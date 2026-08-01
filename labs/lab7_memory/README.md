@@ -26,7 +26,7 @@
 
 ```bash
 conda activate agentic-ai
-cd v2-Python-Agent-LangGraph   # รันจาก root repo (เพราะ import labs.core.*)
+cd v3-Python-Agent-LangGraph   # รันจาก root repo (เพราะ import labs.core.*)
 
 python labs/lab7_memory/agent_memory.py
 ```

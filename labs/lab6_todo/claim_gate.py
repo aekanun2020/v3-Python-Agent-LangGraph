@@ -12,7 +12,11 @@ from labs.lab6_todo.evidence_state import (
     ObservationState,
     SemanticVerdict,
 )
-from labs.lab6_todo.evidence_contract import contract_claims, metric_contract_status
+from labs.lab6_todo.evidence_contract import (
+    CONTRACT_UNSET,
+    contract_claims,
+    metric_contract_status,
+)
 
 
 class ClaimType(str, Enum):
@@ -496,14 +500,20 @@ def verify_then_emit(
     observation: ObservationState,
     evidence: EvidenceState,
     proposed_answer: str = "",
+    *,
+    contract=CONTRACT_UNSET,
 ) -> str:
     """Compose only verified claims; fail closed for unsupported decisions."""
-    contract = metric_contract_status(question, evidence)
-    if not contract.satisfied:
+    status = metric_contract_status(
+        question,
+        evidence,
+        contract=contract,
+    )
+    if not status.satisfied:
         return (
             "หลักฐานยังไม่ครบตาม metric contract "
-            f"{contract.contract_id}: ขาด "
-            + ", ".join(contract.missing_roles)
+            f"{status.contract_id}: ขาด "
+            + ", ".join(status.missing_roles)
         )
     claims = verify_claims(
         question,
@@ -511,7 +521,11 @@ def verify_then_emit(
         evidence,
         proposed_answer=proposed_answer,
     )
-    accepted = list(contract_claims(question, evidence))
+    accepted = list(contract_claims(
+        question,
+        evidence,
+        contract=contract,
+    ))
     accepted.extend(claim.text for claim in claims if claim.accepted)
     accepted = list(dict.fromkeys(accepted))
     accepted.extend(

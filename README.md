@@ -1,17 +1,25 @@
-# v2-Python-Agent-LangGraph
+# v3-Python-Agent-LangGraph
 
-## สถานะปัจจุบัน: Pure Python Agent + bounded-domain Skills
+## สถานะปัจจุบัน: Pure Python Agent + bounded-domain Skills + Hybrid Contract Router
 
 งานพัฒนาล่าสุดอยู่ที่ **Lab 6** และไม่ใช้ LangGraph ใน critical path:
 
 ```text
+Question
+  -> negation/schema-only request guard
+  -> exact/high-precision lexical fast path
+  -> entity/concept identity + polarity/operator + typed-constraint gate
+  -> (เมื่อ lexical ไม่ชัด) semantic proposal 1 ครั้ง
+  -> deterministic id/anchor/constraint/span gate
+  -> Skill contract หรือ abstain เข้า general path
+
 Skill contract -> MCP evidence -> deterministic checks
-               -> LLM semantic review เฉพาะกรณีเสี่ยง
                -> fail-closed Claim Gate -> Answer
 ```
 
 แนวคิดสำคัญคือ Observation เพียงอย่างเดียวไม่รู้ความหมายทางธุรกิจ:
 
+- **Router** เสนอ intent family แต่ไม่ได้มีอำนาจรับ evidence หรืออนุมัติคำตอบ
 - **Skill** เก็บ semantics และ policy ของ bounded domain
 - **Contract** นิยาม query, grain, field, label และ completion rule ที่ runtime ตรวจได้
 - **Observation** ตรวจผล tool เทียบกับ state และ contract
@@ -21,6 +29,8 @@ Runtime core ค้นหา contracts จาก
 `skills/*/references/answer_contracts.json`; ไฟล์ generic
 `labs/lab6_todo/executable_metric_contracts.json` ไม่มี HR/Finance contract
 เพื่อไม่ให้ core ผูกกับโดเมนใดโดเมนหนึ่ง
+ส่วนคำอธิบายที่ semantic router ใช้เสนอ candidate อยู่ใน
+`skills/*/references/routing_catalog.json`
 
 Skills ปัจจุบัน:
 
@@ -35,16 +45,43 @@ Skills ปัจจุบัน:
 | Finance Skill | 2 | 10/10 | 148/148 | 0.730–0.792s |
 
 HR ทั้งสองรอบได้ answer hash เดียวกัน และ Finance non-regression หลังเพิ่ม HR
-Skill ยังคง score และ answer hash เดิม คำถามที่ match contract ใช้เส้นทาง
-`contract → MCP → deterministic emit` โดยไม่เรียก Agent/Observer LLM
+Skill ยังคง score และ answer hash เดิม ผลนี้วัดหลัง route เข้า contract ถูกแล้ว
+ไม่ได้พิสูจน์ว่า selector แบบ substring เข้าใจ paraphrase
+
+v3 จึงแยกความรับผิดชอบชัดเจน: ปฏิเสธคำขอแบบ negation/schema-only ก่อน,
+รับ exact term หรือ Skill-declared high-precision lexical alias เมื่อได้ unique
+contract และ typed constraints ครบโดยไม่เรียก Router LLM ถ้า lexical ไม่ชัดจึง
+เรียก `ROUTER_MODEL` หนึ่งครั้ง แล้วให้ Python ตรวจ contract id, entity/metric
+identity, concept evidence, anchor polarity, comparison operator,
+contract-owned constraints, confidence และ exact spans ก่อนรับ route
+ข้อความจาก router ไม่ใช่ accepted evidence
 
 ผลนี้รับรองเฉพาะ intent families และชุดข้อมูลที่ contracts ประกาศไว้
 ไม่ใช่การรับรองคำถาม HR/Finance ทุกแบบหรือ production readiness
 
 อ่านรายละเอียดและวิธีรันที่
 [Lab 6 — current architecture](labs/lab6_todo/README.md),
+[v3 Hybrid Router acceptance report](artifacts/v3_semantic_router_acceptance_report.md),
 [HR report](artifacts/hr_skill_run4_run5_report.md) และ
 [Finance report](artifacts/finance_skill_run3_run4_report.md)
+
+### ผล Hybrid Router ล่าสุด
+
+ทดสอบ `semantic-v3` แบบ sequential สองรอบด้วย
+`openai/gpt-oss-120b` และ fingerprint เดียวกัน:
+
+| Run | Paraphrases | Near-boundary | False matches | Routing median | Semantic median / p95 | Live MCP / answer |
+|---|---:|---:|---:|---:|---:|---:|
+| Acceptance 1 | 20/20 | 20/20 | 0 | 4.045236s | 4.807690s / 10.413516s | 20/20 / 20/20 |
+| Acceptance 2 | 20/20 | 20/20 | 0 | 3.489238s | 4.325542s / 10.446251s | — |
+
+ทั้งสองรอบมี lexical routes 13, semantic routes 8, semantic attempts 27 และ
+abstentions 19 เท่ากัน decision projection SHA-256 ตรงกันที่
+`ccf0fda7ea1de47c13ba7f234e7caf139a11b189f4346cecdfbef4ef862eb87d`
+fingerprint ระบุ gate source `611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab`
+และ catalog `b04c656c71e0c66c964341ecc233519780fc59af75070f1c92dbc6dddaf03034`
+ดูรายละเอียด suite history, live evidence และข้อจำกัดใน
+[acceptance report](artifacts/v3_semantic_router_acceptance_report.md)
 
 ## Quick start สำหรับผู้เรียน
 
@@ -63,6 +100,8 @@ cp .env.example .env
 OPENROUTER_API_KEY=ใส่คีย์ของผู้เรียน
 OPENROUTER_MODEL=qwen/qwen3.5-35b-a3b
 OBSERVER_MODEL=openai/gpt-oss-120b
+ROUTER_MODEL=openai/gpt-oss-120b
+ROUTER_TIMEOUT_SECONDS=30
 MCP_SERVER_URL=https://your-mcp-server.example/mcp
 ```
 
@@ -73,20 +112,44 @@ python labs/lab6_todo/agent_todo.py \
   "นับพนักงานที่ยังปฏิบัติงานแยกตามแผนก"
 ```
 
+live E2E รอบสุดท้าย route คำถามนี้แบบ semantic เข้า
+`active_headcount_by_department`, พบ MCP tools 5 ตัว, รัน role
+`grouped_active_headcount` และจบด้วย terminal approval ที่ 25 คน
+ครบ 8 แผนกตาม accepted evidence
+
+`--contract-routing hybrid` เป็นค่าเริ่มต้น; ใช้ `--contract-routing lexical`
+เมื่อต้องการเปรียบเทียบกับ selector แบบ literal เดิม
+
 รัน automated tests:
 
 ```bash
 python -m pytest tests --ignore=tests/test_lab8_planner.py -q
+python -m unittest -v tests.test_lab8_planner
 ```
 
-สถานะที่ merge เข้า `main`: `76 passed`
+ผลทดสอบ local ล่าสุด: non-Lab 8 `113 passed` + 35 subtests;
+Lab 8 แยก `2 passed`
+
+รัน routing acceptance ค่าเริ่มต้น (`semantic-v3`, hybrid, fail on error):
+
+```bash
+make evaluate-routing
+```
 
 ### จุดย้อนกลับ
 
-- `archive/original-49f6f10` — original baseline
-- `milestone/skill-contracts-7e24c20` — HR/Finance Skill milestone
+ประวัติ `main` ของ v3 ต่อจาก v2 commit `f33546a` และมี tag
+`v2-baseline-f33546a` สำหรับย้อนกลับก่อนเพิ่ม Hybrid Router ส่วนจุดเก่ากว่านั้น
+ดูได้ใน [v2 repository](https://github.com/aekanun2020/v2-Python-Agent-LangGraph):
 
-Tags ทั้งสองมีคำอธิบายและอยู่บน remote จึงทดลองย้อนหลังได้โดยไม่แก้ `main`
+- [`49f6f10`](https://github.com/aekanun2020/v2-Python-Agent-LangGraph/tree/49f6f10) — original baseline
+- [`7e24c20`](https://github.com/aekanun2020/v2-Python-Agent-LangGraph/tree/7e24c20) — HR/Finance Skill milestone
+
+ย้อน Hybrid Router โดยไม่แก้ `main` ได้ด้วย:
+
+```bash
+git switch -c inspect-v2-baseline v2-baseline-f33546a
+```
 
 > หลักสูตร **Agentic AI Development with Python (หลักสูตรที่ 2)** —
 > เขียน Agent ด้วย Pure Python ทีละขั้น (Lab 1–7) แล้วเปรียบเทียบกับ LangGraph (Lab 8) ก่อน deploy เป็น API Service (Lab 9)
@@ -113,8 +176,8 @@ repo นี้มี README หลายระดับ แต่ละไฟล
 ## เริ่มต้น (Clone Repository)
 
 ```bash
-git clone https://github.com/aekanun2020/v2-Python-Agent-LangGraph.git
-cd v2-Python-Agent-LangGraph
+git clone https://github.com/aekanun2020/v3-Python-Agent-LangGraph.git
+cd v3-Python-Agent-LangGraph
 ```
 
 > **ขั้นตอนติดตั้งสภาพแวดล้อม (conda env + `.env` + dependencies) และวิธีรันแต่ละ Lab อยู่ใน [`labs/README.md`](labs/README.md)** — โดย Setup เต็มเป็นแหล่งเดียว (single source) อยู่ที่ [Lab 1](labs/lab1_setup/README.md) ทำครั้งเดียวก่อนเริ่มทุก Lab (พัฒนา/ทดสอบด้วย **Miniconda**, Python 3.11)
@@ -124,7 +187,7 @@ cd v2-Python-Agent-LangGraph
 ## โครงสร้างโปรเจกต์
 
 ```
-Python-Agent-LangGraph/
+v3-Python-Agent-LangGraph/
 ├── README.md                   # ไฟล์นี้ — ภาพรวมระดับ repo + ชี้ทาง
 ├── labs/
 │   ├── README.md               # สารบัญ Lab 1–9 + เส้นทางการเรียนรู้ + setup/run

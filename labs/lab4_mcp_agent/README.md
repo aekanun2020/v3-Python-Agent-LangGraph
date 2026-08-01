@@ -26,7 +26,7 @@
 
 ```bash
 conda activate agentic-ai
-cd v2-Python-Agent-LangGraph   # รันจาก root repo (เพราะ import labs.core.*)
+cd v3-Python-Agent-LangGraph   # รันจาก root repo (เพราะ import labs.core.*)
 
 python labs/lab4_mcp_agent/agent_mcp.py "มีตารางอะไรบ้างในฐานข้อมูล และมีพนักงานทั้งหมดกี่คน"
 ```

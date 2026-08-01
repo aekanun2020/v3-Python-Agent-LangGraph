@@ -1,0 +1,381 @@
+{
+  "version": "finance-routing-catalog-v1",
+  "contracts": [
+    {
+      "id": "finance_portfolio_totals",
+      "intent": "Summarize whole-portfolio record count, requested and funded totals, and their per-record averages.",
+      "exclude": "One-record maximum, a subgroup, a yearly view, or approval rate.",
+      "concept_evidence_patterns": {
+        "loan_amnt": [
+          "\\bloan_amnt\\b",
+          "ยอด(?:เงิน)?ที่ขอ",
+          "วงเงินที่ขอ"
+        ],
+        "funded_amnt": [
+          "\\bfunded_amnt\\b",
+          "ยอด(?:เงิน)?ที่จัดสรร",
+          "วงเงินที่(?:ได้รับ|จัดสรร|ปล่อยกู้)"
+        ],
+        "ค่าเฉลี่ย": [
+          "ค่าเฉลี่ย",
+          "\\b(?:average|mean)\\b"
+        ],
+        "พอร์ต": [
+          "พอร์ต(?:ทั้งหมด)?",
+          "\\bportfolio\\b"
+        ],
+        "ทั้งหมด": [
+          "ทั้งหมด",
+          "ทั้งพอร์ต",
+          "\\b(?:whole|entire|all)\\s+(?:portfolio|records?)\\b"
+        ],
+        "รวม": [
+          "ยอดรวม",
+          "รวมทั้งหมด",
+          "\\btotal(?:s)?\\b"
+        ]
+      }
+    },
+    {
+      "id": "finance_application_mix",
+      "intent": "Compare record-count shares for Individual versus Joint App application types.",
+      "exclude": "Amount averages, one application type only, or applicant-level decisions.",
+      "concept_evidence_patterns": {
+        "application_type": [
+          "\\bapplication[_\\s-]*type\\b",
+          "ประเภท(?:ของ)?(?:ใบสมัคร|การสมัคร|คำขอ)",
+          "ใบสมัคร"
+        ],
+        "Individual": [
+          "\\bIndividual(?:\\s+(?:App|application))?\\b",
+          "(?:ใบสมัคร|การสมัคร|คำขอ|ผู้สมัคร)(?:แบบ)?เดี่ยว",
+          "แบบเดี่ยว"
+        ],
+        "Joint App": [
+          "\\bJoint(?:\\s+(?:App|application))\\b",
+          "(?:ใบสมัคร|การสมัคร|คำขอ|ผู้สมัคร)(?:แบบ)?ร่วม",
+          "แบบร่วม"
+        ],
+        "สัดส่วน": [
+          "สัดส่วน",
+          "\\b(?:share|proportion|mix)\\b"
+        ],
+        "ร้อยละ": [
+          "ร้อยละ",
+          "เปอร์เซ็นต์",
+          "\\bpercent(?:age)?\\b"
+        ],
+        "พอร์ต": [
+          "พอร์ต(?:ทั้งหมด)?",
+          "\\bportfolio\\b"
+        ]
+      }
+    },
+    {
+      "id": "finance_status_mix",
+      "intent": "Report record counts and portfolio shares for every post-origination loan status.",
+      "exclude": "Individual credit decisions, approval or rejection, or one status count only.",
+      "concept_evidence_patterns": {
+        "loan_status": [
+          "\\bloan[_\\s-]*status\\b",
+          "สถานะหลังปล่อยกู้"
+        ],
+        "สัดส่วน": [
+          "สัดส่วน",
+          "ร้อยละ",
+          "เปอร์เซ็นต์",
+          "\\b(?:share|ratio|proportion)\\b"
+        ],
+        "ทุกสถานะ": [
+          "ทุกสถานะ",
+          "สถานะทั้งหมด",
+          "\\ball\\s+(?:loan\\s+)?statuses\\b"
+        ],
+        "กระจาย": [
+          "(?:การ)?กระจาย",
+          "แจกแจง",
+          "\\bdistribution\\b"
+        ],
+        "จำนวน": [
+          "จำนวน",
+          "\\bcount(?:s)?\\b"
+        ]
+      }
+    },
+    {
+      "id": "finance_year_cohorts",
+      "intent": "Compare funded amount and interest rate by issue year for every year from 2016 through 2019.",
+      "exclude": "A single year, years outside 2016-2019, totals without cohorts, or causal trend claims.",
+      "concept_evidence_patterns": {
+        "funded_amnt": [
+          "\\bfunded_amnt\\b",
+          "ยอด(?:เงิน)?ที่(?:ได้รับ|จัดสรร|ปล่อยกู้)",
+          "วงเงินที่(?:ได้รับ|จัดสรร|ปล่อยกู้)"
+        ],
+        "int_rate": [
+          "\\bint_rate\\b",
+          "อัตราดอกเบี้ย",
+          "ดอกเบี้ย",
+          "\\binterest\\s+rate\\b"
+        ],
+        "2016": [
+          "(?<!\\d)2016(?!\\d)"
+        ],
+        "2019": [
+          "(?<!\\d)2019(?!\\d)"
+        ],
+        "issue_d_dim.year": [
+          "\\bissue_d_dim\\.year\\b",
+          "\\bissue\\s+year\\b",
+          "ปีที่(?:ออกสินเชื่อ|ปล่อยกู้)"
+        ],
+        "แต่ละปี": [
+          "แต่ละปี",
+          "แยกตามปี",
+          "\\b(?:each|every)\\s+year\\b",
+          "\\bby\\s+year\\b"
+        ],
+        "รายปี": [
+          "รายปี",
+          "\\b(?:annual|yearly)\\b",
+          "\\bby\\s+year\\b"
+        ]
+      }
+    },
+    {
+      "id": "finance_home_ownership_segments",
+      "intent": "Describe every home-ownership segment using funded amount, interest rate, and DTI.",
+      "exclude": "Causal effects, one label only, or individual decisions.",
+      "concept_evidence_patterns": {
+        "home_ownership": [
+          "\\bhome[_\\s-]*ownership\\b",
+          "(?:สถานะ)?การ(?:ถือ|ครอบ)ครองที่อยู่อาศัย",
+          "ประเภท(?:การ)?อยู่อาศัย",
+          "\\bhousing\\s+tenure\\b"
+        ],
+        "funded_amnt": [
+          "\\bfunded_amnt\\b",
+          "ยอด(?:เงิน)?ที่(?:ได้รับ|จัดสรร|ปล่อยกู้)",
+          "วงเงินที่(?:ได้รับ|จัดสรร|ปล่อยกู้)"
+        ],
+        "int_rate": [
+          "\\bint_rate\\b",
+          "อัตราดอกเบี้ย",
+          "ดอกเบี้ย",
+          "\\binterest\\s+rate\\b"
+        ],
+        "dti": [
+          "\\bdti\\b",
+          "ภาระหนี้ต่อรายได้",
+          "อัตราส่วนหนี้สินต่อรายได้",
+          "\\bdebt[-\\s]+to[-\\s]+income(?:\\s+ratio)?\\b"
+        ],
+        "ทุก label": [
+          "ทุก\\s*(?:label|ป้ายกำกับ|สถานะการ(?:ถือ|ครอบ)ครอง)",
+          "\\ball\\s+(?:home[-\\s]ownership\\s+)?(?:labels|values)\\b"
+        ],
+        "ทุกกลุ่ม": [
+          "(?:ครบ)?ทุกกลุ่ม",
+          "\\b(?:all|every)\\s+(?:groups?|segments?)\\b"
+        ],
+        "จำแนก": [
+          "จำแนก",
+          "แยก(?:ครบ)?ทุก(?:ประเภท|กลุ่ม)",
+          "แยกตาม(?:สถานะ)?การ(?:ถือ|ครอบ)ครองที่อยู่อาศัย",
+          "\\b(?:classif(?:y|ied)|segment(?:ed)?|group(?:ed)?)\\s+by\\b"
+        ]
+      }
+    },
+    {
+      "id": "finance_employment_extrema",
+      "intent": "Find employment-length segments with highest and lowest average funded amount while explicitly retaining N/A.",
+      "exclude": "One borrower, overall averages, or approval decisions.",
+      "concept_evidence_patterns": {
+        "emp_length": [
+          "\\bemp[_\\s-]*length\\b",
+          "ช่วงอายุงาน",
+          "ระยะเวลา(?:การ)?ทำงาน",
+          "อายุงาน"
+        ],
+        "funded_amnt": [
+          "\\bfunded_amnt\\b",
+          "ยอดจัดสรร",
+          "วงเงินที่(?:ได้รับ|จัดสรร|ปล่อยกู้)"
+        ],
+        "สูงสุด": [
+          "สูงสุด",
+          "มากที่สุด",
+          "\\b(?:highest|maximum|max)\\b"
+        ],
+        "ต่ำสุด": [
+          "ต่ำสุด",
+          "น้อยที่สุด",
+          "\\b(?:lowest|minimum|min)\\b"
+        ],
+        "N/A": [
+          "\\bN/?A\\b",
+          "(?:ค่า|ข้อมูล)ที่ไม่ระบุ"
+        ],
+        "ไม่รวม": ["ไม่รวม"],
+        "จำแนก": [
+          "จำแนก",
+          "แยก(?:ตาม)?",
+          "แบ่งตาม",
+          "\\bgroup(?:ed|ing)?\\b"
+        ]
+      }
+    },
+    {
+      "id": "finance_dti_buckets",
+      "intent": "Bucket DTI into less than 10, 10 to under 20, 20 to under 30, 30 or more, and NULL, then compare metrics.",
+      "exclude": "One overall DTI average, custom bucket boundaries, or causal conclusions.",
+      "concept_evidence_patterns": {
+        "dti": [
+          "\\bdti\\b",
+          "ภาระหนี้ต่อรายได้",
+          "อัตราส่วนหนี้สินต่อรายได้"
+        ],
+        "<10": [
+          "<\\s*10",
+          "ต่ำกว่า\\s*10"
+        ],
+        "10-<20": [
+          "10\\s*(?:-|\\u2013|ถึง)\\s*(?:<|ต่ำกว่า)?\\s*20"
+        ],
+        "20-<30": [
+          "20\\s*(?:-|\\u2013|ถึง)\\s*(?:<|ต่ำกว่า)?\\s*30"
+        ],
+        "30+": [
+          "30\\s*\\+",
+          "ตั้งแต่\\s*30(?:\\s*ขึ้นไป)?",
+          "30\\s*(?:ขึ้นไป|หรือมากกว่า)"
+        ],
+        "NULL": [
+          "\\bNULL\\b",
+          "ข้อมูลว่าง",
+          "ค่าว่าง"
+        ],
+        "bucket": [
+          "\\bbuckets?\\b",
+          "จัดช่วง",
+          "แบ่ง(?:เป็น)?(?:ช่วง)?"
+        ],
+        "แบ่ง": [
+          "แบ่ง(?:เป็น)?(?:ช่วง)?",
+          "จัดช่วง"
+        ]
+      }
+    },
+    {
+      "id": "finance_fixed_income_bands",
+      "intent": "For Individual applications only, compare fixed annual-income bands below 50000, 50000-70000, 70000-100000, and 100000 or more.",
+      "exclude": "Joint App, quantile bands, omitted or different boundaries, or household income.",
+      "required_concepts": [
+        "Individual application population",
+        "annual income field",
+        "four fixed income bands"
+      ],
+      "one_of_concepts": [],
+      "critical_anchor_groups": [
+        ["50000", "50,000"],
+        ["70000", "70,000"],
+        ["100000", "100,000"]
+      ],
+      "concept_evidence_patterns": {
+        "Individual application population": [
+          "\\bIndividual(?:\\s+applications?)?\\b",
+          "ผู้สมัครเดี่ยว",
+          "ใบสมัครเดี่ยว"
+        ],
+        "annual income field": [
+          "\\bannual_inc\\b",
+          "รายได้(?:ต่อปี|รายปี)"
+        ],
+        "four fixed income bands": [
+          "(?:สี่|4)\\s*ช่วง[^\\n.!?]{0,18}(?:รายได้|คงที่)",
+          "ช่วงรายได้คงที่(?:สี่ช่วง)?",
+          "50,?000[^\\n.!?]{0,100}70,?000[^\\n.!?]{0,100}100,?000",
+          "\\bfour\\s+fixed\\s+income\\s+bands?\\b"
+        ]
+      }
+    },
+    {
+      "id": "finance_funding_gap_by_year",
+      "intent": "For each year 2016-2019, calculate requested total, funded total, funding gap, and funding ratio without calling it approval rate.",
+      "exclude": "A semantic question about approval rate alone, one year only, or rejected-application analysis.",
+      "required_concepts": [
+        "year grain covering 2016 through 2019",
+        "difference between requested and funded amounts",
+        "funding ratio"
+      ],
+      "one_of_concepts": [],
+      "allowed_negated_terms": ["approval rate"],
+      "critical_anchor_groups": [
+        ["2016"],
+        ["2019"],
+        ["ส่วนต่าง", "funding gap", "funding_gap"],
+        ["อัตราส่วนการจัดสรร", "funding ratio", "funding_ratio"]
+      ],
+      "concept_evidence_patterns": {
+        "year grain covering 2016 through 2019": [
+          "(?:แต่ละปี|รายปี)[^\\n.!?]{0,24}2016[^\\n.!?]{0,16}2019",
+          "2016\\s*(?:-|\\u2013|ถึง)\\s*2019",
+          "2016[^\\n.!?]{0,24}2019"
+        ],
+        "difference between requested and funded amounts": [
+          "ส่วนต่าง[^\\n.!?]{0,30}(?:ยอดที่ขอ|วงเงินที่ขอ)[^\\n.!?]{0,30}(?:ยอดที่จัดสรร|วงเงินที่จัดสรร)",
+          "\\bfunding[_\\s-]*gap\\b",
+          "ส่วนต่างการจัดสรร"
+        ],
+        "funding ratio": [
+          "อัตราส่วนการจัดสรร",
+          "\\bfunding[_\\s-]*ratio\\b"
+        ]
+      }
+    },
+    {
+      "id": "finance_dual_risk_screen",
+      "intent": "Screen every employment-length segment that is strictly above the whole-portfolio average on both interest rate and Charged Off rate.",
+      "exclude": "Whole-portfolio Charged Off count, one borrower, one threshold only, or an approval decision.",
+      "critical_anchor_groups": [["int_rate", "อัตราดอกเบี้ย", "ดอกเบี้ย"]],
+      "required_concepts": [
+        "emp_length",
+        "int_rate",
+        "Charged Off",
+        "สูงกว่าค่าเฉลี่ยทั้งพอร์ต"
+      ],
+      "one_of_concepts": ["strict", "ทั้ง", "ทุกกลุ่มที่ผ่าน"],
+      "concept_evidence_patterns": {
+        "emp_length": [
+          "\\bemp[_\\s-]*length\\b",
+          "ช่วงอายุงาน",
+          "ระยะเวลา(?:การ)?ทำงาน",
+          "อายุงาน"
+        ],
+        "int_rate": [
+          "\\bint[_\\s-]*rate\\b",
+          "อัตราดอกเบี้ย",
+          "ดอกเบี้ย"
+        ],
+        "Charged Off": ["\\bCharged\\s+Off\\b"],
+        "สูงกว่าค่าเฉลี่ยทั้งพอร์ต": [
+          "สูงกว่าค่าเฉลี่ย(?:รวม|ทั้งพอร์ต|ของทั้งพอร์ต)?",
+          "\\babove\\s+(?:the\\s+)?(?:whole[-\\s]portfolio\\s+)?average\\b"
+        ],
+        "strict": [
+          "\\bstrict(?:ly)?\\b",
+          "แบบเข้มงวด",
+          "มากกว่าแบบไม่รวมเท่ากับ"
+        ],
+        "ทั้ง": [
+          "ทั้ง(?:สอง)?(?:เงื่อนไข|ตัวชี้วัด)",
+          "\\bboth\\b"
+        ],
+        "ทุกกลุ่มที่ผ่าน": [
+          "ทุกกลุ่มที่ผ่าน",
+          "\\ball\\s+(?:qualifying|passing)\\s+(?:groups|segments)\\b"
+        ]
+      }
+    }
+  ]
+}

@@ -16,6 +16,12 @@ OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "anthropic/claude-sonnet-4
 # Observer may use a different model to reduce correlated blind spots.
 # Falls back to the agent model for backward compatibility.
 OBSERVER_MODEL = os.environ.get("OBSERVER_MODEL", OPENROUTER_MODEL)
+# Semantic contract router. It is called only after the lexical fast path
+# abstains, and its proposal still has to pass deterministic span validation.
+ROUTER_MODEL = os.environ.get("ROUTER_MODEL", OPENROUTER_MODEL)
+ROUTER_TIMEOUT_SECONDS = float(
+    os.environ.get("ROUTER_TIMEOUT_SECONDS", "30")
+)
 
 # ---- MCP MSSQL Server จริงของหลักสูตรที่ 1 (Streamable HTTP) ----
 # ค่าเริ่มต้นชี้ localhost:9000 — ตั้งใน .env ให้เป็น URL ngrok ถ้า expose ออกมา

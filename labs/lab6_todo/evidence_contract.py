@@ -32,6 +32,7 @@ class MetricContractStatus:
 _CONTRACT_PATH = Path(__file__).with_name("executable_metric_contracts.json")
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _SKILL_CONTRACT_GLOB = "skills/*/references/answer_contracts.json"
+CONTRACT_UNSET = object()
 
 
 def _plain_number(value: float) -> str:
@@ -40,8 +41,43 @@ def _plain_number(value: float) -> str:
     return f"{value:.10f}".rstrip("0").rstrip(".")
 
 
+def _contract_threshold(contract: dict) -> tuple[str, float] | None:
+    """Read a fixed decision boundary from the executable contract."""
+    threshold = contract.get("parameters", {}).get("threshold")
+    if not isinstance(threshold, dict):
+        return None
+    operator = threshold.get("operator")
+    value = threshold.get("value")
+    if operator not in {"gt", "gte", "lt", "lte"}:
+        return None
+    if not isinstance(value, (int, float)):
+        return None
+    return str(operator), float(value)
+
+
+def _threshold_passes(value: float, operator: str, threshold: float) -> bool:
+    return {
+        "gt": value > threshold,
+        "gte": value >= threshold,
+        "lt": value < threshold,
+        "lte": value <= threshold,
+    }[operator]
+
+
+def _operator_label(operator: str) -> str:
+    return {
+        "gt": "มากกว่า",
+        "gte": "ไม่น้อยกว่า",
+        "lt": "น้อยกว่า",
+        "lte": "ไม่เกิน",
+    }[operator]
+
+
 def _contracts() -> tuple[dict, ...]:
-    paths = (_CONTRACT_PATH, *_REPO_ROOT.glob(_SKILL_CONTRACT_GLOB))
+    paths = (
+        _CONTRACT_PATH,
+        *sorted(_REPO_ROOT.glob(_SKILL_CONTRACT_GLOB)),
+    )
     contracts = []
     identifiers = set()
     for path in paths:
@@ -55,8 +91,23 @@ def _contracts() -> tuple[dict, ...]:
     return tuple(contracts)
 
 
-def select_metric_contract(question: str) -> dict | None:
+def all_metric_contracts() -> tuple[dict, ...]:
+    """Return the discovered generic + Skill contracts as read-only inputs."""
+    return _contracts()
+
+
+def metric_contract_by_id(identifier: str) -> dict | None:
+    """Resolve a contract id without trusting user-provided routing markers."""
+    return next(
+        (item for item in _contracts() if item["id"] == identifier),
+        None,
+    )
+
+
+def matching_metric_contracts(question: str) -> tuple[dict, ...]:
+    """Return every literal match; callers decide how to handle ambiguity."""
     lowered = question.lower()
+    matches = []
     for contract in _contracts():
         if not all(
             term.lower() in lowered
@@ -68,12 +119,28 @@ def select_metric_contract(question: str) -> dict | None:
             for term in contract["question_terms_any"]
         ):
             continue
-        return contract
-    return None
+        matches.append(contract)
+    return tuple(matches)
 
 
-def terminal_contract_verdict(question: str) -> str | None:
-    contract = select_metric_contract(question)
+def select_metric_contract(question: str) -> dict | None:
+    """Legacy literal selector; hybrid routing uses unique matches only."""
+    matches = matching_metric_contracts(question)
+    return matches[0] if matches else None
+
+
+def _resolved_contract(question: str, contract):
+    if contract is CONTRACT_UNSET:
+        return select_metric_contract(question)
+    return contract
+
+
+def terminal_contract_verdict(
+    question: str,
+    *,
+    contract=CONTRACT_UNSET,
+) -> str | None:
+    contract = _resolved_contract(question, contract)
     if not contract:
         return None
     verdict = contract.get("terminal_verdict")
@@ -134,6 +201,8 @@ def repair_query_arguments(
     question: str,
     tool_name: str,
     arguments: dict,
+    *,
+    contract=CONTRACT_UNSET,
 ) -> tuple[dict, tuple[str, ...]]:
     """Apply only contract-declared, semantics-preserving query repairs."""
     if "query" not in tool_name.lower():
@@ -161,7 +230,7 @@ def repair_query_arguments(
         unicode_replacement,
         query,
     )
-    contract = select_metric_contract(question)
+    contract = _resolved_contract(question, contract)
     if contract and contract["id"] == "performance_review_coverage":
         lowered = query.lower()
         if "performance_review" in lowered and "distinct" not in lowered:
@@ -195,6 +264,8 @@ def _has_unsafe_unicode_literal(query: str) -> bool:
 def validate_evidence_contract(
     question: str,
     record: EvidenceRecord,
+    *,
+    contract=CONTRACT_UNSET,
 ) -> ContractResult:
     if "query" not in record.tool_name.lower():
         return ContractResult(ContractDecision.ACCEPT, "non-query evidence")
@@ -216,7 +287,7 @@ def validate_evidence_contract(
             ContractDecision.QUERY_MORE,
             "coverage numerator requires distinct entity grain",
         )
-    metric_contract = select_metric_contract(question)
+    metric_contract = _resolved_contract(question, contract)
     if metric_contract:
         role = _matching_role(metric_contract, query)
         if role:
@@ -234,8 +305,10 @@ def validate_evidence_contract(
 def metric_contract_status(
     question: str,
     evidence: EvidenceState,
+    *,
+    contract=CONTRACT_UNSET,
 ) -> MetricContractStatus:
-    contract = select_metric_contract(question)
+    contract = _resolved_contract(question, contract)
     if not contract:
         return MetricContractStatus(None, True)
     satisfied_roles = set()
@@ -259,9 +332,15 @@ def metric_contract_status(
 def missing_role_queries(
     question: str,
     evidence: EvidenceState,
+    *,
+    contract=CONTRACT_UNSET,
 ) -> tuple[tuple[str, str], ...]:
-    contract = select_metric_contract(question)
-    status = metric_contract_status(question, evidence)
+    contract = _resolved_contract(question, contract)
+    status = metric_contract_status(
+        question,
+        evidence,
+        contract=contract,
+    )
     if not contract or status.satisfied:
         return ()
     by_id = {role["id"]: role for role in contract["roles"]}
@@ -274,11 +353,17 @@ def missing_role_queries(
 def contract_claims(
     question: str,
     evidence: EvidenceState,
+    *,
+    contract=CONTRACT_UNSET,
 ) -> tuple[str, ...]:
-    status = metric_contract_status(question, evidence)
+    contract = _resolved_contract(question, contract)
+    status = metric_contract_status(
+        question,
+        evidence,
+        contract=contract,
+    )
     if not status.satisfied or not status.contract_id:
         return ()
-    contract = select_metric_contract(question)
     assert contract is not None
     role_records: dict[str, EvidenceRecord] = {}
     for record in evidence.records:
@@ -336,15 +421,29 @@ def contract_claims(
             return int(values[-1]) if values else None
         total = scalar("active_employee_denominator")
         reviewed = scalar("distinct_reviewed_employee_numerator")
-        threshold_match = re.search(r"(\d+(?:\.\d+)?)\s*%", question)
-        if total is None or reviewed is None or not threshold_match or total <= 0:
+        threshold_spec = _contract_threshold(contract)
+        review_period = contract.get("parameters", {}).get("review_period")
+        if (
+            total is None
+            or reviewed is None
+            or threshold_spec is None
+            or not review_period
+            or total <= 0
+        ):
             return ()
-        threshold = float(threshold_match.group(1))
+        operator, threshold = threshold_spec
         coverage = reviewed / total * 100
-        verdict = "ผ่าน" if coverage >= threshold else "ไม่ผ่าน"
+        verdict = (
+            "ผ่าน"
+            if _threshold_passes(coverage, operator, threshold)
+            else "ไม่ผ่าน"
+        )
         return (
             f"พนักงานที่ปฏิบัติงานทั้งหมดคือ {total} คน",
-            f"พนักงานที่มี performance review ปี 2023 คือ {reviewed} คน",
+            (
+                "พนักงานที่มี performance review ปี "
+                f"{review_period} คือ {reviewed} คน"
+            ),
             f"Evidence coverage ของพนักงานที่มี review เท่ากับ {reviewed} / {total} = {coverage:g}%",
             f"{verdict}เกณฑ์ขั้นต่ำ {threshold:g}%",
         )
@@ -394,17 +493,24 @@ def contract_claims(
                     float(first_value.group(0).replace(",", "")),
                 ))
         total = sum(value for _, value in rows)
-        threshold_match = re.search(r"(\d+(?:\.\d+)?)\s*%", question)
-        if not rows or total <= 0 or not threshold_match:
+        threshold_spec = _contract_threshold(contract)
+        if not rows or total <= 0 or threshold_spec is None:
             return ()
-        threshold = float(threshold_match.group(1))
+        operator, threshold = threshold_spec
         claims = [f"ชั่วโมงอบรมทั้งหมดคือ {total:g} ชั่วโมง"]
         for label, value in rows:
             share = value / total * 100
-            verdict = "เกิน" if share > threshold else "ไม่เกิน"
+            passed = _threshold_passes(share, operator, threshold)
+            verdict = (
+                "เกิน" if passed and operator == "gt"
+                else "ไม่เกิน" if operator == "gt"
+                else "ผ่าน" if passed
+                else "ไม่ผ่าน"
+            )
             claims.append(
                 f"{label} {value:g} ชั่วโมง ({share:.2f}%) "
-                f"{verdict}นโยบาย concentration limit {threshold:g}%"
+                f"{verdict}นโยบาย concentration limit "
+                f"{_operator_label(operator)} {threshold:g}%"
             )
         return tuple(claims)
     if status.contract_id == "staffing_decision_insufficient":
@@ -456,21 +562,25 @@ def contract_claims(
                     int(match.group(2)),
                     int(match.group(3)),
                 ))
-        threshold_match = re.search(r"(\d+(?:\.\d+)?)\s*%", question)
-        if not rows or not threshold_match:
+        threshold_spec = _contract_threshold(contract)
+        if not rows or threshold_spec is None:
             return ()
-        threshold = float(threshold_match.group(1))
+        operator, threshold = threshold_spec
         claims = []
         for label, total, expert in rows:
             if total <= 0:
                 continue
             share = expert / total * 100
-            verdict = "ถึง" if share >= threshold else "ไม่ถึง"
+            verdict = (
+                "ผ่าน"
+                if _threshold_passes(share, operator, threshold)
+                else "ไม่ผ่าน"
+            )
             claims.append(
                 f"{label} มี skill records {total} รายการ "
                 f"และระดับเชี่ยวชาญ {expert} รายการ "
-                f"คิดเป็น {share:.2f}% ซึ่ง{verdict}เป้าหมาย "
-                f"{threshold:g}%"
+                f"คิดเป็น {share:.2f}% ซึ่ง{verdict}เกณฑ์ "
+                f"{_operator_label(operator)} {threshold:g}%"
             )
         return tuple(claims)
     if status.contract_id == "top_two_project_concentration":
@@ -482,15 +592,15 @@ def contract_claims(
                 record.raw_result,
             )
         ]
-        threshold_match = re.search(r"(\d+(?:\.\d+)?)\s*%", question)
-        if len(values) < 2 or not threshold_match or values[-2] <= 0:
+        threshold_spec = _contract_threshold(contract)
+        if len(values) < 2 or threshold_spec is None or values[-2] <= 0:
             return ()
         total, top_two = values[-2:]
-        threshold = float(threshold_match.group(1))
+        operator, threshold = threshold_spec
         share = top_two / total * 100
         verdict = (
             "มี concentration risk"
-            if share > threshold
+            if _threshold_passes(share, operator, threshold)
             else "ไม่มี concentration risk ตามเกณฑ์"
         )
         return (
@@ -500,7 +610,10 @@ def contract_claims(
                 f"{_plain_number(top_two)}"
             ),
             f"สัดส่วน top two ต่อทั้งหมดคือ {share:.2f}%",
-            f"เกณฑ์นโยบายคือมากกว่า {threshold:g}%",
+            (
+                "เกณฑ์นโยบายคือ "
+                f"{_operator_label(operator)} {threshold:g}%"
+            ),
             verdict,
         )
     return ()

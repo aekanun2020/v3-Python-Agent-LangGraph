@@ -25,7 +25,7 @@
 
 ```bash
 conda activate agentic-ai
-cd v2-Python-Agent-LangGraph   # รันจาก root repo (เพราะ import labs.core.*)
+cd v3-Python-Agent-LangGraph   # รันจาก root repo (เพราะ import labs.core.*)
 
 # ตัวอย่างที่ 1: คำถามเกี่ยวกับ HR → route ไป hr_analytics
 python labs/lab5_skills/agent_skills.py "แต่ละแผนกมีพนักงานกี่คน"

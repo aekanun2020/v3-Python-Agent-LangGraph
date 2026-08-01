@@ -3,7 +3,7 @@
   "scope": "Frozen HR Q1-Q10 suite on TestDB",
   "agent_model": "qwen/qwen3.5-35b-a3b",
   "observer_model": "openai/gpt-oss-120b",
-  "mcp_server": "https://7ff8-184-22-21-43.ngrok-free.app/mcp",
+  "mcp_server": "https://your-mcp-server.example/mcp",
   "grader": {
     "version": "atomic-v1",
     "replays_per_artifact": 20

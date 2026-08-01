@@ -6,7 +6,7 @@ Date: 2026-07-30
 
 - Agent: `qwen/qwen3.5-35b-a3b`
 - Semantic Observer: `openai/gpt-oss-120b`
-- MCP: `https://7ff8-184-22-21-43.ngrok-free.app/mcp`
+- MCP: `https://your-mcp-server.example/mcp`
 - Database: `TestDB`
 - Ground truth: `finance_mcp_ground_truth_q1_q10.md`
 - Evaluation: strict required-claim completeness plus semantic constraints

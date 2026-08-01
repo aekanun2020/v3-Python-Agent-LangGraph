@@ -1,37 +1,158 @@
 # Unseen Paraphrase + Boundary Evaluation
 
-ชุดนี้ freeze ก่อนรัน baseline ครั้งแรก และไม่ควรแก้คำถามหลังเห็นผลเพื่อทำให้
-score ดีขึ้น
+ชุดนี้วัดว่า contract selector จับ paraphrase ได้หรือไม่ และรู้จัก abstain
+เมื่อคำถามอยู่นอกขอบเขต contract โดยแยกจากการตรวจความถูกต้องของ
+MCP evidence และคำตอบปลายทาง
 
-- `*_unseen_paraphrases.json`: คำถามใหม่ที่ควรเลือก contract ที่ระบุ
-- `*_boundaries.json`: คำถามใกล้เคียงที่ต้องไม่เลือก contract
-- routing evaluation ไม่เรียก LLM หรือ MCP
-- `--live` เรียก MCP เฉพาะ paraphrase ที่ routing ถูก และรันหนึ่งครั้งต่อ
-  contract ที่ไม่ซ้ำ
+## สิ่งที่ถูก freeze
 
-รัน routing baseline:
+- `*_unseen_paraphrases.json`: คำถามที่ควรเลือก contract ที่ระบุ
+- `*_boundaries.json`: near-boundary questions ที่ส่วนใหญ่ต้อง abstain
+- `semantic_v2_corrections.json`: overlay แก้ ground truth ที่ตรวจพบจาก pre-run
+  contract audit โดยไม่แก้ไฟล์ v1 เดิม
+- `semantic_v3_corrections.json`: overlay ต่อจาก v2 เพื่อให้คำถามระบุ
+  fixed business value ที่ executable contract กำหนด
 
-```bash
-python scripts/evaluate_skill_routing.py
+ห้ามแก้คำถามหลังเห็นผลเพื่อทำให้ score ดีขึ้น ถ้าพบ defect ให้เก็บไฟล์
+เดิมไว้เป็น audit trail และออก suite version ใหม่แบบเดียวกับ
+`semantic-v2` และ `semantic-v3`
+
+## Suite versions
+
+| Version | หน้าที่ | ควรใช้เมื่อ |
+|---|---|---|
+| `frozen-v1` | ไฟล์คำถามดั้งเดิมก่อน audit | ทำซ้ำ historical baseline และตรวจ audit trail |
+| `semantic-v2` | v1 + correction overlay 5 รายการ | ตรวจประวัติ router v2 |
+| `semantic-v3` | v2 + fixed-constraint correction 1 รายการ | ประเมิน router ปัจจุบัน (ค่าเริ่มต้น) |
+
+Correction overlay มี 5 รายการ:
+
+| Case | ข้อแก้ไขเชิงความหมาย |
+|---|---|
+| `hr_para_004` | contract มี grain ระดับทั้งองค์กร ไม่ใช่รายแผนก |
+| `hr_para_007` | top two ต้องอ้างลำดับตาม `project_value` |
+| `hr_boundary_005` | คำขอ staffing decision ที่หลักฐานไม่พอควร route เข้า fail-closed refusal contract ไม่ใช่ abstain |
+| `fin_para_008` | fixed income bands ต้องระบุขอบ 70,000 ด้วย |
+| `fin_para_010` | dual-risk screen ต้องระบุทั้ง interest rate และ Charged Off rate |
+
+`semantic-v3` แก้ `hr_para_004` ให้ระบุ `review_period=2023`
+ซึ่งเป็น fixed value ใน performance-review contract ที่ v2 ยังไม่ได้ระบุ
+
+Score ของ `frozen-v1`, `semantic-v2` และ `semantic-v3` ไม่ควรถูกนำมา
+เปรียบเทียบโดยไม่ระบุ version เพราะ expected questions/labels ต่างกันบางจุด
+
+## Routing modes
+
+### `legacy`
+
+ใช้ substring/literal `question_terms_all/any` เท่านั้น ไม่เรียก LLM หรือ MCP
+
+### `hybrid` (ค่าเริ่มต้น)
+
+```text
+lexical fast path
+  -> request-boundary guard: negation/schema-only ให้ abstain
+  -> exact terms หรือ Skill-declared high-precision lexical aliases
+  -> unique match + typed constraints: รับ route โดยไม่เรียก Router LLM
+  -> zero/ambiguous match: ขอ semantic proposal 1 ครั้ง
+       -> deterministic contract-id + anchor + typed-constraint
+          + exact-span/concept-pattern/negation gate
+       -> contract หรือ abstain
 ```
 
-รัน routing พร้อม live MCP:
+Hybrid routing อาจเรียก OpenRouter แต่ไม่เรียก MCP จนกว่าจะใส่ `--live`
+Semantic output เป็น routing metadata ไม่ใช่ evidence และถ้า timeout/output ผิดรูป/
+หลักฐานคำไม่ครบ ระบบจะ abstain แบบ fail-closed
+
+## วิธีรัน
+
+Historical baseline ที่ทำซ้ำได้:
 
 ```bash
-python scripts/evaluate_skill_routing.py --live \
-  --output artifacts/unseen_boundary_baseline.json
+python scripts/evaluate_skill_routing.py \
+  --suite-version frozen-v1 \
+  --routing-mode legacy \
+  --allow-failures \
+  --output artifacts/frozen_v1_legacy_baseline.json
 ```
 
-Metrics:
+ตั้งแต่ v3 evaluator จะ exit nonzero เมื่อมี routing/live failure
+ใส่ `--allow-failures` เฉพาะเมื่อตั้งใจเก็บ exploratory หรือ historical baseline
 
-- `contract_recall`: paraphrase ที่เลือก contract ถูก
-- `boundary_precision`: boundary ที่ไม่ถูกจับเข้า contract
-- `false_match_rate`: boundary ที่ถูกจับผิด
-- `live_contract_completion`: live query ที่ evidence ครบตาม contract
+Hybrid semantic evaluation (ใช้ OpenRouter key):
 
-ผล baseline ต้องถูกบันทึกก่อนปรับ selector/router
+```bash
+ROUTER_MODEL=openai/gpt-oss-120b \
+python scripts/evaluate_skill_routing.py \
+  --suite-version semantic-v3 \
+  --routing-mode hybrid \
+  --workers 1 \
+  --progress \
+  --output artifacts/v3_semantic_router_acceptance_run.json
+```
 
-ผล baseline แรกอยู่ที่
+Acceptance runs ใช้ `--workers 1` เพื่อวัด sequential request latency
+ส่วน `--workers` ที่มากกว่า 1 ทำให้เฉพาะ evaluation เรียก semantic router แบบขนาน;
+output ยังเรียงตาม case order เดิม ไม่ได้เปลี่ยน agent runtime ให้เรียก router
+มากกว่าหนึ่งครั้งต่อคำขอ
+
+รันค่าเริ่มต้นของ repo แบบสั้น:
+
+```bash
+make evaluate-routing
+```
+
+Make target ใช้ `semantic-v3`, `hybrid` และไม่ใส่ `--allow-failures`
+
+รัน routing แล้วตรวจ contract evidence กับ MCP จริง:
+
+```bash
+ROUTER_MODEL=openai/gpt-oss-120b \
+python scripts/evaluate_skill_routing.py \
+  --suite-version semantic-v3 \
+  --routing-mode hybrid \
+  --live \
+  --output artifacts/v3_semantic_router_acceptance_live.json
+```
+
+`--live` เรียก MCP เฉพาะ paraphrase ที่ route ถูก และรันเพียงหนึ่งครั้งต่อ
+contract id ที่ไม่ซ้ำ จึงไม่ใช่ end-to-end agent-answer evaluation
+
+## Metrics และ fingerprint
+
+- `contract_recall`: paraphrases ที่เลือก expected contract ถูก
+- `boundary_accuracy`: near-boundary cases ที่ได้ expected route หรือ abstain ถูก
+- `boundary_precision`: alias เก่าของ `boundary_accuracy` เพื่อให้ report v1 ยังอ่านได้
+- `false_match_rate`: สัดส่วน negative boundaries (`expected_contract=null`)
+  ที่ถูก route เข้า contract ผิด
+- `missed_safe_boundary_routes`: boundary ที่ควรเข้า refusal contract
+  แต่ selector ไม่ route ตาม expected contract
+- `lexical_routes`, `semantic_attempts`, `semantic_routes`, `abstentions`:
+  จำนวนการตัดสินใจตามเส้นทางจริง
+- `routing_median_seconds`, `semantic_median_seconds`,
+  `semantic_p95_seconds`: latency ที่วัดในรอบนั้น
+- `live_contract_completion`: live MCP roles ที่ evidence ครบตาม contract
+- `live_answer_completion`: contract-composed answers ที่มี emitted claims ไม่ว่าง
+
+ผล hybrid ทุกไฟล์มี `router_fingerprint` ซึ่งรวม prompt version,
+deterministic gate version/source hash, catalog hash, model, timeout, max output
+tokens, reasoning effort และ confidence threshold
+การเปรียบเทียบรอบต้องใช้ fingerprint เดียวกัน
+
+## ผลที่มีอยู่
+
+Historical `frozen-v1 + legacy` baseline อยู่ที่
 [`artifacts/unseen_boundary_baseline_report.md`](../../artifacts/unseen_boundary_baseline_report.md):
-paraphrase recall `55%`, boundary precision `95%`, false match `5%`; live MCP
+paraphrase recall `55%`, boundary accuracy `95%`, false match `5%`; live MCP
 ผ่าน `11/11` contracts สามรอบด้วย normalized evidence hash เดียวกัน
+
+Final `semantic-v3 + hybrid` sequential acceptance artifacts ที่มี router
+fingerprint เดียวกันบันทึก paraphrase `20/20` และ boundary `20/20`
+ทั้งสองรอบโดยไม่มี false match; decision projection SHA-256 เท่ากับ
+`ccf0fda7ea1de47c13ba7f234e7caf139a11b189f4346cecdfbef4ef862eb87d`
+gate source SHA-256 คือ
+`611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab`
+และ catalog SHA-256 คือ
+`b04c656c71e0c66c964341ecc233519780fc59af75070f1c92dbc6dddaf03034`
+run 1 ผ่าน live MCP `20/20` contracts และได้คำตอบไม่ว่าง `20/20` ดู
+[acceptance report](../../artifacts/v3_semantic_router_acceptance_report.md)

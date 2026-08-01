@@ -22,8 +22,8 @@
 ### 1) Clone repository
 
 ```bash
-git clone https://github.com/aekanun2020/v2-Python-Agent-LangGraph.git
-cd v2-Python-Agent-LangGraph
+git clone https://github.com/aekanun2020/v3-Python-Agent-LangGraph.git
+cd v3-Python-Agent-LangGraph
 ```
 
 ### 2) สร้างและเปิดใช้งาน conda environment
@@ -59,6 +59,8 @@ cp .env.example .env
 | `OPENROUTER_BASE_URL` | `https://openrouter.ai/api/v1` | endpoint มาตรฐาน OpenRouter |
 | `OPENROUTER_MODEL` | `anthropic/claude-sonnet-4.6` | default ของ code; controlled Lab 6 tests ใช้ `qwen/qwen3.5-35b-a3b` |
 | `OBSERVER_MODEL` | `openai/gpt-oss-120b` | optional model สำหรับ semantic observer ใน Lab 6; ถ้าไม่ตั้งจะใช้ `OPENROUTER_MODEL` |
+| `ROUTER_MODEL` | `openai/gpt-oss-120b` | optional model สำหรับ semantic contract proposal ของ Lab 6 |
+| `ROUTER_TIMEOUT_SECONDS` | `30` | timeout ของ semantic route; timeout แล้ว abstain แบบ fail-closed |
 | `MCP_SERVER_URL` | `https://<subdomain>.ngrok-free.app/mcp` | URL ของ MCP MSSQL Server จริง (expose ผ่าน ngrok) |
 
 > ⚠️ ไฟล์ `.env` ถูก `.gitignore` ไว้แล้ว — **ห้าม commit คีย์จริงขึ้น repo เด็ดขาด**
@@ -69,7 +71,7 @@ cp .env.example .env
 
 ```bash
 conda activate agentic-ai
-cd v2-Python-Agent-LangGraph   # root ของ repo
+cd v3-Python-Agent-LangGraph   # root ของ repo
 
 python labs/lab1_setup/check_env.py
 ```

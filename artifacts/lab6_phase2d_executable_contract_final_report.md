@@ -18,7 +18,7 @@ Both variants used:
 
 - Agent model: `qwen/qwen3.5-35b-a3b`
 - Semantic Observer: `openai/gpt-oss-120b`
-- MCP: `https://7ff8-184-22-21-43.ngrok-free.app/mcp`
+- MCP: `https://your-mcp-server.example/mcp`
 - same ten questions and frozen atomic rubric
 - per-question subprocess timeout: 180 seconds
 - whole-agent runtime budget: 150 seconds

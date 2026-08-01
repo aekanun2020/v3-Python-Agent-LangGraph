@@ -25,7 +25,7 @@
 
 ```bash
 conda activate agentic-ai
-cd v2-Python-Agent-LangGraph   # รันจาก root repo (เพราะ import labs.core.*)
+cd v3-Python-Agent-LangGraph   # รันจาก root repo (เพราะ import labs.core.*)
 
 python labs/lab3_agent_loop/agent_loop.py "ตอนนี้กี่โมง แล้ว 15*4 เท่ากับเท่าไร"
 ```

@@ -1,11 +1,35 @@
 {
-  "version": "hr-answer-contracts-v1",
+  "version": "hr-answer-contracts-v2",
   "contracts": [
     {
       "id": "active_headcount_by_department",
       "question_terms_all": ["ปฏิบัติงาน", "department"],
       "question_terms_any": ["กี่คน", "แยกตาม"],
       "terminal_verdict": "approve",
+      "parameters": {"population": "active_employee"},
+      "routing_constraints": [{
+        "name": "active_employee_population",
+        "parameter": "population",
+        "kind": "fixed_value",
+        "value": "active_employee",
+        "evidence_pattern_groups": [[
+          "ปฏิบัติงาน",
+          "ยัง(?:คง)?ทำงาน(?:อยู่)?",
+          "(?:พนักงาน|บุคลากร)ปัจจุบัน",
+          "\\b(?:active|current)\\s+(?:employee|staff|workforce)s?\\b"
+        ], [
+          "พนักงาน",
+          "บุคลากร",
+          "กำลังคน",
+          "คน[^\\n.!?]{0,16}(?:ปฏิบัติงาน|ยัง(?:คง)?ทำงาน(?:อยู่)?)",
+          "\\b(?:employee|staff|workforce)s?\\b"
+        ]],
+        "conflict_pattern_groups": [[
+          "พนักงาน(?:ทั้งหมด|ทุกคน)",
+          "\\ball\\s+(?:employees|staff|workforce)\\b",
+          "ลาออก|พ้นสภาพ|อดีตพนักงาน|\\bformer\\s+employees?\\b"
+        ]]
+      }],
       "roles": [
         {
           "id": "grouped_active_headcount",
@@ -24,6 +48,30 @@
       "question_terms_all": ["ปฏิบัติงาน", "ประจำ", "สัญญา", "แผนก"],
       "question_terms_any": ["สัดส่วน", "แต่ละแผนก"],
       "terminal_verdict": "approve",
+      "parameters": {"population": "active_employee"},
+      "routing_constraints": [{
+        "name": "active_employee_population",
+        "parameter": "population",
+        "kind": "fixed_value",
+        "value": "active_employee",
+        "evidence_pattern_groups": [[
+          "ปฏิบัติงาน",
+          "ยัง(?:คง)?ทำงาน(?:อยู่)?",
+          "(?:พนักงาน|บุคลากร)ปัจจุบัน",
+          "\\b(?:active|current)\\s+(?:employee|staff|workforce)s?\\b"
+        ], [
+          "พนักงาน",
+          "บุคลากร",
+          "กำลังคน",
+          "คน[^\\n.!?]{0,16}(?:ปฏิบัติงาน|ยัง(?:คง)?ทำงาน(?:อยู่)?)",
+          "\\b(?:employee|staff|workforce)s?\\b"
+        ]],
+        "conflict_pattern_groups": [[
+          "พนักงาน(?:ทั้งหมด|ทุกคน)",
+          "\\ball\\s+(?:employees|staff|workforce)\\b",
+          "ลาออก|พ้นสภาพ|อดีตพนักงาน|\\bformer\\s+employees?\\b"
+        ]]
+      }],
       "roles": [
         {
           "id": "employment_mix",
@@ -48,6 +96,48 @@
       "question_terms_all": ["contract dependency", "มากกว่า 50%", "ปฏิบัติงาน"],
       "question_terms_any": ["แผนกใด", "เข้าเกณฑ์", "numerator"],
       "terminal_verdict": "approve",
+      "parameters": {
+        "population": "active_employee",
+        "threshold": {"operator": "gt", "value": 50, "unit": "percent"}
+      },
+      "routing_constraints": [
+        {
+          "name": "active_employee_population",
+          "parameter": "population",
+          "kind": "fixed_value",
+          "value": "active_employee",
+          "evidence_pattern_groups": [[
+            "ปฏิบัติงาน",
+            "ยัง(?:คง)?ทำงาน(?:อยู่)?",
+            "(?:พนักงาน|บุคลากร)ปัจจุบัน",
+            "\\b(?:active|current)\\s+(?:employee|staff|workforce)s?\\b"
+          ], [
+            "พนักงาน",
+            "บุคลากร",
+            "กำลังคน",
+            "คน[^\\n.!?]{0,16}(?:ปฏิบัติงาน|ยัง(?:คง)?ทำงาน(?:อยู่)?)",
+            "\\b(?:employee|staff|workforce)s?\\b"
+          ]],
+          "conflict_pattern_groups": [[
+            "พนักงาน(?:ทั้งหมด|ทุกคน)",
+            "\\ball\\s+(?:employees|staff|workforce)\\b",
+            "ลาออก|พ้นสภาพ|อดีตพนักงาน|\\bformer\\s+employees?\\b"
+          ]]
+        },
+        {
+          "name": "contract_share_threshold",
+          "parameter": "threshold",
+          "kind": "comparison",
+          "operator": "gt",
+          "value": 50,
+          "unit": "percent",
+          "reject_unlisted_numbers": true,
+          "evidence_pattern_groups": [[
+            "(?:มากกว่า|เกิน|สูงกว่า|>)\\s*50\\s*(?:%|เปอร์เซ็นต์)",
+            "(?:มากกว่า|เกิน)(?:กึ่ง|ครึ่ง)(?:หนึ่ง)?"
+          ]]
+        }
+      ],
       "roles": [
         {
           "id": "strict_contract_dependency",
@@ -73,6 +163,53 @@
       "question_terms_all": ["performance review", "coverage"],
       "question_terms_any": ["80%", "เกณฑ์"],
       "terminal_verdict": "approve",
+      "parameters": {
+        "population": "active_employee",
+        "review_period": "2023",
+        "threshold": {"operator": "gte", "value": 80, "unit": "percent"}
+      },
+      "routing_constraints": [
+        {
+          "name": "active_employee_population",
+          "parameter": "population",
+          "kind": "fixed_value",
+          "value": "active_employee",
+          "evidence_pattern_groups": [[
+            "ปฏิบัติงาน",
+            "ยัง(?:คง)?ทำงาน(?:อยู่)?",
+            "(?:พนักงาน|บุคลากร)ปัจจุบัน",
+            "\\b(?:active|current)\\s+(?:employee|staff|workforce)s?\\b"
+          ], [
+            "พนักงาน",
+            "บุคลากร",
+            "กำลังคน",
+            "คน[^\\n.!?]{0,16}(?:ปฏิบัติงาน|ยัง(?:คง)?ทำงาน(?:อยู่)?)",
+            "\\b(?:employee|staff|workforce)s?\\b"
+          ]],
+          "conflict_pattern_groups": [[
+            "พนักงาน(?:ทั้งหมด|ทุกคน)",
+            "\\ball\\s+(?:employees|staff|workforce)\\b",
+            "ลาออก|พ้นสภาพ|อดีตพนักงาน|\\bformer\\s+employees?\\b"
+          ]]
+        },
+        {
+          "name": "review_period",
+          "parameter": "review_period",
+          "kind": "fixed_value",
+          "value": "2023",
+          "evidence_pattern_groups": [["(?<!\\d)2023(?!\\d)"]]
+        },
+        {
+          "name": "coverage_threshold",
+          "parameter": "threshold",
+          "kind": "comparison",
+          "operator": "gte",
+          "value": 80,
+          "unit": "percent",
+          "reject_unlisted_numbers": true,
+          "evidence_pattern_groups": [["(?<!\\d)80\\s*(?:%|เปอร์เซ็นต์)"]]
+        }
+      ],
       "roles": [
         {
           "id": "active_employee_denominator",
@@ -101,6 +238,22 @@
       "question_terms_all": ["training_type", "50%"],
       "question_terms_any": ["ชั่วโมงอบรม", "concentration"],
       "terminal_verdict": "approve",
+      "parameters": {
+        "threshold": {"operator": "gt", "value": 50, "unit": "percent"}
+      },
+      "routing_constraints": [{
+        "name": "training_hour_concentration_threshold",
+        "parameter": "threshold",
+        "kind": "comparison",
+        "operator": "gt",
+        "value": 50,
+        "unit": "percent",
+        "reject_unlisted_numbers": true,
+        "evidence_pattern_groups": [[
+          "(?:มากกว่า|เกิน|สูงกว่า|>)\\s*50\\s*(?:%|เปอร์เซ็นต์)",
+          "(?:มากกว่า|เกิน)(?:กึ่ง|ครึ่ง)(?:หนึ่ง)?"
+        ]]
+      }],
       "roles": [
         {
           "id": "hours_by_training_type",
@@ -119,6 +272,22 @@
       "question_terms_all": ["เชี่ยวชาญ", "skill_category"],
       "question_terms_any": ["50%", "สัดส่วน"],
       "terminal_verdict": "approve",
+      "parameters": {
+        "threshold": {"operator": "gt", "value": 50, "unit": "percent"}
+      },
+      "routing_constraints": [{
+        "name": "expert_record_share_threshold",
+        "parameter": "threshold",
+        "kind": "comparison",
+        "operator": "gt",
+        "value": 50,
+        "unit": "percent",
+        "reject_unlisted_numbers": true,
+        "evidence_pattern_groups": [[
+          "(?:มากกว่า|เกิน|สูงกว่า|>)\\s*50\\s*(?:%|เปอร์เซ็นต์)",
+          "(?:มากกว่า|เกิน)(?:กึ่ง|ครึ่ง)(?:หนึ่ง)?"
+        ]]
+      }],
       "roles": [
         {
           "id": "expert_share_by_category",
@@ -137,6 +306,40 @@
       "question_terms_all": ["concentration risk", "60%"],
       "question_terms_any": ["สองอันดับ", "two"],
       "terminal_verdict": "approve",
+      "parameters": {
+        "threshold": {"operator": "gt", "value": 60, "unit": "percent"},
+        "top_n": 2
+      },
+      "routing_constraints": [
+        {
+          "name": "top_project_count",
+          "parameter": "top_n",
+          "kind": "fixed_value",
+          "value": 2,
+          "reject_unlisted_numbers": true,
+          "evidence_pattern_groups": [[
+            "สอง(?:รายการ|โครงการ|อันดับ)",
+            "top\\s*(?:2|two)"
+          ]],
+          "conflict_pattern_groups": [[
+            "top\\s*(?!(?:2|two)\\b)(?:\\d+|one|three|four|five)\\b",
+            "(?:หนึ่ง|สาม|สี่|ห้า|หก|เจ็ด|แปด|เก้า|\\b(?:1|3|4|5|6|7|8|9)\\b)(?:\\s*)(?:รายการ|โครงการ|อันดับ)"
+          ]]
+        },
+        {
+          "name": "top_two_concentration_threshold",
+          "parameter": "threshold",
+          "kind": "comparison",
+          "operator": "gt",
+          "value": 60,
+          "unit": "percent",
+          "reject_unlisted_numbers": true,
+          "evidence_pattern_groups": [[
+            "(?:มากกว่า|เกิน|สูงกว่า|>)\\s*60\\s*(?:%|เปอร์เซ็นต์)",
+            "(?:มากกว่า|เกิน|สูงกว่า)หกสิบเปอร์เซ็นต์"
+          ]]
+        }
+      ],
       "roles": [
         {
           "id": "portfolio_total_and_top_two",
@@ -183,6 +386,31 @@
       "question_terms_all": ["ประสิทธิภาพ", "พนักงาน"],
       "question_terms_any": ["โครงการมูลค่า", "project value"],
       "terminal_verdict": "refuse_decision",
+      "parameters": {"population": "active_employee"},
+      "routing_constraints": [{
+        "name": "active_employee_population",
+        "parameter": "population",
+        "kind": "fixed_value",
+        "value": "active_employee",
+        "evidence_pattern_groups": [[
+          "ปฏิบัติงาน",
+          "ยัง(?:คง)?ทำงาน(?:อยู่)?",
+          "กำลังคนที่ยังทำงานอยู่",
+          "(?:พนักงาน|บุคลากร)ปัจจุบัน",
+          "\\b(?:active|current)\\s+(?:employee|staff|workforce)s?\\b"
+        ], [
+          "พนักงาน",
+          "บุคลากร",
+          "กำลังคน",
+          "คน[^\\n.!?]{0,16}(?:ปฏิบัติงาน|ยัง(?:คง)?ทำงาน(?:อยู่)?)",
+          "\\b(?:employee|staff|workforce)s?\\b"
+        ]],
+        "conflict_pattern_groups": [[
+          "พนักงาน(?:ทั้งหมด|ทุกคน)",
+          "\\ball\\s+(?:employees|staff|workforce)\\b",
+          "ลาออก|พ้นสภาพ|อดีตพนักงาน|\\bformer\\s+employees?\\b"
+        ]]
+      }],
       "roles": [
         {
           "id": "department_value_and_headcount",

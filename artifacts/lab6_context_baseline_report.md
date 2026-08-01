@@ -2,7 +2,7 @@
 
 วันที่ทดสอบ: 2026-07-29  
 Model: `qwen/qwen3.5-35b-a3b` ผ่าน OpenRouter  
-MCP: `https://7ff8-184-22-21-43.ngrok-free.app/mcp`  
+MCP: `https://your-mcp-server.example/mcp`
 จำนวน: 10 คำถาม × 2 variants = 20 live runs
 
 Variants:

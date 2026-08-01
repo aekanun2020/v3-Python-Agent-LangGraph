@@ -24,7 +24,7 @@
 
 ```bash
 conda activate agentic-ai
-cd v2-Python-Agent-LangGraph   # รันจาก root repo (เพราะ import labs.core.*)
+cd v3-Python-Agent-LangGraph   # รันจาก root repo (เพราะ import labs.core.*)
 
 # ไฟล์ที่ 1: เรียก LLM ครั้งแรก + ดู token usage
 python labs/lab2_llm/first_llm.py "อธิบาย Agent Loop ใน 2 ประโยค"

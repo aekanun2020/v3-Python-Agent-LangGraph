@@ -58,6 +58,7 @@ from labs.lab6_todo.phase2_runtime import (
     RuntimeBudgetExhausted,
     hard_deadline,
 )
+from labs.lab6_todo.contract_router import route_metric_contract
 
 SYSTEM = (
     "คุณคือ agent ที่ทำงานเป็นขั้นตอน ตอบเป็นภาษาไทย\n"
@@ -169,9 +170,14 @@ def fulfill_metric_contract(
     registry: ToolRegistry,
     evidence: EvidenceState,
     budget: Phase2Budget,
+    contract: dict | None,
 ) -> None:
     """Execute only versioned missing metric roles before final emission."""
-    for role_id, query in missing_role_queries(question, evidence):
+    for role_id, query in missing_role_queries(
+        question,
+        evidence,
+        contract=contract,
+    ):
         try:
             budget.consume_mcp()
             result = dispatch_with_retry(
@@ -197,7 +203,11 @@ def fulfill_metric_contract(
             {"query": query},
             result,
         )
-        validation = validate_evidence_contract(question, record)
+        validation = validate_evidence_contract(
+            question,
+            record,
+            contract=contract,
+        )
         if validation.decision is ContractDecision.ACCEPT:
             evidence.accept(record)
             print(f"[METRIC CONTRACT EXECUTED] role={role_id}")
@@ -217,6 +227,7 @@ def resolve_rewrite(
     dynamic_observer: bool,
     budget: Phase2Budget,
     timeout: float,
+    contract: dict | None,
 ) -> str:
     """Phase 2B is bounded; Phase 2A retains its historical LLM recheck."""
     if dynamic_observer:
@@ -225,6 +236,7 @@ def resolve_rewrite(
             observation,
             evidence,
             proposed_answer=proposed,
+            contract=contract,
         )
         print(
             "[FINAL CLAIM GATE] verify-then-emit; MCP disabled; "
@@ -264,6 +276,7 @@ def _run_impl(
     dynamic_observer: bool = True,
     max_dynamic_observations: int = 6,
     max_run_seconds: float = 240,
+    contract_routing: str = "hybrid",
 ):
     todo = TodoState()
     context = ContextState(original_goal=question, phase=AgentPhase.ACT)
@@ -276,6 +289,20 @@ def _run_impl(
         max_final_reviews=max_semantic_reviews,
         max_mcp_calls=max_mcp_calls,
     )
+    route = route_metric_contract(
+        question,
+        semantic=(
+            contract_routing == "hybrid" and dynamic_observer
+        ),
+        on_semantic_call=budget.consume_router,
+    )
+    selected_contract = route.contract
+    print(
+        f"[CONTRACT ROUTING] path={route.path.value} "
+        f"contract={route.contract_id} confidence={route.confidence:.2f} "
+        f"semantic_attempted={route.semantic_attempted} "
+        f"reason={route.reason}"
+    )
     if dynamic_observer:
         print("[ROUTING] deterministic-first; claim planner disabled")
     tools = build_tools(registry)
@@ -286,7 +313,7 @@ def _run_impl(
     force_no_tools = False
     reviewed_risk_signatures: set[tuple[str, ...]] = set()
     terminal_verdict = (
-        terminal_contract_verdict(question)
+        terminal_contract_verdict(question, contract=selected_contract)
         if dynamic_observer
         else None
     )
@@ -294,7 +321,13 @@ def _run_impl(
         SemanticVerdict.APPROVE.value,
         SemanticVerdict.REFUSE_DECISION.value,
     }:
-        fulfill_metric_contract(question, registry, evidence, budget)
+        fulfill_metric_contract(
+            question,
+            registry,
+            evidence,
+            budget,
+            selected_contract,
+        )
         observation = ObservationState(
             verdict=SemanticVerdict(terminal_verdict),
             reason=(
@@ -310,6 +343,7 @@ def _run_impl(
             question,
             observation,
             evidence,
+            contract=selected_contract,
         )
         print(
             f"[TERMINAL CONTRACT] {terminal_verdict}; "
@@ -382,6 +416,7 @@ def _run_impl(
                                 question,
                                 name,
                                 args,
+                                contract=selected_contract,
                             )
                             if query_repairs:
                                 print(
@@ -418,12 +453,13 @@ def _run_impl(
                                     question,
                                     record,
                                 )
-                                contract = validate_evidence_contract(
+                                contract_validation = validate_evidence_contract(
                                     question,
                                     record,
+                                    contract=selected_contract,
                                 )
                                 contract_accepts = (
-                                    contract.decision
+                                    contract_validation.decision
                                     is ContractDecision.ACCEPT
                                 )
                                 if (
@@ -445,12 +481,12 @@ def _run_impl(
                                     print(
                                         "[EVIDENCE CONTRACT] "
                                         f"evidence={call.id} "
-                                        f"decision={contract.decision.value} "
-                                        f"reason={contract.reason}"
+                                        f"decision={contract_validation.decision.value} "
+                                        f"reason={contract_validation.reason}"
                                     )
                                     dynamic_feedback.append(
-                                        f"{contract.decision.value}: "
-                                        f"{contract.reason}"
+                                        f"{contract_validation.decision.value}: "
+                                        f"{contract_validation.reason}"
                                     )
                                 if deterministic.decision in {
                                     DeterministicDecision.RETRY,
@@ -605,7 +641,13 @@ def _run_impl(
         context.set_phase(AgentPhase.ANSWER)
         proposed = msg.content or ""
         if dynamic_observer:
-            fulfill_metric_contract(question, registry, evidence, budget)
+            fulfill_metric_contract(
+                question,
+                registry,
+                evidence,
+                budget,
+                selected_contract,
+            )
         if semantic_observer:
             final_risks = (
                 final_semantic_risk(question, proposed, evidence)
@@ -647,6 +689,7 @@ def _run_impl(
                     observation,
                     evidence,
                     proposed_answer=proposed,
+                    contract=selected_contract,
                 )
                 print("[FINAL CLAIM GATE] observer-error fallback composed")
                 return _print_final(proposed, todo, context)
@@ -668,6 +711,7 @@ def _run_impl(
                     observation,
                     evidence,
                     proposed_answer=proposed,
+                    contract=selected_contract,
                 )
                 print("[FINAL CLAIM GATE] approved allowlist composed")
             elif observation.verdict is SemanticVerdict.QUERY_MORE:
@@ -701,6 +745,7 @@ def _run_impl(
                     dynamic_observer,
                     budget,
                     budget.call_timeout(60),
+                    selected_contract,
                 )
         return _print_final(proposed, todo, context)
 
@@ -725,7 +770,13 @@ def _run_impl(
     context.set_phase(AgentPhase.ANSWER)
     content = final.choices[0].message.content or ""
     if dynamic_observer:
-        fulfill_metric_contract(question, registry, evidence, budget)
+        fulfill_metric_contract(
+            question,
+            registry,
+            evidence,
+            budget,
+            selected_contract,
+        )
     if semantic_observer:
         final_risks = (
             final_semantic_risk(question, content, evidence)
@@ -765,6 +816,7 @@ def _run_impl(
                 observation,
                 evidence,
                 proposed_answer=content,
+                contract=selected_contract,
             )
             print("[FINAL CLAIM GATE] observer-error fallback composed")
             return _print_final(content, todo, context)
@@ -781,6 +833,7 @@ def _run_impl(
                 observation,
                 evidence,
                 proposed_answer=content,
+                contract=selected_contract,
             )
             print("[FINAL CLAIM GATE] approved allowlist composed")
         elif observation.verdict in {
@@ -796,6 +849,7 @@ def _run_impl(
                 dynamic_observer,
                 budget,
                 budget.call_timeout(60),
+                selected_contract,
             )
         elif observation.verdict is SemanticVerdict.QUERY_MORE:
             content = (
@@ -815,6 +869,7 @@ def run(
     dynamic_observer: bool = True,
     max_dynamic_observations: int = 6,
     max_run_seconds: float = 240,
+    contract_routing: str = "hybrid",
 ):
     """Run under a hard wall-clock deadline, including blocking I/O calls."""
     try:
@@ -829,6 +884,7 @@ def run(
                 dynamic_observer=dynamic_observer,
                 max_dynamic_observations=max_dynamic_observations,
                 max_run_seconds=max_run_seconds,
+                contract_routing=contract_routing,
             )
     except RuntimeBudgetExhausted as error:
         print(f"[HARD DEADLINE STOP] {error}")
@@ -856,6 +912,15 @@ def main():
         help="เปิด Phase 2B claim ledger และ post-tool observation (default: on)",
     )
     parser.add_argument(
+        "--contract-routing",
+        choices=["hybrid", "lexical"],
+        default="hybrid",
+        help=(
+            "hybrid = lexical fast path + one semantic fallback; "
+            "lexical = substring contracts only"
+        ),
+    )
+    parser.add_argument(
         "--max-run-seconds",
         type=float,
         default=240,
@@ -879,6 +944,7 @@ def main():
             semantic_observer=args.semantic_observer == "on",
             dynamic_observer=args.dynamic_observer == "on",
             max_run_seconds=args.max_run_seconds,
+            contract_routing=args.contract_routing,
         )
     finally:
         registry.close()

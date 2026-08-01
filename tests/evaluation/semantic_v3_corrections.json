@@ -1,0 +1,13 @@
+{
+  "suite_version": "semantic-v3",
+  "base_suite": "semantic-v2",
+  "frozen_before_first_run": true,
+  "corrections": [
+    {
+      "id": "hr_para_004",
+      "question": "ตรวจ performance review coverage ปี 2023 ของพนักงานปฏิบัติงานในระดับทั้งองค์กรเทียบเกณฑ์ 80%",
+      "expected_contract": "performance_review_coverage",
+      "reason": "The executable contract fixes review_period=2023; v2 named the organization grain and threshold but omitted the period."
+    }
+  ]
+}

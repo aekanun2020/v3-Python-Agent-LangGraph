@@ -2,7 +2,7 @@
   "generated_at": "2026-07-30T02:08:01.372978+00:00",
   "model": "qwen/qwen3.5-35b-a3b",
   "observer_model": "openai/gpt-oss-120b",
-  "mcp_server": "https://7ff8-184-22-21-43.ngrok-free.app/mcp",
+  "mcp_server": "https://your-mcp-server.example/mcp",
   "comparison": {
     "phase2a_final_only": {
       "semantic_observer": "on",

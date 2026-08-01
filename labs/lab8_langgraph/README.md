@@ -34,7 +34,7 @@
 
 ```bash
 conda activate agentic-ai
-cd v2-Python-Agent-LangGraph   # รันจาก root repo
+cd v3-Python-Agent-LangGraph   # รันจาก root repo
 
 python labs/lab8_langgraph/agent_langgraph.py
 ```

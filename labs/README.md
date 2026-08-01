@@ -29,9 +29,10 @@ Lab 3  agent loop (local tools)
                       └─ Lab 9  ห่อ Lab 8 เป็น FastAPI API + Docker (`lab9_deploy/`)
 ```
 
-Lab 6 เป็นสายพัฒนาปัจจุบันของ runtime ที่เน้น deterministic evidence และ
-Skill contracts ส่วน Lab 8–9 ยังคงเป็นบทเรียนเปรียบเทียบ framework/deployment
-ไม่ได้แทน implementation ปัจจุบันของ Lab 6
+Lab 6 เป็นสายพัฒนาปัจจุบันของ runtime ที่เน้น deterministic evidence, Skill
+contracts และ Hybrid Contract Router (lexical fast path → semantic proposal หนึ่งครั้ง
+→ deterministic anchor/span gate) ส่วน Lab 8–9 ยังคงเป็นบทเรียนเปรียบเทียบ
+framework/deployment ไม่ได้แทน implementation ปัจจุบันของ Lab 6
 
 ---
 
@@ -67,7 +68,7 @@ LangGraph มาแทนส่วนไหน: loop → graph, state ที่�
 | [3](lab3_agent_loop/README.md) | `lab3_agent_loop/agent_loop.py` | Agent loop แรก (Pure Python) — บทที่ 1.3 | while loop + local tools |
 | [4](lab4_mcp_agent/README.md) | `lab4_mcp_agent/agent_mcp.py` | Agent + MCP จริง — บทที่ 1.4 | MCP client + Tool Registry |
 | [5](lab5_skills/README.md) | `lab5_skills/agent_skills.py` | Skill routing — บทที่ 2.1 | SkillLoader + Progressive Disclosure |
-| [6](lab6_todo/README.md) | `lab6_todo/agent_todo.py` | Pure Python Agent — บทที่ 2.2 + current extension | TodoWrite, Context/Evidence State, Dynamic Observation, Skill contracts, Claim Gate |
+| [6](lab6_todo/README.md) | `lab6_todo/agent_todo.py` | Pure Python Agent — บทที่ 2.2 + current extension | TodoWrite, Context/Evidence State, Hybrid Contract Router, Dynamic Observation, Skill contracts, Claim Gate |
 | [7](lab7_memory/README.md) | `lab7_memory/agent_memory.py` | Memory — บทที่ 2.3 | จำข้ามรอบ + compaction + notes |
 | [8](lab8_langgraph/README.md) | `lab8_langgraph/agent_langgraph.py` | LangGraph Agent — บทที่ 3.1 | State/Node/Edge/Checkpointer (เทียบ Pure Python) |
 | [9](lab9_deploy/README.md) | `lab9_deploy/` (app.py, Dockerfile) | Deploy — บทที่ 3.3 | FastAPI `/chat` + Docker + Retry/Logging |
@@ -96,6 +97,8 @@ cp .env.example .env
 - `OPENROUTER_BASE_URL` — `https://openrouter.ai/api/v1`
 - `OPENROUTER_MODEL` — default ใน code คือ `anthropic/claude-sonnet-4.6`; controlled Lab 6 tests ใช้ `qwen/qwen3.5-35b-a3b`
 - `OBSERVER_MODEL` — optional semantic observer; controlled Lab 6 tests ใช้ `openai/gpt-oss-120b`
+- `ROUTER_MODEL` — optional semantic contract proposal; v3 evaluation ใช้ `openai/gpt-oss-120b`
+- `ROUTER_TIMEOUT_SECONDS` — timeout ของ semantic route; default `30`
 - `MCP_SERVER_URL` — URL ของ MCP MSSQL Server จริง (Streamable HTTP, ลงท้าย `/mcp`)
 
 ---

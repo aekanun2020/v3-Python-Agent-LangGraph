@@ -4,6 +4,7 @@ from pathlib import Path
 
 from labs.lab6_todo.evidence_contract import (
     contract_claims,
+    metric_contract_by_id,
     select_metric_contract,
 )
 from labs.lab6_todo.evidence_state import EvidenceRecord, EvidenceState
@@ -91,6 +92,32 @@ class HRSkillIsolationTests(unittest.TestCase):
             "contract_pct=50.0%",
             "\n".join(contract_claims(question, evidence)),
         )
+
+    def test_semantic_half_phrase_emits_contract_bound_claims(self):
+        question = "หมวดทักษะใดมีสัดส่วนระเบียนระดับเชี่ยวชาญเกินครึ่งหนึ่ง"
+        contract = metric_contract_by_id("expert_skill_record_share")
+        self.assertIsNotNone(contract)
+        evidence = EvidenceState()
+        evidence.accept(EvidenceRecord.from_tool(
+            "expert-share",
+            "execute_query_tool",
+            {"query": contract["roles"][0]["query_template"]},
+            (
+                "skill_category  total_skills  expert_count\n"
+                "Data  10  6\n"
+                "Management  8  2\n"
+                "Technical  12  7\n"
+                "Soft Skill  10  4\n"
+                "รวมทั้งหมด  40  19"
+            ),
+        ))
+        claims = contract_claims(
+            question,
+            evidence,
+            contract=contract,
+        )
+        self.assertTrue(claims)
+        self.assertIn("50%", "\n".join(claims))
 
 
 if __name__ == "__main__":

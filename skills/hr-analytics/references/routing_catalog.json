@@ -1,0 +1,312 @@
+{
+  "version": "hr-routing-catalog-v1",
+  "contracts": [
+    {
+      "id": "active_headcount_by_department",
+      "intent": "Count active employees grouped by department.",
+      "exclude": "All employees, former employees, one overall total, zero-headcount departments, individual records, or performance ranking.",
+      "concept_evidence_patterns": {
+        "ปฏิบัติงาน": [
+          "ปฏิบัติงาน",
+          "ยัง(?:คง)?ทำงาน(?:อยู่)?",
+          "(?:พนักงาน|บุคลากร)ปัจจุบัน",
+          "\\bcurrent\\s+(?:employee|staff|workforce)s?\\b",
+          "\\bactive\\s+(?:employee|staff|workforce)s?\\b"
+        ],
+        "department": [
+          "\\bdepartments?\\b",
+          "แผนก",
+          "ฝ่าย"
+        ],
+        "กี่คน": [
+          "กี่คน",
+          "จำนวน(?:พนักงาน|คน)",
+          "นับ(?:จำนวน)?",
+          "\\b(?:count|headcount)\\b"
+        ],
+        "แยกตาม": [
+          "แยกตาม",
+          "แยก(?:ราย)?(?:แผนก|ฝ่าย)",
+          "ราย(?:แผนก|ฝ่าย)",
+          "\\bgroup(?:ed)?\\s+by\\b"
+        ]
+      }
+    },
+    {
+      "id": "active_employment_mix_by_department",
+      "intent": "Compare permanent and contract employee counts and shares for active employees within every department.",
+      "exclude": "Overall headcount without employee-type composition or non-active populations.",
+      "concept_evidence_patterns": {
+        "ปฏิบัติงาน": [
+          "ปฏิบัติงาน",
+          "ยัง(?:คง)?ทำงาน(?:อยู่)?",
+          "(?:พนักงาน|บุคลากร)ปัจจุบัน",
+          "\\bcurrent\\s+(?:employee|staff|workforce)s?\\b",
+          "\\bactive\\s+(?:employee|staff|workforce)s?\\b"
+        ],
+        "ประจำ": [
+          "(?:พนักงาน|ลูกจ้าง|บุคลากร)?\\s*ประจำ",
+          "(?:พนักงาน|ลูกจ้าง|บุคลากร)\\s*ถาวร",
+          "\\b(?:permanent|regular)\\s+(?:employee|staff|worker)s?\\b"
+        ],
+        "สัญญา": [
+          "(?:พนักงาน|ลูกจ้าง|บุคลากร)?\\s*(?:ตาม)?สัญญา",
+          "(?:พนักงาน|ลูกจ้าง|บุคลากร)?\\s*ชั่วคราว",
+          "\\bcontract(?:ual)?\\s+(?:employee|staff|worker)s?\\b"
+        ],
+        "แผนก": [
+          "แผนก",
+          "ฝ่าย",
+          "\\bdepartments?\\b"
+        ],
+        "สัดส่วน": [
+          "สัดส่วน",
+          "ร้อยละ",
+          "เปอร์เซ็นต์",
+          "\\b(?:share|proportion|composition|mix)\\b"
+        ],
+        "แต่ละแผนก": [
+          "แต่ละ(?:แผนก|ฝ่าย)",
+          "ราย(?:แผนก|ฝ่าย)",
+          "แยกตาม(?:แผนก|ฝ่าย)",
+          "\\b(?:each|every|all)\\s+departments?\\b",
+          "\\bby\\s+department\\b"
+        ]
+      }
+    },
+    {
+      "id": "strict_contract_dependency_policy",
+      "intent": "Identify active departments whose contract-employee share is strictly greater than 50 percent.",
+      "exclude": "Thresholds other than strict greater-than 50 percent, equality at 50 percent, or organization-wide totals.",
+      "concept_evidence_patterns": {
+        "contract dependency": [
+          "\\bcontract[-\\s]+dependenc(?:y|ies)\\b",
+          "(?:การ)?พึ่งพ(?:า|ิง)[^\\n.!?]{0,24}(?:พนักงาน|ลูกจ้าง|บุคลากร)?\\s*(?:ตาม)?สัญญา",
+          "(?:การ)?พึ่งพ(?:า|ิง)[^\\n.!?]{0,24}(?:พนักงาน|ลูกจ้าง|บุคลากร)?\\s*ชั่วคราว",
+          "สัดส่วน(?:ของ)?(?:พนักงาน|ลูกจ้าง|บุคลากร)?\\s*(?:ตาม)?สัญญา"
+        ],
+        "มากกว่า 50%": [
+          "(?:มากกว่า|เกิน|สูงกว่า|>)\\s*50\\s*(?:%|เปอร์เซ็นต์)",
+          "(?:มากกว่า|เกิน)(?:กึ่ง|ครึ่ง)(?:หนึ่ง)?"
+        ],
+        "ปฏิบัติงาน": [
+          "ปฏิบัติงาน",
+          "ยัง(?:คง)?ทำงาน(?:อยู่)?",
+          "(?:พนักงาน|บุคลากร)ปัจจุบัน",
+          "\\bcurrent\\s+(?:employee|staff|workforce)s?\\b",
+          "\\bactive\\s+(?:employee|staff|workforce)s?\\b"
+        ],
+        "แผนกใด": [
+          "(?:แผนก|ฝ่าย)(?:ใด|ไหน)",
+          "\\bwhich\\s+departments?\\b"
+        ],
+        "เข้าเกณฑ์": [
+          "(?:เข้า|ผ่าน)(?:ข่าย|เกณฑ์)",
+          "\\bqualif(?:y|ies|ying)\\b",
+          "\\bmeet(?:s|ing)?\\s+(?:the\\s+)?(?:criterion|criteria|threshold)\\b"
+        ],
+        "numerator": [
+          "\\bnumerator\\b",
+          "ตัว(?:ตั้ง|เศษ)",
+          "จำนวน(?:พนักงาน|ลูกจ้าง)?\\s*(?:ตาม)?สัญญา[^\\n.!?]{0,18}(?:เป็น|ใช้เป็น)ตัว(?:ตั้ง|เศษ)"
+        ]
+      }
+    },
+    {
+      "id": "performance_review_coverage",
+      "intent": "Measure distinct-active-employee performance-review coverage against an 80 percent threshold.",
+      "exclude": "Department-level coverage, individual review scores, latest-review ranking, or judging employee performance.",
+      "forbidden_anchors": ["รายฝ่าย", "แยกตามฝ่าย", "แยกตามแผนก", "department"],
+      "concept_evidence_patterns": {
+        "performance review": [
+          "\\bperformance[_\\s-]*reviews?\\b",
+          "(?:การ)?ประเมิน(?:ผลการปฏิบัติงาน|ผลงาน)"
+        ],
+        "coverage": [
+          "\\bcoverage\\b",
+          "ความครอบคลุม",
+          "สัดส่วน(?:ของ)?พนักงาน[^\\n.!?]{0,30}(?:ได้รับ|มี)(?:การ)?ประเมิน"
+        ],
+        "80%": [
+          "80\\s*(?:%|เปอร์เซ็นต์)",
+          "ร้อยละ\\s*80"
+        ],
+        "เกณฑ์": [
+          "เกณฑ์(?:ขั้นต่ำ)?",
+          "เทียบ(?:กับ)?(?:เป้า|เป้าหมาย)",
+          "\\b(?:threshold|target|benchmark)\\b"
+        ]
+      }
+    },
+    {
+      "id": "training_hours_portfolio",
+      "intent": "Measure training-hour concentration by training type and test whether a type exceeds 50 percent of all training hours.",
+      "exclude": "Course counts, attendee counts, individual training history, or completion rates.",
+      "concept_evidence_patterns": {
+        "training_type": [
+          "\\btraining[_\\s-]*type\\b",
+          "ประเภท(?:การ)?(?:อบรม|ฝึกอบรม)",
+          "หมวด(?:หมู่)?(?:การ)?(?:อบรม|ฝึกอบรม)"
+        ],
+        "50%": [
+          "50\\s*(?:%|เปอร์เซ็นต์)",
+          "(?:กึ่ง|ครึ่ง)(?:หนึ่ง)?"
+        ],
+        "ชั่วโมงอบรม": [
+          "ชั่วโมง(?:การ)?(?:อบรม|ฝึกอบรม)",
+          "\\btraining\\s+hours?\\b"
+        ],
+        "concentration": [
+          "\\bconcentration\\b",
+          "(?:การ|ความ)กระจุกตัว",
+          "สัดส่วน(?:ของ)?ชั่วโมง(?:การ)?(?:อบรม|ฝึกอบรม)[^\\n.!?]{0,24}(?:ทั้งหมด|รวม)"
+        ]
+      }
+    },
+    {
+      "id": "expert_skill_record_share",
+      "intent": "Measure the share of expert-level skill records within each skill category and test a 50 percent threshold.",
+      "exclude": "Employee promotion, capability decisions, distinct-employee coverage, or all proficiency levels.",
+      "concept_evidence_patterns": {
+        "เชี่ยวชาญ": [
+          "(?:ระดับ\\s*)?เชี่ยวชาญ",
+          "\\bexpert(?:-level)?\\b"
+        ],
+        "skill_category": [
+          "skill[_\\s-]*category",
+          "หมวด(?:หมู่)?ทักษะ",
+          "ประเภททักษะ"
+        ],
+        "50%": [
+          "50\\s*(?:%|เปอร์เซ็นต์)",
+          "(?:กึ่ง|ครึ่ง)(?:หนึ่ง)?"
+        ],
+        "สัดส่วน": [
+          "สัดส่วน",
+          "ร้อยละ",
+          "เปอร์เซ็นต์",
+          "(?:เกิน|มากกว่า|สูงกว่า)?(?:กึ่ง|ครึ่ง)(?:หนึ่ง)?",
+          "\\b(?:share|ratio|proportion)\\b"
+        ]
+      }
+    },
+    {
+      "id": "top_two_project_concentration",
+      "intent": "Calculate whether the top two projects account for more than 60 percent of total project value.",
+      "exclude": "The first two unsorted records, project ranking without concentration, employee productivity, or a threshold other than top-two over 60 percent.",
+      "critical_anchor_groups": [
+        ["สูงสุด", "top two", "top 2"],
+        ["project_value", "project value", "มูลค่าโครงการ", "มูลค่างาน", "โครงการ"]
+      ],
+      "lexical_pattern_groups": [
+        ["สอง(?:รายการ|โครงการ|อันดับ)", "top\\s*(?:2|two)"],
+        ["สูงสุด", "top"],
+        ["project_value", "project\\s+value", "มูลค่าโครงการ"],
+        ["สัดส่วน[^\\n.!?]{0,30}รวม", "concentration"]
+      ],
+      "required_concepts": [
+        "project value portfolio",
+        "concentration risk",
+        "60%"
+      ],
+      "one_of_concepts": ["สองอันดับ", "two"],
+      "concept_evidence_patterns": {
+        "project value portfolio": [
+          "project[_\\s-]*value",
+          "project\\s+value",
+          "มูลค่า(?:ของ)?(?:โครงการ|งาน)",
+          "โครงการ[^\\n.!?]{0,24}มูลค่า"
+        ],
+        "concentration risk": [
+          "\\bconcentration(?:\\s+risk)?\\b",
+          "ความกระจุกตัว",
+          "สัดส่วน(?:มูลค่า)?[^\\n.!?]{0,20}รวม"
+        ],
+        "60%": [
+          "60\\s*(?:%|เปอร์เซ็นต์)",
+          "หกสิบเปอร์เซ็นต์"
+        ],
+        "สองอันดับ": [
+          "สอง(?:รายการ|โครงการ|อันดับ)",
+          "top\\s*(?:2|two)"
+        ],
+        "two": [
+          "สอง(?:รายการ|โครงการ|อันดับ)",
+          "top\\s*(?:2|two)",
+          "\\btwo\\b"
+        ]
+      }
+    },
+    {
+      "id": "training_certificate_semantic_separation",
+      "intent": "Refuse to infer that certificate_obtained proves a currently valid certification; compare the two evidence sources only.",
+      "exclude": "Counting certification holders, listing certificate names, or expiry analysis with direct validity fields."
+    },
+    {
+      "id": "project_value_per_active_employee",
+      "intent": "Compute project value per active employee by department while refusing to relabel it as productivity or efficiency.",
+      "exclude": "Overall project totals, individual employee ranking, or a staffing decision.",
+      "allowed_negated_terms": ["ประสิทธิภาพ"],
+      "allowed_negated_concepts": [
+        "do not interpret the ratio as productivity or efficiency"
+      ],
+      "required_concepts": [
+        "project value numerator",
+        "active workforce denominator",
+        "department grain",
+        "do not interpret the ratio as productivity or efficiency"
+      ],
+      "one_of_concepts": [],
+      "concept_evidence_patterns": {
+        "project value numerator": [
+          "project[_\\s-]*value",
+          "มูลค่า(?:ของ)?(?:งาน|โครงการ)"
+        ],
+        "active workforce denominator": [
+          "กำลังคน[^\\n.!?]{0,24}(?:ยัง(?:คง)?ทำงาน|ปฏิบัติงาน)",
+          "พนักงาน[^\\n.!?]{0,24}(?:ยัง(?:คง)?ทำงาน|ปฏิบัติงาน)",
+          "(?:พนักงาน|บุคลากร)ปัจจุบัน",
+          "\\bcurrent\\s+(?:employee|staff|workforce)s?\\b",
+          "\\bactive\\s+(?:employee|staff|workforce)s?\\b"
+        ],
+        "department grain": [
+          "ราย(?:ฝ่าย|แผนก)",
+          "แยกตาม(?:ฝ่าย|แผนก)",
+          "แต่ละ(?:ฝ่าย|แผนก)",
+          "\\bdepartment(?:-level)?\\b"
+        ],
+        "do not interpret the ratio as productivity or efficiency": [
+          "(?:อย่า|ห้าม|ไม่(?:ควร)?)\\s*[^\\n.!?]{0,30}(?:ตีความ|เรียก|สรุป)?[^\\n.!?]{0,18}(?:ผลิตภาพ|ประสิทธิภาพ)",
+          "(?:do\\s+not|don't|must\\s+not)[^\\n.!?]{0,40}(?:productivity|efficiency)"
+        ]
+      }
+    },
+    {
+      "id": "staffing_decision_insufficient",
+      "intent": "Refuse a request to add or reduce staff when only descriptive headcount and/or project-value evidence is available.",
+      "exclude": "A descriptive report with no staffing decision request.",
+      "required_concepts": [
+        "staffing increase-or-reduction decision",
+        "headcount or project-value proxy used as the decision basis"
+      ],
+      "one_of_concepts": [],
+      "critical_anchor_groups": [
+        ["ลดคน", "เพิ่มคน", "รับเพิ่ม", "ลดอัตรากำลัง", "เพิ่มอัตรากำลัง"],
+        ["headcount", "จำนวนกำลังคน", "กำลังคน", "project value", "มูลค่าโครงการ", "มูลค่างาน"]
+      ],
+      "concept_evidence_patterns": {
+        "staffing increase-or-reduction decision": [
+          "(?:ลด|เพิ่ม|รับเพิ่ม|ตัด)[^\\n.!?]{0,12}(?:คน|อัตรากำลัง)",
+          "(?:staffing|headcount)[^\\n.!?]{0,18}(?:increase|reduction|reduce|add|cut)"
+        ],
+        "headcount or project-value proxy used as the decision basis": [
+          "\\bheadcount\\b",
+          "จำนวนกำลังคน",
+          "กำลังคน",
+          "project[_\\s-]*value",
+          "มูลค่า(?:ของ)?(?:งาน|โครงการ)"
+        ]
+      }
+    }
+  ]
+}

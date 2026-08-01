@@ -1,0 +1,37 @@
+{
+  "suite_version": "semantic-v2",
+  "frozen_before_first_run": true,
+  "purpose": "Correct semantic ground-truth defects found by pre-run contract audit without rewriting the frozen v1 files.",
+  "corrections": [
+    {
+      "id": "hr_para_004",
+      "question": "ตรวจ performance review coverage ของพนักงานปฏิบัติงานในระดับทั้งองค์กรเทียบเกณฑ์ 80%",
+      "expected_contract": "performance_review_coverage",
+      "reason": "The executable contract has organization grain; v1 incorrectly requested department grain."
+    },
+    {
+      "id": "hr_para_007",
+      "question": "โครงการสองรายการที่มี project_value สูงสุดกินสัดส่วนมูลค่ารวมเกิน 60% หรือไม่",
+      "expected_contract": "top_two_project_concentration",
+      "reason": "The contract orders by project value; v1 said first two records without defining an order."
+    },
+    {
+      "id": "hr_boundary_005",
+      "question": "ควรลดคนหรือเพิ่มคนจาก headcount เพียงอย่างเดียวหรือไม่",
+      "expected_contract": "staffing_decision_insufficient",
+      "reason": "A fail-closed refusal contract is the safe route for an unsupported staffing decision even when only one proxy is named."
+    },
+    {
+      "id": "fin_para_008",
+      "question": "เฉพาะ Individual แบ่ง annual_inc เป็นช่วงคงที่ต่ำกว่า 50000, 50000 ถึงต่ำกว่า 70000, 70000 ถึงต่ำกว่า 100000 และตั้งแต่ 100000 ขึ้นไป",
+      "expected_contract": "finance_fixed_income_bands",
+      "reason": "The executable contract requires every fixed boundary; v1 omitted the 70000 boundary."
+    },
+    {
+      "id": "fin_para_010",
+      "question": "คัดช่วง emp_length ที่ทั้ง int_rate เฉลี่ยและสัดส่วน Charged Off สูงกว่าค่าเฉลี่ยรวมแบบ strict โดยต้องผ่านทั้งสองเงื่อนไข",
+      "expected_contract": "finance_dual_risk_screen",
+      "reason": "The contract has two risk metrics; v1 named Charged Off but omitted interest rate."
+    }
+  ]
+}
