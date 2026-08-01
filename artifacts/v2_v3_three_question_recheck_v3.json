@@ -1,0 +1,153 @@
+{
+  "suite_id": "v2-full-question-replay-v1",
+  "generated_at": "2026-08-01T23:43:19.297790+00:00",
+  "source_commit": "f33546aea94620e1e27425d34517e76a9443a5c2",
+  "manifest_sha256": "8fccbf131444c1450a9231df6085418d9197fec6b2f464d84817ae4b66b4e138",
+  "question_projection_sha256": "e90b98c24b5aa3836f8c2d05ff0f24eb1c2a453afc44d0edeba755d9c1602fb1",
+  "router_fingerprint": {
+    "prompt_version": "hybrid-contract-router-v3",
+    "gate_version": "skill-grounded-admission-gate-v1",
+    "gate_source_sha256": "611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab",
+    "catalog_sha256": "ed3112d6292f38d4d51d068895a6659233f6b75c8d0a342607183f1a018c4377",
+    "model": "openai/gpt-oss-120b",
+    "request_timeout_seconds": 30.0,
+    "max_output_tokens": 1600,
+    "reasoning_effort": "low",
+    "minimum_confidence": 0.8
+  },
+  "models": {
+    "agent": "qwen/qwen3.5-35b-a3b",
+    "router": "openai/gpt-oss-120b",
+    "observer": "openai/gpt-oss-120b"
+  },
+  "mcp_tools_discovered": 5,
+  "mcp_endpoint_recorded": false,
+  "summary": {
+    "questions_total": 3,
+    "questions_passed": 2,
+    "questions_failed": 1,
+    "routing_passed": 3,
+    "contract_live_passed": 0,
+    "contract_live_total": 0,
+    "general_agent_live_passed": 2,
+    "general_agent_live_total": 3
+  },
+  "contract_evidence": {},
+  "results": [
+    {
+      "id": "v2q_008",
+      "question": "funding_ratio คือ approval rate ใช่หรือไม่",
+      "category": "finance_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "The question asks whether funding_ratio is the same as approval rate, which is a semantic definition query. The finance_funding_gap_by_year contract explicitly excludes a semantic question about approval rate alone, and no other contract matches the required concepts and constraints. Therefore, no contract applies.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ยังไม่มี claim ที่ผ่านเงื่อนไขการตรวจหลักฐานครบถ้วน",
+        "answer_sha256": "fbfb5a1c5d930297a6794ec69350b4e0e51a8a6a042ded295610a4d517b67be5",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 1,
+          "evidence_frames": 1,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 102.873386,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=1\n[PYTHON OBSERVATION] evidence=call_2978d058923f4541945ae649 decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_2978d058923f4541945ae649 supports=False complete=False proved=[] next=stop reason=The tool result contains only database schema information and does not provide any definition for 'funding_ratio' or 'approval rate', so the claim cannot be verified.\n[step 1] TOOL get_database_context\n[step 2] TODO_WRITE\n\n[step 3] TODO_UPDATE -> {}\n\n[step 4] TODO_WRITE\n\n[CONTEXT ALERT] repeated_action_result: tool, arguments, and result repeated\n[step 5] TODO_WRITE\n\n[CONTEXT ALERT] repeated_action_result: tool, arguments, and result repeated\n[step 6] TODO_WRITE\n\n[CONTEXT ALERT] repeated_action_result: tool, arguments, and result repeated\n[step 7] TODO_UPDATE -> {}\n\n[CONTEXT ALERT] repeated_action_result: tool, arguments, and result repeated\n[step 8] TODO_WRITE\n\n[CONTEXT ALERT] repeated_action_result: tool, arguments, and result repeated\n[step 9] TODO_WRITE\n\n[CONTEXT ALERT] repeated_action_result: tool, arguments, and result repeated\n[step 10] TODO_WRITE\n\n[CONTEXT ALERT] repeated_action_result: tool, arguments, and result repeated\n[FINAL ROUTING] risks=['unsupported-numbers:161,31,360', 'semantic-decision', 'qualitative-interpretation']\n[FINAL OBSERVATION] verdict=rewrite reason=The answer contains multiple factual claims about the meaning of `funding_ratio` and `approval rate` that are not supported by the provided evidence (the schema contains no definitions for these terms).\n[FINAL CLAIM GATE] verify-then-emit; MCP disabled; observer_supported=0\n[CONTEXT FIDELITY] status=supported frames=1/1 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nยังไม่มี claim ที่ผ่านเงื่อนไขการตรวจหลักฐานครบถ้วน\n------------------------------------------------------------\n[todo สุดท้าย]\n\n[context budget] BudgetState(steps=10, tool_calls=1, errors=0)\n"
+      },
+      "elapsed_seconds": 107.789088
+    },
+    {
+      "id": "v2q_015",
+      "question": "คัดช่วงอายุงานที่สัดส่วน Charged Off สูงกว่าค่าเฉลี่ยรวมแบบ strict และผ่านทั้งสองเงื่อนไข",
+      "category": "finance_unseen_paraphrases",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "Missing required concept 'int_rate' for finance_dual_risk_screen contract.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": false,
+      "general": {
+        "passed": false,
+        "runtime_contract": null,
+        "answer": "หยุดตามขีดจำกัด runtime โดยไม่สร้างข้อสรุปเกินหลักฐาน: whole-run deadline exhausted; unresolved claims=",
+        "answer_sha256": "a97d53843d4fdc30504497dcc024e5761ae83ae045f25be9c929ed6fc44ca7b3",
+        "answer_nonempty": true,
+        "completed": false,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 4,
+          "evidence_frames": 4,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 240.004115,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=4\n[PYTHON OBSERVATION] evidence=call_c370fe83d9f14a94be60f1a1 decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_c370fe83d9f14a94be60f1a1 supports=False complete=False proved=[] next=query_more reason=Schema information alone does not provide the data needed to calculate overall and per‑range Charged Off proportions; additional queries to retrieve counts are required.\n[step 1] TOOL get_database_context\n[PYTHON OBSERVATION] evidence=call_c0cf8e8ce50a4c19bf2d897b decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_c0cf8e8ce50a4c19bf2d897b supports=False complete=False proved=[] next=stop reason=The preview data lacks the 'status' and 'work_age_range' fields required to satisfy any of the pending claims.\n[step 2] TOOL preview_table\n[PYTHON OBSERVATION] evidence=call_4f8375c984b44aea9d1f8707 decision=accept type=query_result risk=False reasons=[]\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 3] TOOL preview_table\n[step 4] TODO_WRITE\n\n[step 5] TODO_UPDATE -> {'index': '1', 'status': 'doing'}\n\n[PYTHON OBSERVATION] evidence=call_0e618e778d994ef4b1464ae0 decision=accept type=query_result risk=True reasons=['derived-ratio', 'conditional-metric', 'aggregate-comparison']\n[DYNAMIC OBSERVATION] evidence=call_0e618e778d994ef4b1464ae0 supports=False complete=False proved=[] next=stop reason=Tool 'execute_query' not found; cannot retrieve any data to evaluate Charged Off proportions or filter work‑age ranges.\n[step 6] TOOL execute_query\n[step 7] TODO_UPDATE -> {'index': '1', 'status': 'done'}\n\n[step 8] TODO_WRITE\n\n[step 9] TODO_UPDATE -> {'index': '1', 'status': 'doing'}\n\n[CONTEXT ALERT] repeated_action_result: tool, arguments, and result repeated\n[step 10] TODO_UPDATE -> {'index': '2', 'status': 'doing'}\n\n[step 11] TODO_UPDATE -> {'index': '1', 'status': 'done'}\n\n[CONTEXT ALERT] repeated_action_result: tool, arguments, and result repeated\n[AGENT LLM ERROR] APIConnectionError: Connection error.; elapsed=240.0/240.0s agent=12/13 router=0/1 observer=4/5 final=0/1 mcp=4/8\n[CONTEXT FIDELITY] status=supported frames=4/4 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nหยุดตามขีดจำกัด runtime โดยไม่สร้างข้อสรุปเกินหลักฐาน: whole-run deadline exhausted; unresolved claims=\n------------------------------------------------------------\n[todo สุดท้าย]\n\n[context budget] BudgetState(steps=11, tool_calls=4, errors=1)\n"
+      },
+      "elapsed_seconds": 246.094272
+    },
+    {
+      "id": "v2q_030",
+      "question": "นับพนักงานทั้งหมดแยกตามแผนก",
+      "category": "hr_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches all required concepts, one_of_concepts, and fixed constraints. The request lacks the required fixed constraint for active employee population.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- เทคโนโลยีสารสนเทศ มีพนักงาน 5 คน\n- การตลาด มีพนักงาน 4 คน\n- ทรัพยากรบุคคล มีพนักงาน 4 คน\n- การเงิน มีพนักงาน 3 คน\n- ผลิต มีพนักงาน 3 คน\n- วิจัยและพัฒนา มีพนักงาน 3 คน\n- บัญชี มีพนักงาน 2 คน\n- บริหารทั่วไป มีพนักงาน 1 คน",
+        "answer_sha256": "96601e41d637225e2617659a343af7df1b044f66082edab9797204dbc5c8d529",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 5,
+          "evidence_frames": 5,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 172.552096,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=2\n[PYTHON OBSERVATION] evidence=call_a04aded24a0f4799a25fff89 decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_a04aded24a0f4799a25fff89 supports=False complete=False proved=[] next=query_more reason=Need actual employee rows (employee_id and department) to fulfill claim_001; current evidence only describes schema.\n[step 1] TOOL get_database_context\n[step 2] TODO_WRITE\n[ ] 1. สร้างแผนงานเพื่อนับพนักงานแยกตามแผนก\n[ ] 2. เขียนและรัน T-SQL query เพื่อหาจำนวนพนักงานแยกตามแผนก\n[ ] 3. สรุปข้อค้นพบเชิงธุรกิจ\n[step 3] TODO_UPDATE -> {'index': 1, 'status': 'done'}\n[x] 1. สร้างแผนงานเพื่อนับพนักงานแยกตามแผนก\n[ ] 2. เขียนและรัน T-SQL query เพื่อหาจำนวนพนักงานแยกตามแผนก\n[ ] 3. สรุปข้อค้นพบเชิงธุรกิจ\n[step 4] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[x] 1. สร้างแผนงานเพื่อนับพนักงานแยกตามแผนก\n[~] 2. เขียนและรัน T-SQL query เพื่อหาจำนวนพนักงานแยกตามแผนก\n[ ] 3. สรุปข้อค้นพบเชิงธุรกิจ\n[PYTHON OBSERVATION] evidence=call_d0e247ab3a6748dc87cc7c60 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_d0e247ab3a6748dc87cc7c60 supports=True complete=False proved=[] next=query_more reason=Additional evidence needed: raw employee records with IDs for claim_001 and distinct employee counts per department for claim_002.\n[step 5] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_2e22ce9e5bb24c3384977588 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_2e22ce9e5bb24c3384977588 supports=True complete=False proved=[] next=query_more reason=Need aggregate counts of distinct employees per department to satisfy claim_002\n[step 6] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_c1ae0e762dd64e4eb67e0372 decision=accept type=query_result risk=True reasons=['distinct-grain']\n[DYNAMIC OBSERVATION] evidence=call_c1ae0e762dd64e4eb67e0372 supports=True complete=False proved=[] next=query_more reason=Need raw employee records (record‑level data) to satisfy claim_001; current evidence only provides aggregated counts.\n[step 7] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_fdffcfeac19e4131a5f642c6 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVER SKIPPED] dynamic observer budget exhausted; elapsed=149.3/240.0s agent=8/13 router=0/1 observer=5/5 final=0/1 mcp=5/8\n[step 8] TOOL execute_query_tool\n[step 9] TODO_UPDATE -> {'index': 2, 'status': 'done'}\n[x] 1. สร้างแผนงานเพื่อนับพนักงานแยกตามแผนก\n[x] 2. เขียนและรัน T-SQL query เพื่อหาจำนวนพนักงานแยกตามแผนก\n[ ] 3. สรุปข้อค้นพบเชิงธุรกิจ\n[FINAL ROUTING] risks=['empty-answer', 'risky-tool-semantics']\n[FINAL OBSERVATION] verdict=rewrite reason=The proposed answer is empty; it does not present the required employee counts per department.\n[FINAL CLAIM GATE] verify-then-emit; MCP disabled; observer_supported=8\n[CONTEXT FIDELITY] status=supported frames=5/5 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- เทคโนโลยีสารสนเทศ มีพนักงาน 5 คน\n- การตลาด มีพนักงาน 4 คน\n- ทรัพยากรบุคคล มีพนักงาน 4 คน\n- การเงิน มีพนักงาน 3 คน\n- ผลิต มีพนักงาน 3 คน\n- วิจัยและพัฒนา มีพนักงาน 3 คน\n- บัญชี มีพนักงาน 2 คน\n- บริหารทั่วไป มีพนักงาน 1 คน\n------------------------------------------------------------\n[todo สุดท้าย]\n[x] 1. สร้างแผนงานเพื่อนับพนักงานแยกตามแผนก\n[x] 2. เขียนและรัน T-SQL query เพื่อหาจำนวนพนักงานแยกตามแผนก\n[ ] 3. สรุปข้อค้นพบเชิงธุรกิจ\n[context budget] BudgetState(steps=9, tool_calls=5, errors=0)\n"
+      },
+      "elapsed_seconds": 177.367224
+    }
+  ],
+  "decision_projection_sha256": "1e01677ab2b4794ce0e55d95c73c4453ec703bb75229d4bd0de8d156b1448b6a"
+}
