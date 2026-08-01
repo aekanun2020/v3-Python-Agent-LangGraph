@@ -73,6 +73,7 @@ contract-owned constraints, confidence และ exact spans ก่อนรั�
 [Lab 6 — current architecture](labs/lab6_todo/README.md),
 [v3 Hybrid Router acceptance report](artifacts/v3_semantic_router_acceptance_report.md),
 [V2 Incident Replay report](artifacts/v2_incident_replay_report.md),
+[V2 Full Question Replay on V3](artifacts/v2_full_question_replay_v3_report.md),
 [v3.1 Evidence-context report](artifacts/v3_1_evidence_context_report.md),
 [HR report](artifacts/hr_skill_run4_run5_report.md) และ
 [Finance report](artifacts/finance_skill_run3_run4_report.md)
@@ -98,6 +99,14 @@ fingerprint ระบุ gate source `611aa9d67bddfe7405df36bc61ba63aa71599f1397
 V2 Incident Replay หลังแก้ regression ผ่านสอง live runs ติดต่อกัน:
 incidents `17/17`, routing attempts `40/40` และ contracts `6/6` ต่อรอบ
 ดู [incident report](artifacts/v2_incident_replay_report.md)
+
+การขยายจาก incident fixtures ไปยังคำถามภายนอกที่ค้นพบใน versioned v2
+artifacts รวมกับ manual-history ที่ตรวจย้อนกลับได้ รวม 63 ข้อ เมื่อนำมารันกับ
+v3 ผ่าน `55/63`: routing `59/63`, contract live path `34/38` และ
+general-agent live path `21/25` เหลือ routing mismatch 4 ข้อกับคำตอบ general
+ที่ขัด tool context 4 ข้อ ผลนี้จึง **ยังไม่รองรับ**
+คำกล่าวว่า v3 ดีกว่า v2 ทุกมิติ ดูวิธีคัดคำถาม, controlled rechecks และ failure
+รายข้อใน [full replay report](artifacts/v2_full_question_replay_v3_report.md)
 
 ## Quick start สำหรับผู้เรียน
 
@@ -143,7 +152,7 @@ python -m pytest tests --ignore=tests/test_lab8_planner.py -q
 python -m unittest -v tests.test_lab8_planner
 ```
 
-ผลทดสอบ local ล่าสุด: non-Lab 8 `125 passed`;
+ผลทดสอบ local ล่าสุด: non-Lab 8 `132 passed`;
 Lab 8 แยก `2 passed`
 
 รัน routing acceptance ค่าเริ่มต้น (`semantic-v3`, hybrid, fail on error):

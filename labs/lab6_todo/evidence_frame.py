@@ -7,6 +7,7 @@ returned: fields, rows, filters, grouping, labels, and numeric values.
 from __future__ import annotations
 
 import json
+import math
 import re
 from dataclasses import asdict, dataclass
 from typing import Any, Iterable
@@ -254,6 +255,29 @@ def _number_tokens(text: str) -> set[str]:
     return values
 
 
+def _supported_number(token: str, allowed: set[str]) -> bool:
+    if token in allowed:
+        return True
+    token_percent = token.endswith("%")
+    try:
+        value = float(token.rstrip("%"))
+    except ValueError:
+        return False
+    for candidate in allowed:
+        if candidate.endswith("%") != token_percent:
+            continue
+        try:
+            expected = float(candidate.rstrip("%"))
+        except ValueError:
+            continue
+        # Display rounding to two decimals is context-faithful.  This matches
+        # the deterministic claim gate tolerance and still rejects materially
+        # different or invented values.
+        if math.isclose(value, expected, rel_tol=1e-4, abs_tol=0.011):
+            return True
+    return False
+
+
 def _claim_is_present(answer: str, claim: str, labels: Iterable[str]) -> bool:
     numbers = _number_tokens(claim)
     claim_labels = {
@@ -337,7 +361,10 @@ def reconcile_answer_with_context(
     for claim in required_claims:
         allowed_numbers.update(_number_tokens(claim))
     answer_numbers = _number_tokens(answer)
-    unsupported_numbers = tuple(sorted(answer_numbers - allowed_numbers))
+    unsupported_numbers = tuple(sorted(
+        token for token in answer_numbers
+        if not _supported_number(token, allowed_numbers)
+    ))
     numeric_precision = (
         1.0
         if not answer_numbers

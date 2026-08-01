@@ -308,6 +308,14 @@ staffing-route regression ผ่าน live run สองรอบติดต�
 `40/40` และ contracts `6/6` ต่อรอบ ดู
 [incident report](../../artifacts/v2_incident_replay_report.md)
 
+เมื่อนำคำถามภายนอกที่ค้นพบใน versioned v2 artifacts รวมกับ manual-history
+ที่ตรวจย้อนกลับได้มาขยายเป็น Full Question Replay 63 ข้อ v3 ผ่าน `55/63`:
+routing `59/63`, contract live path `34/38` และ general-agent live path
+`21/25` เหลือ routing mismatch 4 ข้อและ general answer ที่ขัด tool context
+4 ข้อ ดังนั้น incident suite ที่ผ่านหมดไม่ได้
+แปลว่ารองรับคำถามประวัติ v2 ทั้งหมด ดู
+[full replay report](../../artifacts/v2_full_question_replay_v3_report.md)
+
 หลักที่ใช้ตีความผลคือ:
 
 > Observation อย่างเดียวจำเป็นแต่ไม่เพียงพอ
@@ -320,9 +328,12 @@ staffing-route regression ผ่าน live run สองรอบติดต�
 python -m pytest tests --ignore=tests/test_lab8_planner.py -q
 python -m unittest -v tests.test_lab8_planner
 python scripts/replay_v2_incidents.py --progress
+python scripts/replay_v2_questions.py \
+  --manifest tests/evaluation/v2_full_question_replay.json \
+  --output artifacts/v2_full_question_replay_v3_run.json
 ```
 
-ผลทดสอบ local ล่าสุด: non-Lab 8 `117 passed` + 35 subtests;
+ผลทดสอบ local ล่าสุด: non-Lab 8 `132 passed`;
 Lab 8 แยก `2 passed`
 
 รัน routing suite ค่าเริ่มต้น:

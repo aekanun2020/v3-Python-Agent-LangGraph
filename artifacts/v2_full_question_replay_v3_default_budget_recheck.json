@@ -1,0 +1,419 @@
+{
+  "suite_id": "v2-full-question-replay-v1",
+  "generated_at": "2026-08-01T15:18:55.085938+00:00",
+  "source_commit": "f33546aea94620e1e27425d34517e76a9443a5c2",
+  "manifest_sha256": "d496e0f9dcfab4002d7bf62bffa5d282b0c5e16f26faf43571e37400cf7077a4",
+  "question_projection_sha256": "e5eb9a05ffe7703b7846f860cd00ae4211b7bb0c39c0779dc566ecc5822ec21b",
+  "router_fingerprint": {
+    "prompt_version": "hybrid-contract-router-v3",
+    "gate_version": "skill-grounded-admission-gate-v1",
+    "gate_source_sha256": "611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab",
+    "catalog_sha256": "ed3112d6292f38d4d51d068895a6659233f6b75c8d0a342607183f1a018c4377",
+    "model": "openai/gpt-oss-120b",
+    "request_timeout_seconds": 30.0,
+    "max_output_tokens": 1600,
+    "reasoning_effort": "low",
+    "minimum_confidence": 0.8
+  },
+  "models": {
+    "agent": "qwen/qwen3.5-35b-a3b",
+    "router": "openai/gpt-oss-120b",
+    "observer": "openai/gpt-oss-120b"
+  },
+  "mcp_tools_discovered": 5,
+  "mcp_endpoint_recorded": false,
+  "summary": {
+    "questions_total": 10,
+    "questions_passed": 8,
+    "questions_failed": 2,
+    "routing_passed": 10,
+    "contract_live_passed": 0,
+    "contract_live_total": 0,
+    "general_agent_live_passed": 8,
+    "general_agent_live_total": 10
+  },
+  "contract_evidence": {},
+  "results": [
+    {
+      "id": "v2q_002",
+      "question": "Joint App มีวงเงินเฉลี่ยเท่าไร",
+      "category": "finance_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches all required concepts and constraints. The question asks for the average loan amount for Joint App, but no contract includes both the required concepts (loan_amnt, funded_amnt, ค่าเฉลี่ย) and the specific application type filter without additional missing elements.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ยังไม่สามารถตอบข้อสรุปที่ร้องขอได้จากหลักฐานที่มี: Missing required field credit_limit for Joint App; cannot compute average credit limit",
+        "answer_sha256": "86605cd7d714b099d054a3f71b41f702f56e285aaa9930b5e7f6966da2358b79",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 4,
+          "evidence_frames": 4,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 168.331174,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=1\n[step 1] TODO_WRITE\n[ ] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[ ] 2. ค้นหาตารางที่มีข้อมูล Joint App และวงเงิน\n[ ] 3. เขียนและรัน T-SQL query หาค่าเฉลี่ยวงเงิน\n[ ] 4. สรุปข้อค้นพบ\n[step 2] TODO_UPDATE -> {'index': 1, 'status': 'doing'}\n[~] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[ ] 2. ค้นหาตารางที่มีข้อมูล Joint App และวงเงิน\n[ ] 3. เขียนและรัน T-SQL query หาค่าเฉลี่ยวงเงิน\n[ ] 4. สรุปข้อค้นพบ\n[PYTHON OBSERVATION] evidence=call_ff3814cd71ee4f1eb6b7d67a decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_ff3814cd71ee4f1eb6b7d67a supports=True complete=False proved=[] next=query_more reason=Schema inspection did not reveal a table with both credit_limit and app_type columns; need to locate appropriate table and compute the average\n[step 3] TOOL get_database_context\n[step 4] TODO_UPDATE -> {'index': 1, 'status': 'done'}\n[x] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[ ] 2. ค้นหาตารางที่มีข้อมูล Joint App และวงเงิน\n[ ] 3. เขียนและรัน T-SQL query หาค่าเฉลี่ยวงเงิน\n[ ] 4. สรุปข้อค้นพบ\n[step 5] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[x] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[~] 2. ค้นหาตารางที่มีข้อมูล Joint App และวงเงิน\n[ ] 3. เขียนและรัน T-SQL query หาค่าเฉลี่ยวงเงิน\n[ ] 4. สรุปข้อค้นพบ\n[PYTHON OBSERVATION] evidence=call_04a7caa79d2e49f8801d2958 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_04a7caa79d2e49f8801d2958 supports=False complete=False proved=[] next=query_more reason=The previewed table contains Joint App rows but lacks a credit_limit column needed to compute the average credit limit.\n[step 6] TOOL preview_table\n[PYTHON OBSERVATION] evidence=call_2241006ea51646fc90104aec decision=accept type=query_result risk=True reasons=['aggregate-comparison']\n[DYNAMIC OBSERVATION] evidence=call_2241006ea51646fc90104aec supports=True complete=False proved=[] next=query_more reason=Tool returned aggregate average of funded_amnt, but claim requires average of credit_limit at record grain\n[step 7] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_fd0d9c7aeedf41d881a3407f decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_fd0d9c7aeedf41d881a3407f supports=True complete=False proved=[] next=query_more reason=Result lacks the required credit_limit field to compute average credit limit for Joint App\n[step 8] TOOL execute_query_tool\n[step 9] TODO_UPDATE -> {'index': 2, 'status': 'done'}\n[x] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[x] 2. ค้นหาตารางที่มีข้อมูล Joint App และวงเงิน\n[ ] 3. เขียนและรัน T-SQL query หาค่าเฉลี่ยวงเงิน\n[ ] 4. สรุปข้อค้นพบ\n[FINAL ROUTING] risks=['empty-answer', 'risky-tool-semantics']\n[FINAL OBSERVATION] verdict=query_more reason=Missing required field credit_limit for Joint App; cannot compute average credit limit\n[CONTEXT FIDELITY] status=supported frames=4/4 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nยังไม่สามารถตอบข้อสรุปที่ร้องขอได้จากหลักฐานที่มี: Missing required field credit_limit for Joint App; cannot compute average credit limit\n------------------------------------------------------------\n[todo สุดท้าย]\n[x] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[x] 2. ค้นหาตารางที่มีข้อมูล Joint App และวงเงิน\n[ ] 3. เขียนและรัน T-SQL query หาค่าเฉลี่ยวงเงิน\n[ ] 4. สรุปข้อค้นพบ\n[context budget] BudgetState(steps=9, tool_calls=4, errors=0)\n"
+      },
+      "elapsed_seconds": 175.605034
+    },
+    {
+      "id": "v2q_003",
+      "question": "annual_inc ของ Joint App แบ่งตามช่วงรายได้",
+      "category": "finance_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches the request for Joint App annual income distribution; existing contracts either target Individual applications or different metrics.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ยังไม่สามารถตอบข้อสรุปที่ร้องขอได้จากหลักฐานที่มี: Missing required data: need application_id for Joint App records and aggregated counts of Joint App records by income range brackets.",
+        "answer_sha256": "373541c896de06321cd925bafe5975941a026a4e91cb8655d51100944888dc57",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 2,
+          "evidence_frames": 2,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 69.775933,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=3\n[step 1] TODO_WRITE\n[ ] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[ ] 2. ค้นหาตารางที่เกี่ยวข้องกับ Joint App และ annual_inc\n[ ] 3. เขียน T-SQL query แบ่ง annual_inc ตามช่วงรายได้\n[ ] 4. Execute query และวิเคราะห์ผลลัพธ์\n[step 2] TODO_UPDATE -> {'index': 1, 'status': 'doing'}\n[~] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[ ] 2. ค้นหาตารางที่เกี่ยวข้องกับ Joint App และ annual_inc\n[ ] 3. เขียน T-SQL query แบ่ง annual_inc ตามช่วงรายได้\n[ ] 4. Execute query และวิเคราะห์ผลลัพธ์\n[PYTHON OBSERVATION] evidence=call_839d374ef094482d9e5ead89 decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_839d374ef094482d9e5ead89 supports=True complete=False proved=[] next=query_more reason=Schema retrieved but does not contain the fields needed to satisfy the claims; need to locate the table with annual_inc and related fields.\n[step 2] TOOL get_database_context\n[step 3] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[~] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[~] 2. ค้นหาตารางที่เกี่ยวข้องกับ Joint App และ annual_inc\n[ ] 3. เขียน T-SQL query แบ่ง annual_inc ตามช่วงรายได้\n[ ] 4. Execute query และวิเคราะห์ผลลัพธ์\n[PYTHON OBSERVATION] evidence=call_c01057dacee64deaa317e124 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_c01057dacee64deaa317e124 supports=True complete=False proved=[] next=query_more reason=Need application_id for each Joint App record and full set of Joint App rows; also need aggregated counts by income range brackets.\n[step 3] TOOL preview_table\n[step 4] TODO_UPDATE -> {'index': 3, 'status': 'doing'}\n[~] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[~] 2. ค้นหาตารางที่เกี่ยวข้องกับ Joint App และ annual_inc\n[~] 3. เขียน T-SQL query แบ่ง annual_inc ตามช่วงรายได้\n[ ] 4. Execute query และวิเคราะห์ผลลัพธ์\n[FINAL ROUTING] risks=['empty-answer']\n[FINAL OBSERVATION] verdict=query_more reason=Missing required data: need application_id for Joint App records and aggregated counts of Joint App records by income range brackets.\n[CONTEXT FIDELITY] status=supported frames=2/2 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nยังไม่สามารถตอบข้อสรุปที่ร้องขอได้จากหลักฐานที่มี: Missing required data: need application_id for Joint App records and aggregated counts of Joint App records by income range brackets.\n------------------------------------------------------------\n[todo สุดท้าย]\n[~] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[~] 2. ค้นหาตารางที่เกี่ยวข้องกับ Joint App และ annual_inc\n[~] 3. เขียน T-SQL query แบ่ง annual_inc ตามช่วงรายได้\n[ ] 4. Execute query และวิเคราะห์ผลลัพธ์\n[context budget] BudgetState(steps=6, tool_calls=2, errors=0)\n"
+      },
+      "elapsed_seconds": 73.039821
+    },
+    {
+      "id": "v2q_008",
+      "question": "funding_ratio คือ approval rate ใช่หรือไม่",
+      "category": "finance_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "The question asks whether funding_ratio is the same as approval rate, which is a semantic definition query. No contract's required concepts and constraints match this request; the finance_funding_gap_by_year contract explicitly excludes such semantic approval rate questions.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": false,
+      "general": {
+        "passed": false,
+        "runtime_contract": null,
+        "answer": "ข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- **Funding Ratio** = วัดประสิทธิภาพในการระดมทุน (Amount-based) เช่น กู้ 100 ได้รับเงินจริง 90 → ratio = 90%\n- **Approval Rate** = วัดอัตราการผ่านเกณฑ์ (Count-based) เช่น ยื่น 100 ออมัติ 80 → rate = 80%",
+        "answer_sha256": "36a35a37f5e5887648aa47214950b4f54512f8920691997aa8fc669569280b58",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "contradicted",
+          "successful_frames": 2,
+          "evidence_frames": 2,
+          "numeric_precision": 0.2,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 115.48986,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=1\n[PYTHON OBSERVATION] evidence=call_8484aeda36954f7488ca94bb decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_8484aeda36954f7488ca94bb supports=False complete=False proved=[] next=query_more reason=Missing definitions needed to determine equivalence of funding_ratio and approval_rate.\n[step 1] TOOL get_database_context\n[step 2] TODO_WRITE\n[ ] 1. 1. ตรวจสอบว่ามีความหมายของ funding_ratio และ approval_rate ถูกบันทึกไว้ที่ไหนในฐานข้อมูล (metadata, comments, documentation tables)\n[ ] 2. 2. หารายการคอลัมน์และฟังก์ชันทั้งหมดที่เกี่ยวข้องกับคำว่า 'funding', 'ratio', 'approval' ในทุกตาราง\n[ ] 3. 3. วิเคราะห์ความสัมพันธ์ระหว่าง funded_amnt, loan_amnt และสถานะการอนุมัติใน loans_fact table\n[step 3] TODO_UPDATE -> {'index': 1, 'status': 'doing'}\n[~] 1. 1. ตรวจสอบว่ามีความหมายของ funding_ratio และ approval_rate ถูกบันทึกไว้ที่ไหนในฐานข้อมูล (metadata, comments, documentation tables)\n[ ] 2. 2. หารายการคอลัมน์และฟังก์ชันทั้งหมดที่เกี่ยวข้องกับคำว่า 'funding', 'ratio', 'approval' ในทุกตาราง\n[ ] 3. 3. วิเคราะห์ความสัมพันธ์ระหว่าง funded_amnt, loan_amnt และสถานะการอนุมัติใน loans_fact table\n[PYTHON OBSERVATION] evidence=call_af50ce2e808945fcbfb137a0 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_af50ce2e808945fcbfb137a0 supports=False complete=False proved=[] next=query_more reason=preview of loans_fact does not contain definitions of funding_ratio or approval_rate needed to determine equivalence\n[step 4] TOOL preview_table\n[step 5] TODO_UPDATE -> {'index': 1, 'status': 'done'}\n[x] 1. 1. ตรวจสอบว่ามีความหมายของ funding_ratio และ approval_rate ถูกบันทึกไว้ที่ไหนในฐานข้อมูล (metadata, comments, documentation tables)\n[ ] 2. 2. หารายการคอลัมน์และฟังก์ชันทั้งหมดที่เกี่ยวข้องกับคำว่า 'funding', 'ratio', 'approval' ในทุกตาราง\n[ ] 3. 3. วิเคราะห์ความสัมพันธ์ระหว่าง funded_amnt, loan_amnt และสถานะการอนุมัติใน loans_fact table\n[AGENT LLM ERROR] APIConnectionError: Connection error.; elapsed=95.1/240.0s agent=6/13 router=0/1 observer=3/5 final=0/1 mcp=2/8\n[FINAL ROUTING] risks=['unsupported-numbers:80,80%,90,90%', 'semantic-decision']\n[FINAL OBSERVATION] verdict=rewrite reason=Proposed answer makes unsupported definitions and claims about funding_ratio and approval_rate that are not present in the accepted evidence; also includes unsupported recommendation.\n[FINAL CLAIM GATE] verify-then-emit; MCP disabled; observer_supported=0\n[CONTEXT FIDELITY] status=contradicted frames=2/2 numeric_precision=0.200 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- **Funding Ratio** = วัดประสิทธิภาพในการระดมทุน (Amount-based) เช่น กู้ 100 ได้รับเงินจริง 90 → ratio = 90%\n- **Approval Rate** = วัดอัตราการผ่านเกณฑ์ (Count-based) เช่น ยื่น 100 ออมัติ 80 → rate = 80%\n------------------------------------------------------------\n[todo สุดท้าย]\n[x] 1. 1. ตรวจสอบว่ามีความหมายของ funding_ratio และ approval_rate ถูกบันทึกไว้ที่ไหนในฐานข้อมูล (metadata, comments, documentation tables)\n[ ] 2. 2. หารายการคอลัมน์และฟังก์ชันทั้งหมดที่เกี่ยวข้องกับคำว่า 'funding', 'ratio', 'approval' ในทุกตาราง\n[ ] 3. 3. วิเคราะห์ความสัมพันธ์ระหว่าง funded_amnt, loan_amnt และสถานะการอนุมัติใน loans_fact table\n[context budget] BudgetState(steps=5, tool_calls=2, errors=1)\n"
+      },
+      "elapsed_seconds": 119.77727
+    },
+    {
+      "id": "v2q_009",
+      "question": "home_ownership ใดทำให้ dti สูงขึ้น",
+      "category": "finance_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches all required concepts and constraints.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": false,
+      "general": {
+        "passed": false,
+        "runtime_contract": null,
+        "answer": "ข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- The NONE home_ownership category has the highest average DTI of 23.902.\n- Average DTI values by home_ownership are: NONE = 23.902, MORTGAGE ≈ 19.75, OWN ≈ 19.21, RENT ≈ 18.54, ANY ≈ 18.38.",
+        "answer_sha256": "63e4fdbd96907c80630be694b146da2b70f8110cfa312d81b45358b46a0b6315",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "contradicted",
+          "successful_frames": 2,
+          "evidence_frames": 2,
+          "numeric_precision": 0.2,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 89.868116,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=3\n[step 1] TODO_WRITE\n[ ] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[ ] 2. ค้นหาตารางที่มีข้อมูล home_ownership และ dti\n[ ] 3. เขียนและรัน T-SQL query เพื่อวิเคราะห์ความสัมพันธ์\n[ ] 4. วิเคราะห์ผลลัพธ์และสรุปข้อค้นพบ\n[PYTHON OBSERVATION] evidence=call_08ee1773906a4fe5b2a293f6 decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_08ee1773906a4fe5b2a293f6 supports=False complete=False proved=[] next=query_more reason=Schema inspection shows no 'dti' column; need to query a table containing both 'home_ownership' and 'dti' to satisfy record‑level claim and subsequent aggregations.\n[step 2] TOOL get_database_context\n[step 3] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[ ] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[~] 2. ค้นหาตารางที่มีข้อมูล home_ownership และ dti\n[ ] 3. เขียนและรัน T-SQL query เพื่อวิเคราะห์ความสัมพันธ์\n[ ] 4. วิเคราะห์ผลลัพธ์และสรุปข้อค้นพบ\n[PYTHON OBSERVATION] evidence=call_96264721b8c74077aeba2672 decision=accept type=query_result risk=True reasons=['aggregate-comparison']\n[DYNAMIC OBSERVATION] evidence=call_96264721b8c74077aeba2672 supports=True complete=False proved=[] next=query_more reason=Aggregated query provides average DTI per home_ownership (supports claim_002 and claim_003) but does not retrieve raw records needed for claim_001.\n[step 4] TOOL execute_query_tool\n[step 5] TODO_UPDATE -> {'index': 3, 'status': 'done'}\n[ ] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[~] 2. ค้นหาตารางที่มีข้อมูล home_ownership และ dti\n[x] 3. เขียนและรัน T-SQL query เพื่อวิเคราะห์ความสัมพันธ์\n[ ] 4. วิเคราะห์ผลลัพธ์และสรุปข้อค้นพบ\n[step 6] TODO_UPDATE -> {'index': 4, 'status': 'done'}\n[ ] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[~] 2. ค้นหาตารางที่มีข้อมูล home_ownership และ dti\n[x] 3. เขียนและรัน T-SQL query เพื่อวิเคราะห์ความสัมพันธ์\n[x] 4. วิเคราะห์ผลลัพธ์และสรุปข้อค้นพบ\n[FINAL ROUTING] risks=['empty-answer', 'risky-tool-semantics']\n[FINAL OBSERVATION] verdict=rewrite reason=Proposed answer is empty; need to provide answer based on evidence.\n[FINAL CLAIM GATE] verify-then-emit; MCP disabled; observer_supported=2\n[CONTEXT FIDELITY] status=contradicted frames=2/2 numeric_precision=0.200 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- The NONE home_ownership category has the highest average DTI of 23.902.\n- Average DTI values by home_ownership are: NONE = 23.902, MORTGAGE ≈ 19.75, OWN ≈ 19.21, RENT ≈ 18.54, ANY ≈ 18.38.\n------------------------------------------------------------\n[todo สุดท้าย]\n[ ] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[~] 2. ค้นหาตารางที่มีข้อมูล home_ownership และ dti\n[x] 3. เขียนและรัน T-SQL query เพื่อวิเคราะห์ความสัมพันธ์\n[x] 4. วิเคราะห์ผลลัพธ์และสรุปข้อค้นพบ\n[context budget] BudgetState(steps=6, tool_calls=2, errors=0)\n"
+      },
+      "elapsed_seconds": 94.294071
+    },
+    {
+      "id": "v2q_034",
+      "question": "พนักงานคนใดควรได้เลื่อนตำแหน่งจาก skill_category",
+      "category": "hr_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches the required concepts and constraints for the promotion decision request.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ยังไม่สามารถตอบข้อสรุปที่ร้องขอได้จากหลักฐานที่มี: Missing promotion eligibility criteria needed to identify qualifying employees for promotion",
+        "answer_sha256": "dedc446aa0374ae25a7a8e2cdd4a4b475faaa080cd6ce8aa5df9e366a54a7c42",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 5,
+          "evidence_frames": 5,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 125.640286,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=2\n[step 1] TODO_WRITE\n[ ] 1. ทำความเข้าใจโครงสร้างฐานข้อมูลและ schema\n[ ] 2. ตรวจสอบตารางพนักงานและตารางทักษะ\n[ ] 3. วิเคราะห์ข้อมูลเพื่อหาพนักงานที่มีศักยภาพในการเลื่อนตำแหน่ง\n[ ] 4. สรุปผลเชิงธุรกิจ\n[PYTHON OBSERVATION] evidence=call_3fd36f8a25354497bdf25f3a decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_3fd36f8a25354497bdf25f3a supports=False complete=False proved=[] next=query_more reason=Schema metadata does not provide the required employee skill records; need to query the skills table for actual data.\n[step 2] TOOL get_database_context\n[step 3] TODO_UPDATE -> {'index': 1, 'status': 'done'}\n[x] 1. ทำความเข้าใจโครงสร้างฐานข้อมูลและ schema\n[ ] 2. ตรวจสอบตารางพนักงานและตารางทักษะ\n[ ] 3. วิเคราะห์ข้อมูลเพื่อหาพนักงานที่มีศักยภาพในการเลื่อนตำแหน่ง\n[ ] 4. สรุปผลเชิงธุรกิจ\n[PYTHON OBSERVATION] evidence=call_5e9070f6be2f4e5c8c7eab67 decision=accept type=query_result risk=True reasons=['semantic-decision']\n[DYNAMIC OBSERVATION] evidence=call_5e9070f6be2f4e5c8c7eab67 supports=True complete=False proved=[] next=query_more reason=We have record-level data for employee skill categories and levels (claim_001). However, claim_002 cannot be satisfied without explicit promotion eligibility criteria.\n[step 3] TOOL preview_table\n[QUERY CONTRACT REPAIR] tool=execute_query_tool repairs=['mssql-unicode-prefix']\n[PYTHON OBSERVATION] evidence=call_18c7855eb49f47ffbe938c22 decision=accept type=query_result risk=True reasons=['multi-source', 'semantic-decision']\n[DYNAMIC OBSERVATION] evidence=call_18c7855eb49f47ffbe938c22 supports=True complete=False proved=[] next=query_more reason=claim_001 is fully supported, but claim_002 lacks the promotion_eligibility_criteria field needed to confirm eligibility\n[step 4] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_15ba9f2b0e294791a318aeae decision=accept type=query_result risk=True reasons=['semantic-decision']\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 5] TOOL preview_table\n[QUERY CONTRACT REPAIR] tool=execute_query_tool repairs=['mssql-unicode-prefix']\n[PYTHON OBSERVATION] evidence=call_f4aa7e7b86ea43689894fa1a decision=accept type=query_result risk=True reasons=['multi-source', 'semantic-decision']\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 6] TOOL execute_query_tool\n[step 7] TODO_UPDATE -> {'index': 2, 'status': 'done'}\n[x] 1. ทำความเข้าใจโครงสร้างฐานข้อมูลและ schema\n[x] 2. ตรวจสอบตารางพนักงานและตารางทักษะ\n[ ] 3. วิเคราะห์ข้อมูลเพื่อหาพนักงานที่มีศักยภาพในการเลื่อนตำแหน่ง\n[ ] 4. สรุปผลเชิงธุรกิจ\n[step 7] TODO_UPDATE -> {'index': 3, 'status': 'done'}\n[x] 1. ทำความเข้าใจโครงสร้างฐานข้อมูลและ schema\n[x] 2. ตรวจสอบตารางพนักงานและตารางทักษะ\n[x] 3. วิเคราะห์ข้อมูลเพื่อหาพนักงานที่มีศักยภาพในการเลื่อนตำแหน่ง\n[ ] 4. สรุปผลเชิงธุรกิจ\n[step 8] TODO_UPDATE -> {'index': 4, 'status': 'done'}\n[x] 1. ทำความเข้าใจโครงสร้างฐานข้อมูลและ schema\n[x] 2. ตรวจสอบตารางพนักงานและตารางทักษะ\n[x] 3. วิเคราะห์ข้อมูลเพื่อหาพนักงานที่มีศักยภาพในการเลื่อนตำแหน่ง\n[x] 4. สรุปผลเชิงธุรกิจ\n[FINAL ROUTING] risks=['empty-answer', 'semantic-decision', 'risky-tool-semantics']\n[FINAL OBSERVATION] verdict=query_more reason=Missing promotion eligibility criteria needed to identify qualifying employees for promotion\n[CONTEXT FIDELITY] status=supported frames=5/5 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nยังไม่สามารถตอบข้อสรุปที่ร้องขอได้จากหลักฐานที่มี: Missing promotion eligibility criteria needed to identify qualifying employees for promotion\n------------------------------------------------------------\n[todo สุดท้าย]\n[x] 1. ทำความเข้าใจโครงสร้างฐานข้อมูลและ schema\n[x] 2. ตรวจสอบตารางพนักงานและตารางทักษะ\n[x] 3. วิเคราะห์ข้อมูลเพื่อหาพนักงานที่มีศักยภาพในการเลื่อนตำแหน่ง\n[x] 4. สรุปผลเชิงธุรกิจ\n[context budget] BudgetState(steps=10, tool_calls=5, errors=0)\n"
+      },
+      "elapsed_seconds": 132.224412
+    },
+    {
+      "id": "v2q_036",
+      "question": "พนักงานที่ยังทำงานอยู่มีทั้งหมดกี่คน",
+      "category": "hr_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches the request for total active employee count without departmental grouping; the only related contracts require grouping or additional metrics.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- There are 25 distinct employees with status 'ปฏิบัติงาน' in the employees table.",
+        "answer_sha256": "536f986980dfef636c6953ddc65779036c0fd5d080e9cbaef6c519cc12da0153",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 4,
+          "evidence_frames": 4,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 114.003911,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=1\n[step 1] TODO_WRITE\n[ ] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[ ] 2. ค้นหาตารางที่เกี่ยวข้องกับพนักงาน\n[ ] 3. เขียนและรัน T-SQL query เพื่อค้นจำนวนพนักงานที่ยังทำงานอยู่\n[ ] 4. สรุปจำนวนพนักงาน\n[PYTHON OBSERVATION] evidence=call_e2b92d93452847b0ae2e9fbe decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_e2b92d93452847b0ae2e9fbe supports=False complete=False proved=[] next=query_more reason=Schema information only; no data rows to count currently active employees\n[step 1] TOOL get_database_context\n[step 2] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[ ] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[~] 2. ค้นหาตารางที่เกี่ยวข้องกับพนักงาน\n[ ] 3. เขียนและรัน T-SQL query เพื่อค้นจำนวนพนักงานที่ยังทำงานอยู่\n[ ] 4. สรุปจำนวนพนักงาน\n[QUERY CONTRACT REPAIR] tool=execute_query_tool repairs=['mssql-unicode-prefix']\n[PYTHON OBSERVATION] evidence=call_8aca5553b1d84e9b91fd0ea7 decision=accept type=query_result risk=True reasons=['distinct-grain']\n[DYNAMIC OBSERVATION] evidence=call_8aca5553b1d84e9b91fd0ea7 supports=True complete=True proved=[] next=accept reason=The query returned a distinct count of employee_id where status = 'กำลังทำงาน', providing the required evidence for claim_001.\n[step 2] TOOL execute_query_tool\n[step 3] TODO_UPDATE -> {'index': 3, 'status': 'doing'}\n[ ] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[~] 2. ค้นหาตารางที่เกี่ยวข้องกับพนักงาน\n[~] 3. เขียนและรัน T-SQL query เพื่อค้นจำนวนพนักงานที่ยังทำงานอยู่\n[ ] 4. สรุปจำนวนพนักงาน\n[PYTHON OBSERVATION] evidence=call_bbba29a2520b4460a1a6bade decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_bbba29a2520b4460a1a6bade supports=True complete=True proved=['claim_001'] next=accept reason=Preview shows 20 distinct employee rows, all with status 'ปฏิบัติงาน', providing the required count of active employees.\n[step 3] TOOL preview_table\n[QUERY CONTRACT REPAIR] tool=execute_query_tool repairs=['mssql-unicode-prefix']\n[PYTHON OBSERVATION] evidence=call_f2ba9368b944412dbda06b48 decision=accept type=query_result risk=True reasons=['distinct-grain']\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 4] TOOL execute_query_tool\n[step 5] TODO_UPDATE -> {'index': 3, 'status': 'done'}\n[ ] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[~] 2. ค้นหาตารางที่เกี่ยวข้องกับพนักงาน\n[x] 3. เขียนและรัน T-SQL query เพื่อค้นจำนวนพนักงานที่ยังทำงานอยู่\n[ ] 4. สรุปจำนวนพนักงาน\n[step 6] TODO_UPDATE -> {'index': 4, 'status': 'doing'}\n[ ] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[~] 2. ค้นหาตารางที่เกี่ยวข้องกับพนักงาน\n[x] 3. เขียนและรัน T-SQL query เพื่อค้นจำนวนพนักงานที่ยังทำงานอยู่\n[~] 4. สรุปจำนวนพนักงาน\n[FINAL ROUTING] risks=['semantic-decision', 'risky-tool-semantics']\n[FINAL OBSERVATION] verdict=approve reason=The answer correctly reports the count of currently active employees (25) as supported by the distinct count query for status 'ปฏิบัติงาน' and the preview table showing those rows.\n[FINAL CLAIM GATE] approved allowlist composed\n[CONTEXT FIDELITY] status=supported frames=4/4 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- There are 25 distinct employees with status 'ปฏิบัติงาน' in the employees table.\n------------------------------------------------------------\n[todo สุดท้าย]\n[ ] 1. เรียก get_database_context เพื่อดูโครงสร้างฐานข้อมูล\n[~] 2. ค้นหาตารางที่เกี่ยวข้องกับพนักงาน\n[x] 3. เขียนและรัน T-SQL query เพื่อค้นจำนวนพนักงานที่ยังทำงานอยู่\n[~] 4. สรุปจำนวนพนักงาน\n[context budget] BudgetState(steps=9, tool_calls=4, errors=0)\n"
+      },
+      "elapsed_seconds": 118.52019
+    },
+    {
+      "id": "v2q_040",
+      "question": "มีแผนกใดไม่มีพนักงานปฏิบัติงานเลย",
+      "category": "hr_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches the request for identifying departments with zero active employees; existing contracts either count active employees or explicitly exclude zero-headcount departments.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- แผนกเทคโนโลยีสารสนเทศไม่มีพนักงานปฏิบัติงาน\n- แผนกการเงินไม่มีพนักงานปฏิบัติงาน\n- แผนกการตลาดไม่มีพนักงานปฏิบัติงาน\n- แผนกทรัพยากรบุคคลไม่มีพนักงานปฏิบัติงาน\n- แผนกผลิตไม่มีพนักงานปฏิบัติงาน",
+        "answer_sha256": "115a6f67f777c7381c4a3a78590f7d6bc2cc4f69d31b09b4aabf29dc6342dbf7",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 3,
+          "evidence_frames": 3,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 103.173516,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=2\n[step 1] TODO_WRITE\n[ ] 1. ดูโครงสร้างฐานข้อมูลเพื่อเข้าใจตารางและความสัมพันธ์\n[ ] 2. เขียน T-SQL query เพื่อค้นหาแผนกที่ไม่มีพนักงาน\n[ ] 3. เรียกใช้ query และวิเคราะห์ผลลัพธ์\n[PYTHON OBSERVATION] evidence=call_dd1afa2451f5466ca827ffc0 decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_dd1afa2451f5466ca827ffc0 supports=False complete=False proved=[] next=query_more reason=Schema information was retrieved but no employee data was provided; need a query that returns active employee counts per department to evaluate both claims\n[step 1] TOOL get_database_context\n[step 2] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[ ] 1. ดูโครงสร้างฐานข้อมูลเพื่อเข้าใจตารางและความสัมพันธ์\n[~] 2. เขียน T-SQL query เพื่อค้นหาแผนกที่ไม่มีพนักงาน\n[ ] 3. เรียกใช้ query และวิเคราะห์ผลลัพธ์\n[PYTHON OBSERVATION] evidence=call_c2c59ba868b34c28a04fdf11 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_c2c59ba868b34c28a04fdf11 supports=True complete=False proved=[] next=query_more reason=Result lists departments with no active employees but does not provide employee counts per department nor an aggregate count, so claims remain unsupported\n[step 2] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_601a8aa0bf9346db95f96fc7 decision=accept type=query_result risk=True reasons=['distinct-grain', 'multi-source']\n[DYNAMIC OBSERVATION] evidence=call_601a8aa0bf9346db95f96fc7 supports=True complete=True proved=[] next=accept reason=Result provides employee counts per department (all zero), satisfying claim_001 (active employee count per department) and claim_002 (existence of department(s) with zero active employees).\n[step 3] TOOL execute_query_tool\n[step 4] TODO_UPDATE -> {'index': 3, 'status': 'done'}\n[ ] 1. ดูโครงสร้างฐานข้อมูลเพื่อเข้าใจตารางและความสัมพันธ์\n[~] 2. เขียน T-SQL query เพื่อค้นหาแผนกที่ไม่มีพนักงาน\n[x] 3. เรียกใช้ query และวิเคราะห์ผลลัพธ์\n[FINAL ROUTING] risks=['empty-answer', 'risky-tool-semantics']\n[FINAL OBSERVATION] verdict=rewrite reason=The proposed answer is empty and does not address the user question about which departments have no active employees.\n[FINAL CLAIM GATE] verify-then-emit; MCP disabled; observer_supported=5\n[CONTEXT FIDELITY] status=supported frames=3/3 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- แผนกเทคโนโลยีสารสนเทศไม่มีพนักงานปฏิบัติงาน\n- แผนกการเงินไม่มีพนักงานปฏิบัติงาน\n- แผนกการตลาดไม่มีพนักงานปฏิบัติงาน\n- แผนกทรัพยากรบุคคลไม่มีพนักงานปฏิบัติงาน\n- แผนกผลิตไม่มีพนักงานปฏิบัติงาน\n------------------------------------------------------------\n[todo สุดท้าย]\n[ ] 1. ดูโครงสร้างฐานข้อมูลเพื่อเข้าใจตารางและความสัมพันธ์\n[~] 2. เขียน T-SQL query เพื่อค้นหาแผนกที่ไม่มีพนักงาน\n[x] 3. เรียกใช้ query และวิเคราะห์ผลลัพธ์\n[context budget] BudgetState(steps=6, tool_calls=3, errors=0)\n"
+      },
+      "elapsed_seconds": 107.629465
+    },
+    {
+      "id": "v2q_043",
+      "question": "ลูกค้าที่มี loan_status Charged Off ควรถูกปฏิเสธครั้งต่อไปหรือไม่",
+      "category": "finance_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches the request for a decision on rejecting customers with loan_status Charged Off; existing contracts either report metrics or forbid decision-making.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- There are 147,348 loans with loan_status 'Charged Off' (count_loans = 147348).\n- The total loan amount for loans with loan_status 'Charged Off' is 2.330994e+09.\nหลักฐานที่มีไม่เพียงพอและไม่สามารถพิสูจน์ข้อสรุป การตัดสินใจ หรือคำแนะนำที่ร้องขอ",
+        "answer_sha256": "7b1a68ace41f6ad0649adb234457283ca8956923acd0f74b2101a858414b6daa",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 5,
+          "evidence_frames": 5,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 121.992452,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=1\n[PYTHON OBSERVATION] evidence=call_e59b39cfb5e84bafa1c9f0bb decision=accept type=schema risk=False reasons=[]\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 1] TOOL get_database_context\n[step 2] TODO_WRITE\n[ ] 1. ตรวจสอบค่า loan_status ในตาราง loan_status_dim เพื่อหา ID ของ Charged Off\n[ ] 2. วิเคราะห์สถิติการกู้ยืมของลูกหนี้ที่มีสถานะ Charged Off ว่ามีการยื่นกู้ต่อหรือไม่\n[ ] 3. สรุปผลเชิงธุรกิจว่าควรปฏิเสธลูกค้าที่มีสถานะ Charged Off หรือไม่\n[step 3] TODO_UPDATE -> {'index': 1, 'status': 'doing'}\n[~] 1. ตรวจสอบค่า loan_status ในตาราง loan_status_dim เพื่อหา ID ของ Charged Off\n[ ] 2. วิเคราะห์สถิติการกู้ยืมของลูกหนี้ที่มีสถานะ Charged Off ว่ามีการยื่นกู้ต่อหรือไม่\n[ ] 3. สรุปผลเชิงธุรกิจว่าควรปฏิเสธลูกค้าที่มีสถานะ Charged Off หรือไม่\n[PYTHON OBSERVATION] evidence=call_4a0e83c2b2924ef796551170 decision=accept type=query_result risk=True reasons=['semantic-decision']\n[DYNAMIC OBSERVATION] evidence=call_4a0e83c2b2924ef796551170 supports=True complete=True proved=[] next=accept reason=Retrieved loan_status_id for 'Charged Off', satisfying the active step.\n[step 4] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_aef4dbde24184b57919bc5b8 decision=accept type=query_result risk=True reasons=['semantic-decision']\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 5] TOOL preview_table\n[step 6] TODO_UPDATE -> {'index': 1, 'status': 'done'}\n[x] 1. ตรวจสอบค่า loan_status ในตาราง loan_status_dim เพื่อหา ID ของ Charged Off\n[ ] 2. วิเคราะห์สถิติการกู้ยืมของลูกหนี้ที่มีสถานะ Charged Off ว่ามีการยื่นกู้ต่อหรือไม่\n[ ] 3. สรุปผลเชิงธุรกิจว่าควรปฏิเสธลูกค้าที่มีสถานะ Charged Off หรือไม่\n[PYTHON OBSERVATION] evidence=call_0bd3537706004449b29266de decision=accept type=query_result risk=True reasons=['multi-source', 'aggregate-comparison', 'semantic-decision']\n[DYNAMIC OBSERVATION] evidence=call_0bd3537706004449b29266de supports=False complete=False proved=[] next=query_more reason=Tool result provides only group‑level aggregates; record‑level data needed to substantiate the claim that a 'Charged Off' loan_status must trigger denial.\n[step 7] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_87795b1c99434dafb202d132 decision=accept type=query_result risk=True reasons=['multi-source', 'semantic-decision']\n[DYNAMIC OBSERVATION] evidence=call_87795b1c99434dafb202d132 supports=False complete=False proved=[] next=stop reason=SQL query failed; no rows or fields returned, so no new evidence can be extracted.\n[step 8] TOOL execute_query_tool\n[FINAL ROUTING] risks=['unsupported-numbers:2.33', 'semantic-decision', 'qualitative-interpretation', 'risky-tool-semantics']\n[FINAL OBSERVATION] verdict=refuse_decision reason=The answer includes a recommendation to deny customers with loan_status 'Charged Off' that is not supported by any evidence; no record‑level rule linking Charged Off status to denial is provided.\n[FINAL CLAIM GATE] verify-then-emit; MCP disabled; observer_supported=2\n[CONTEXT FIDELITY] status=supported frames=5/5 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- There are 147,348 loans with loan_status 'Charged Off' (count_loans = 147348).\n- The total loan amount for loans with loan_status 'Charged Off' is 2.330994e+09.\nหลักฐานที่มีไม่เพียงพอและไม่สามารถพิสูจน์ข้อสรุป การตัดสินใจ หรือคำแนะนำที่ร้องขอ\n------------------------------------------------------------\n[todo สุดท้าย]\n[x] 1. ตรวจสอบค่า loan_status ในตาราง loan_status_dim เพื่อหา ID ของ Charged Off\n[ ] 2. วิเคราะห์สถิติการกู้ยืมของลูกหนี้ที่มีสถานะ Charged Off ว่ามีการยื่นกู้ต่อหรือไม่\n[ ] 3. สรุปผลเชิงธุรกิจว่าควรปฏิเสธลูกค้าที่มีสถานะ Charged Off หรือไม่\n[context budget] BudgetState(steps=8, tool_calls=5, errors=0)\n"
+      },
+      "elapsed_seconds": 127.975217
+    },
+    {
+      "id": "v2q_047",
+      "question": "สำหรับ application_type = Individual ที่ annual_inc ไม่เป็น NULL ให้ใช้ NTILE(4) เรียง annual_inc แบ่ง income quartile แล้วรายงานจำนวน ช่วงรายได้ funded_amnt เฉลี่ย int_rate เฉลี่ย และ dti เฉลี่ยของแต่ละ quartile",
+      "category": "finance_legacy_general",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches the request for income quartile segmentation and reporting of funded amount, interest rate, and DTI averages; existing contracts either require fixed income bands, different metrics, or different population constraints.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ยังไม่มี claim ที่ผ่านเงื่อนไขการตรวจหลักฐานครบถ้วน",
+        "answer_sha256": "fbfb5a1c5d930297a6794ec69350b4e0e51a8a6a042ded295610a4d517b67be5",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 4,
+          "evidence_frames": 4,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 162.78492,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=9\n[PYTHON OBSERVATION] evidence=call_6b3fc3a865c04137b0e384af decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_6b3fc3a865c04137b0e384af supports=False complete=False proved=[] next=query_more reason=Schema evidence shows required fields funded_amnt and int_rate exist, but annual_inc and dti are missing and no data rows are available to verify record existence, NTILE partitioning, or aggregate calculations.\n[step 1] TOOL get_database_context\n[PYTHON OBSERVATION] evidence=call_12c6c051747d446383887205 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_12c6c051747d446383887205 supports=True complete=False proved=[] next=query_more reason=Need NTILE(4) partition of annual_inc and aggregate statistics per quartile (counts, funded_amnt range, avg int_rate, avg dti).\n[step 2] TOOL preview_table\n[step 3] TODO_WRITE\n[ ] 1. สร้าง CTE สำหรับคัดกรอง Individual loans ที่มี annual_inc ไม่เป็น NULL และคำนวณ income_quartile ด้วย NTILE\n[ ] 2. คำนวณ aggregated statistics แต่ละ quartile (count, min/max funded_amnt, avg int_rate, avg dti)\n[ ] 3. รัน query และตรวจสอบผลลัพธ์\n[step 4] TODO_UPDATE -> {'index': 1, 'status': 'doing'}\n[~] 1. สร้าง CTE สำหรับคัดกรอง Individual loans ที่มี annual_inc ไม่เป็น NULL และคำนวณ income_quartile ด้วย NTILE\n[ ] 2. คำนวณ aggregated statistics แต่ละ quartile (count, min/max funded_amnt, avg int_rate, avg dti)\n[ ] 3. รัน query และตรวจสอบผลลัพธ์\n[PYTHON OBSERVATION] evidence=call_4567522a6252460fa3015257 decision=accept type=query_result risk=True reasons=['aggregate-comparison']\n[DYNAMIC OBSERVATION] evidence=call_4567522a6252460fa3015257 supports=True complete=True proved=[] next=accept reason=All required claims have supporting evidence from the query result; records exist, fields are present, and the requested aggregates per income quartile are provided.\n[step 5] TOOL execute_query_tool\n[step 6] TODO_UPDATE -> {'index': 1, 'status': 'done'}\n[x] 1. สร้าง CTE สำหรับคัดกรอง Individual loans ที่มี annual_inc ไม่เป็น NULL และคำนวณ income_quartile ด้วย NTILE\n[ ] 2. คำนวณ aggregated statistics แต่ละ quartile (count, min/max funded_amnt, avg int_rate, avg dti)\n[ ] 3. รัน query และตรวจสอบผลลัพธ์\n[step 7] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[x] 1. สร้าง CTE สำหรับคัดกรอง Individual loans ที่มี annual_inc ไม่เป็น NULL และคำนวณ income_quartile ด้วย NTILE\n[~] 2. คำนวณ aggregated statistics แต่ละ quartile (count, min/max funded_amnt, avg int_rate, avg dti)\n[ ] 3. รัน query และตรวจสอบผลลัพธ์\n[PYTHON OBSERVATION] evidence=call_ca072bed83d649d1a4bf258a decision=accept type=query_result risk=True reasons=['aggregate-comparison']\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 8] TOOL execute_query_tool\n[step 9] TODO_UPDATE -> {'index': 2, 'status': 'done'}\n[x] 1. สร้าง CTE สำหรับคัดกรอง Individual loans ที่มี annual_inc ไม่เป็น NULL และคำนวณ income_quartile ด้วย NTILE\n[x] 2. คำนวณ aggregated statistics แต่ละ quartile (count, min/max funded_amnt, avg int_rate, avg dti)\n[ ] 3. รัน query และตรวจสอบผลลัพธ์\n[step 10] TODO_UPDATE -> {'index': 3, 'status': 'doing'}\n[x] 1. สร้าง CTE สำหรับคัดกรอง Individual loans ที่มี annual_inc ไม่เป็น NULL และคำนวณ income_quartile ด้วย NTILE\n[x] 2. คำนวณ aggregated statistics แต่ละ quartile (count, min/max funded_amnt, avg int_rate, avg dti)\n[~] 3. รัน query และตรวจสอบผลลัพธ์\n[step 11] TODO_UPDATE -> {'index': 3, 'status': 'done'}\n[x] 1. สร้าง CTE สำหรับคัดกรอง Individual loans ที่มี annual_inc ไม่เป็น NULL และคำนวณ income_quartile ด้วย NTILE\n[x] 2. คำนวณ aggregated statistics แต่ละ quartile (count, min/max funded_amnt, avg int_rate, avg dti)\n[x] 3. รัน query และตรวจสอบผลลัพธ์\n[FINAL ROUTING] risks=['empty-answer', 'risky-tool-semantics']\n[FINAL OBSERVATION] verdict=rewrite reason=The proposed answer is empty and does not provide the requested quartile statistics.\n[FINAL CLAIM GATE] verify-then-emit; MCP disabled; observer_supported=0\n[CONTEXT FIDELITY] status=supported frames=4/4 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nยังไม่มี claim ที่ผ่านเงื่อนไขการตรวจหลักฐานครบถ้วน\n------------------------------------------------------------\n[todo สุดท้าย]\n[x] 1. สร้าง CTE สำหรับคัดกรอง Individual loans ที่มี annual_inc ไม่เป็น NULL และคำนวณ income_quartile ด้วย NTILE\n[x] 2. คำนวณ aggregated statistics แต่ละ quartile (count, min/max funded_amnt, avg int_rate, avg dti)\n[x] 3. รัน query และตรวจสอบผลลัพธ์\n[context budget] BudgetState(steps=11, tool_calls=4, errors=0)\n"
+      },
+      "elapsed_seconds": 168.955508
+    },
+    {
+      "id": "v2q_058",
+      "question": "แผนกใดมีผลงานดีที่สุด",
+      "category": "hr_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches the question.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ยังไม่สามารถตอบข้อสรุปที่ร้องขอได้จากหลักฐานที่มี: No data available to retrieve performance metrics per department or identify the top department; additional query needed.",
+        "answer_sha256": "be5b9fc516a3c6f4011007fd7f9075bf95e3bea0ebf267815a679725dd7b4123",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 3,
+          "evidence_frames": 3,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 56.802329,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=2\n[PYTHON OBSERVATION] evidence=call_3cb1b6a49f92449a97b21957 decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_3cb1b6a49f92449a97b21957 supports=False complete=False proved=[] next=query_more reason=The tool returned only database schema metadata; no actual performance metric data is available to satisfy the required claims.\n[step 1] TOOL get_database_context\n[step 2] TODO_WRITE\n[ ] 1. ตรวจสอบโครงสร้างข้อมูลของตาราง employees และ performance_reviews\n[ ] 2. สร้าง query หาผลงานเฉลี่ยของแต่ละแผนกโดยใช้ JOIN\n[ ] 3. วิเคราะห์ผลลัพธ์และระบุแผนกที่มีผลงานดีที่สุด\n[ ] 4. สรุปข้อค้นพบเชิงธุรกิจ\n[step 3] TODO_UPDATE -> {'index': 1, 'status': 'doing'}\n[~] 1. ตรวจสอบโครงสร้างข้อมูลของตาราง employees และ performance_reviews\n[ ] 2. สร้าง query หาผลงานเฉลี่ยของแต่ละแผนกโดยใช้ JOIN\n[ ] 3. วิเคราะห์ผลลัพธ์และระบุแผนกที่มีผลงานดีที่สุด\n[ ] 4. สรุปข้อค้นพบเชิงธุรกิจ\n[PYTHON OBSERVATION] evidence=call_6e1d6e1e49734227bad040d5 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_6e1d6e1e49734227bad040d5 supports=True complete=False proved=[] next=query_more reason=Preview of employees table lacks performance metric and department_id fields needed for claim_001; need data from performance_reviews.\n[step 4] TOOL preview_table\n[step 5] TODO_UPDATE -> {'index': 1, 'status': 'done'}\n[x] 1. ตรวจสอบโครงสร้างข้อมูลของตาราง employees และ performance_reviews\n[ ] 2. สร้าง query หาผลงานเฉลี่ยของแต่ละแผนกโดยใช้ JOIN\n[ ] 3. วิเคราะห์ผลลัพธ์และระบุแผนกที่มีผลงานดีที่สุด\n[ ] 4. สรุปข้อค้นพบเชิงธุรกิจ\n[PYTHON OBSERVATION] evidence=call_9456d3bcfe79435d94b6d02a decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_9456d3bcfe79435d94b6d02a supports=False complete=False proved=[] next=query_more reason=The previewed table does not contain department_id or performance_metric needed to satisfy claim_001.\n[step 6] TOOL preview_table\n[step 7] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[x] 1. ตรวจสอบโครงสร้างข้อมูลของตาราง employees และ performance_reviews\n[~] 2. สร้าง query หาผลงานเฉลี่ยของแต่ละแผนกโดยใช้ JOIN\n[ ] 3. วิเคราะห์ผลลัพธ์และระบุแผนกที่มีผลงานดีที่สุด\n[ ] 4. สรุปข้อค้นพบเชิงธุรกิจ\n[FINAL ROUTING] risks=['empty-answer']\n[FINAL OBSERVATION] verdict=query_more reason=No data available to retrieve performance metrics per department or identify the top department; additional query needed.\n[CONTEXT FIDELITY] status=supported frames=3/3 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nยังไม่สามารถตอบข้อสรุปที่ร้องขอได้จากหลักฐานที่มี: No data available to retrieve performance metrics per department or identify the top department; additional query needed.\n------------------------------------------------------------\n[todo สุดท้าย]\n[x] 1. ตรวจสอบโครงสร้างข้อมูลของตาราง employees และ performance_reviews\n[~] 2. สร้าง query หาผลงานเฉลี่ยของแต่ละแผนกโดยใช้ JOIN\n[ ] 3. วิเคราะห์ผลลัพธ์และระบุแผนกที่มีผลงานดีที่สุด\n[ ] 4. สรุปข้อค้นพบเชิงธุรกิจ\n[context budget] BudgetState(steps=7, tool_calls=3, errors=0)\n"
+      },
+      "elapsed_seconds": 59.961146
+    }
+  ],
+  "decision_projection_sha256": "8c8b4bfaf9e83969a313bf00b8d5343025ca2a67e6b1fca18e5e9784a35a96a5"
+}

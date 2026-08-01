@@ -1,0 +1,136 @@
+{
+  "suite_id": "v2-full-question-replay-v1",
+  "generated_at": "2026-08-01T16:12:04.869822+00:00",
+  "source_commit": "f33546aea94620e1e27425d34517e76a9443a5c2",
+  "manifest_sha256": "9a2dbfa591a11f5fc3e25b1db6e7e604d1fa9f2fd45171c4a96db031ad8ae2fc",
+  "question_projection_sha256": "e90b98c24b5aa3836f8c2d05ff0f24eb1c2a453afc44d0edeba755d9c1602fb1",
+  "router_fingerprint": {
+    "prompt_version": "hybrid-contract-router-v3",
+    "gate_version": "skill-grounded-admission-gate-v1",
+    "gate_source_sha256": "611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab",
+    "catalog_sha256": "ed3112d6292f38d4d51d068895a6659233f6b75c8d0a342607183f1a018c4377",
+    "model": "openai/gpt-oss-120b",
+    "request_timeout_seconds": 30.0,
+    "max_output_tokens": 1600,
+    "reasoning_effort": "low",
+    "minimum_confidence": 0.8
+  },
+  "models": {
+    "agent": "qwen/qwen3.5-35b-a3b",
+    "router": "openai/gpt-oss-120b",
+    "observer": "openai/gpt-oss-120b"
+  },
+  "mcp_tools_discovered": 5,
+  "mcp_endpoint_recorded": false,
+  "summary": {
+    "questions_total": 2,
+    "questions_passed": 1,
+    "questions_failed": 1,
+    "routing_passed": 2,
+    "contract_live_passed": 1,
+    "contract_live_total": 1,
+    "general_agent_live_passed": 0,
+    "general_agent_live_total": 1
+  },
+  "contract_evidence": {
+    "active_headcount_by_department": {
+      "evidence_sha256": "79ada9aefe456bf4b527c2b63397f85046b08394b34cc335a00f415281ec8c4c",
+      "roles": [
+        {
+          "role_id": "grouped_active_headcount",
+          "query": "SELECT department, COUNT(*) AS employee_count FROM employees WHERE status = N'ปฏิบัติงาน' GROUP BY department ORDER BY department",
+          "result": "       department  employee_count\nเทคโนโลยีสารสนเทศ               5\n          การเงิน               3\n          การตลาด               4\n    ทรัพยากรบุคคล               4\n     บริหารทั่วไป               1\n            บัญชี               2\n             ผลิต               3\n    วิจัยและพัฒนา               3"
+        }
+      ]
+    }
+  },
+  "results": [
+    {
+      "id": "v2q_062",
+      "question": "นับพนักงานที่ยังปฏิบัติงานแยกตามแผนก",
+      "category": "v2_manual_history",
+      "evaluation_mode": "contract_live",
+      "expected_contract": "active_headcount_by_department",
+      "actual_contract": "active_headcount_by_department",
+      "route_passed": true,
+      "route": {
+        "path": "semantic",
+        "confidence": 0.99,
+        "reason": "The question asks to count active employees ('ยังปฏิบัติงาน') grouped by department ('แผนก'), matching required concepts and one_of_concepts, and satisfies the fixed constraint for active employee population.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "contract": {
+        "evidence_sha256": "79ada9aefe456bf4b527c2b63397f85046b08394b34cc335a00f415281ec8c4c",
+        "satisfied": true,
+        "missing_roles": [],
+        "claim_count": 9,
+        "claims": [
+          "พนักงานที่มีสถานะ `ปฏิบัติงาน` มีทั้งหมด 25 คน",
+          "แผนกเทคโนโลยีสารสนเทศ มีพนักงาน 5 คน",
+          "แผนกการเงิน มีพนักงาน 3 คน",
+          "แผนกการตลาด มีพนักงาน 4 คน",
+          "แผนกทรัพยากรบุคคล มีพนักงาน 4 คน",
+          "แผนกบริหารทั่วไป มีพนักงาน 1 คน",
+          "แผนกบัญชี มีพนักงาน 2 คน",
+          "แผนกผลิต มีพนักงาน 3 คน",
+          "แผนกวิจัยและพัฒนา มีพนักงาน 3 คน"
+        ],
+        "answer_sha256": "0d064ab6cad5da9cf8ec261ca80992b07f3c0e54212312cc04b7ab347c5cc89b",
+        "context_fidelity": {
+          "status": "supported",
+          "evidence_frames": 1,
+          "successful_frames": 1,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": 1.0,
+          "required_claim_recall": 1.0,
+          "unsupported_numbers": [],
+          "unsupported_interpretations": [],
+          "missing_labels": [],
+          "missing_claims": []
+        }
+      },
+      "elapsed_seconds": 7.771384
+    },
+    {
+      "id": "v2q_063",
+      "question": "ระยะเวลาการทำงานที่มีผลต่อการอนุมัติวงเงิน",
+      "category": "v2_manual_history",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches the required concepts and constraints.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": false,
+      "general": {
+        "passed": false,
+        "runtime_contract": null,
+        "answer": "ข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- ### 1. **ระยะเวลาการทำงานสัมพันธ์กับระดับวงเงิน**\n- ### 2. **อัตราความสำเร็จในการชำระเงิน**\n- **ผู้ที่มีประสบการณ์สั้น** (<1-2 ปี) มีอัตรา charged off สูงกว่าเมื่อเทียบกับกลุ่มอื่น\n- **1 year** มีอัตรา charged off สูงถึง **11,739 รายการ** (12.2% ของทั้งหมด)\nหลักฐานที่มีไม่เพียงพอและไม่สามารถพิสูจน์ข้อสรุป การตัดสินใจ หรือคำแนะนำที่ร้องขอ",
+        "answer_sha256": "2d79d674baebdc088646dabde953a2eaf793995e8d2711df67a446c3ce2e22b5",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "contradicted",
+          "successful_frames": 8,
+          "evidence_frames": 8,
+          "numeric_precision": 0.75,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 100.429801,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=2\n[step 1] TODO_WRITE\n[ ] 1. ตรวจสอบโครงสร้างฐานข้อมูลและค้นหาตารางที่เกี่ยวข้อง\n[ ] 2. วิเคราะห์ความสัมพันธ์ระหว่างระยะเวลาการทำงานและการอนุมัติวงเงิน\n[ ] 3. สรุปข้อค้นพบเชิงธุรกิจ\n[PYTHON OBSERVATION] evidence=call_2768644621ac408b903a70ce decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_2768644621ac408b903a70ce supports=False complete=False proved=[] next=query_more reason=Need to retrieve employment start and end dates for each applicant; current schema information does not provide these fields.\n[step 2] TOOL get_database_context\n[step 3] TODO_UPDATE -> {'index': 1, 'status': 'doing'}\n[~] 1. ตรวจสอบโครงสร้างฐานข้อมูลและค้นหาตารางที่เกี่ยวข้อง\n[ ] 2. วิเคราะห์ความสัมพันธ์ระหว่างระยะเวลาการทำงานและการอนุมัติวงเงิน\n[ ] 3. สรุปข้อค้นพบเชิงธุรกิจ\n[PYTHON OBSERVATION] evidence=call_9ed4c8d2ba0842019ccb49d3 decision=accept type=query_result risk=True reasons=['semantic-decision']\n[DYNAMIC OBSERVATION] evidence=call_9ed4c8d2ba0842019ccb49d3 supports=False complete=False proved=[] next=query_more reason=The previewed table does not contain the employment period fields needed to satisfy claim_001, and thus claim_002 cannot be derived.\n[step 4] TOOL preview_table\n[PYTHON OBSERVATION] evidence=call_57f3aff081b240938952395e decision=accept type=query_result risk=True reasons=['semantic-decision']\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 5] TOOL preview_table\n[step 6] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[~] 1. ตรวจสอบโครงสร้างฐานข้อมูลและค้นหาตารางที่เกี่ยวข้อง\n[~] 2. วิเคราะห์ความสัมพันธ์ระหว่างระยะเวลาการทำงานและการอนุมัติวงเงิน\n[ ] 3. สรุปข้อค้นพบเชิงธุรกิจ\n[PYTHON OBSERVATION] evidence=call_8d9a553093894ea7a9d757c1 decision=accept type=query_result risk=True reasons=['conditional-metric', 'aggregate-comparison', 'semantic-decision']\n[DYNAMIC OBSERVATION] evidence=call_8d9a553093894ea7a9d757c1 supports=False complete=False proved=[] next=query_more reason=Tool query failed and did not provide the employment start/end dates needed to calculate employment duration.\n[step 7] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_27c2316c3e6d4e65bcee78be decision=accept type=query_result risk=True reasons=['conditional-metric', 'aggregate-comparison', 'semantic-decision']\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 8] TOOL execute_query_tool\n[step 9] TODO_UPDATE -> {'index': 1, 'status': 'done'}\n[x] 1. ตรวจสอบโครงสร้างฐานข้อมูลและค้นหาตารางที่เกี่ยวข้อง\n[~] 2. วิเคราะห์ความสัมพันธ์ระหว่างระยะเวลาการทำงานและการอนุมัติวงเงิน\n[ ] 3. สรุปข้อค้นพบเชิงธุรกิจ\n[PYTHON OBSERVATION] evidence=call_4b01cc0ea6824a7582d736bc decision=accept type=query_result risk=True reasons=['semantic-decision']\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 10] TOOL preview_table\n[PYTHON OBSERVATION] evidence=call_e5f138d4a373480f8edbd2c8 decision=accept type=query_result risk=True reasons=['conditional-metric', 'aggregate-comparison', 'semantic-decision']\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 11] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_86884a65a9854a83863802d1 decision=accept type=query_result risk=True reasons=['conditional-metric', 'aggregate-comparison', 'semantic-decision']\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 12] TOOL execute_query_tool\n[FINAL ROUTING] risks=['unsupported-numbers:12.2%,12263.2,14488.15,16514.66', 'semantic-decision', 'qualitative-interpretation', 'risky-tool-semantics']\n[FINAL OBSERVATION] verdict=refuse_decision reason=The answer makes numerous factual claims and recommendations about the impact of employment duration on credit approval, but the required employment start/end date fields are not present in the provided schema or data. Consequently, none of the claims are supported by the accepted evidence.\n[FINAL CLAIM GATE] verify-then-emit; MCP disabled; observer_supported=0\n[CONTEXT FIDELITY] status=contradicted frames=8/8 numeric_precision=0.750 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- ### 1. **ระยะเวลาการทำงานสัมพันธ์กับระดับวงเงิน**\n- ### 2. **อัตราความสำเร็จในการชำระเงิน**\n- **ผู้ที่มีประสบการณ์สั้น** (<1-2 ปี) มีอัตรา charged off สูงกว่าเมื่อเทียบกับกลุ่มอื่น\n- **1 year** มีอัตรา charged off สูงถึง **11,739 รายการ** (12.2% ของทั้งหมด)\nหลักฐานที่มีไม่เพียงพอและไม่สามารถพิสูจน์ข้อสรุป การตัดสินใจ หรือคำแนะนำที่ร้องขอ\n------------------------------------------------------------\n[todo สุดท้าย]\n[x] 1. ตรวจสอบโครงสร้างฐานข้อมูลและค้นหาตารางที่เกี่ยวข้อง\n[~] 2. วิเคราะห์ความสัมพันธ์ระหว่างระยะเวลาการทำงานและการอนุมัติวงเงิน\n[ ] 3. สรุปข้อค้นพบเชิงธุรกิจ\n[context budget] BudgetState(steps=12, tool_calls=8, errors=0)\n"
+      },
+      "elapsed_seconds": 105.504374
+    }
+  ],
+  "decision_projection_sha256": "eac06de9b6fd470d66c2463261d01fbf1d652365989f66701f00b2b54e93ad25"
+}

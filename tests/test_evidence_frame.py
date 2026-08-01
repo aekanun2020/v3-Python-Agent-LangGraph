@@ -140,6 +140,26 @@ class EvidenceFrameTests(unittest.TestCase):
         self.assertEqual(len(report.unsupported_interpretations), 1)
         self.assertIn("ทักษะหลากหลาย", report.unsupported_interpretations[0])
 
+    def test_reconciliation_accepts_transparent_display_rounding(self):
+        evidence = EvidenceState()
+        record = EvidenceRecord.from_tool(
+            "call-averages",
+            "execute_query_tool",
+            {},
+            "label  avg_dti\nMORTGAGE  19.747853\nOWN  19.213482",
+        )
+        evidence.accept(record)
+        evidence.add_frame(build_evidence_frame(record))
+
+        report = reconcile_answer_with_context(
+            "สรุป dti เฉลี่ย",
+            "MORTGAGE ≈ 19.75, OWN ≈ 19.21",
+            evidence,
+        )
+
+        self.assertEqual(report.status, "supported")
+        self.assertEqual(report.numeric_precision, 1.0)
+
     def test_structured_render_includes_frame_provenance(self):
         evidence = EvidenceState()
         frame = build_evidence_frame(self.headcount_record())

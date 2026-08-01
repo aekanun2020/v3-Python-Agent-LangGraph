@@ -1,0 +1,91 @@
+{
+  "suite_id": "v2-full-question-replay-v1",
+  "generated_at": "2026-08-01T15:18:33.772850+00:00",
+  "source_commit": "f33546aea94620e1e27425d34517e76a9443a5c2",
+  "manifest_sha256": "71821e544b48d8053ef1b83a14d860a065565316fd564ef817c8f03a4813edca",
+  "question_projection_sha256": "e5eb9a05ffe7703b7846f860cd00ae4211b7bb0c39c0779dc566ecc5822ec21b",
+  "router_fingerprint": {
+    "prompt_version": "hybrid-contract-router-v3",
+    "gate_version": "skill-grounded-admission-gate-v1",
+    "gate_source_sha256": "611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab",
+    "catalog_sha256": "ed3112d6292f38d4d51d068895a6659233f6b75c8d0a342607183f1a018c4377",
+    "model": "openai/gpt-oss-120b",
+    "request_timeout_seconds": 30.0,
+    "max_output_tokens": 1600,
+    "reasoning_effort": "low",
+    "minimum_confidence": 0.8
+  },
+  "models": {
+    "agent": "qwen/qwen3.5-35b-a3b",
+    "router": "openai/gpt-oss-120b",
+    "observer": "openai/gpt-oss-120b"
+  },
+  "mcp_tools_discovered": 5,
+  "mcp_endpoint_recorded": false,
+  "summary": {
+    "questions_total": 1,
+    "questions_passed": 1,
+    "questions_failed": 0,
+    "routing_passed": 1,
+    "contract_live_passed": 1,
+    "contract_live_total": 1,
+    "general_agent_live_passed": 0,
+    "general_agent_live_total": 0
+  },
+  "contract_evidence": {
+    "project_value_per_active_employee": {
+      "evidence_sha256": "007d51f7cea638e9324ee10545b8b0daec729c40c4c816f1c6658eb362202bfc",
+      "roles": [
+        {
+          "role_id": "department_value_and_headcount",
+          "query": "WITH active_headcount AS (SELECT department, COUNT(*) AS active_employee_count FROM employees WHERE status = N'ปฏิบัติงาน' GROUP BY department), project_totals AS (SELECT e.department, SUM(p.project_value) AS project_value FROM projects p JOIN employees e ON e.employee_id = p.employee_id GROUP BY e.department) SELECT h.department, h.active_employee_count, p.project_value FROM active_headcount h JOIN project_totals p ON p.department = h.department ORDER BY h.department",
+          "result": "       department  active_employee_count  project_value\nเทคโนโลยีสารสนเทศ                      5      5000000.0\n          การเงิน                      3      2000000.0\n          การตลาด                      4      3000000.0\n             ผลิต                      3      8000000.0\n    วิจัยและพัฒนา                      3     10000000.0"
+        }
+      ]
+    }
+  },
+  "results": [
+    {
+      "id": "v2q_019",
+      "question": "จากข้อมูลพบว่า `วิจัยและพัฒนา` มีพนักงานปฏิบัติงาน 3 คน และมีโครงการมูลค่า 10,000,000 ส่วน `เทคโนโลยีสารสนเทศ` มีพนักงาน 5 คนและโครงการมูลค่า 5,000,000 จงสรุปว่าแผนกใดใช้กำลังคนมีประสิทธิภาพกว่ากัน",
+      "category": "hr_primary_q1_q10",
+      "evaluation_mode": "contract_live",
+      "expected_contract": "project_value_per_active_employee",
+      "actual_contract": "project_value_per_active_employee",
+      "route_passed": true,
+      "route": {
+        "path": "lexical",
+        "confidence": 1.0,
+        "reason": "literal question_terms_all/any matched",
+        "semantic_attempted": false
+      },
+      "route_error": null,
+      "passed": true,
+      "contract": {
+        "evidence_sha256": "007d51f7cea638e9324ee10545b8b0daec729c40c4c816f1c6658eb362202bfc",
+        "satisfied": true,
+        "missing_roles": [],
+        "claim_count": 2,
+        "claims": [
+          "project value ต่อพนักงานของ เทคโนโลยีสารสนเทศ = 5e+06 / 5 = 1000000.00",
+          "project value ต่อพนักงานของ วิจัยและพัฒนา = 1e+07 / 3 = 3333333.33"
+        ],
+        "answer_sha256": "8df5e6e5dd0d6c13553621330c2c50f789468c46a5360903534a0f2a41da81a3",
+        "context_fidelity": {
+          "status": "supported",
+          "evidence_frames": 1,
+          "successful_frames": 1,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": 1.0,
+          "required_claim_recall": 1.0,
+          "unsupported_numbers": [],
+          "unsupported_interpretations": [],
+          "missing_labels": [],
+          "missing_claims": []
+        }
+      },
+      "elapsed_seconds": 0.085367
+    }
+  ],
+  "decision_projection_sha256": "369a949201a66436660a220a321fdd7ab5ebd600ef8681cd6afea5bafd092305"
+}
