@@ -5,8 +5,12 @@ import json
 import re
 from dataclasses import dataclass
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from labs.lab6_todo.evidence_state import EvidenceRecord, EvidenceState
+
+if TYPE_CHECKING:
+    from labs.lab6_todo.evidence_frame import EvidenceFrame
 
 
 class DeterministicDecision(str, Enum):
@@ -98,6 +102,7 @@ def _extract_fields(raw_result: str) -> tuple[str, ...]:
 def observe_deterministically(
     question: str,
     record: EvidenceRecord,
+    frame: "EvidenceFrame | None" = None,
 ) -> DeterministicObservation:
     raw_lower = record.raw_result.lower()
     if any(marker in raw_lower for marker in ERROR_MARKERS):
@@ -127,7 +132,7 @@ def observe_deterministically(
             True,
             DeterministicDecision.ACCEPT,
             "schema",
-            _extract_fields(record.raw_result),
+            frame.fields if frame is not None else _extract_fields(record.raw_result),
             False,
             (),
             "schema/context result accepted by deterministic checks",
@@ -145,7 +150,7 @@ def observe_deterministically(
         True,
         DeterministicDecision.ACCEPT,
         "query_result",
-        _extract_fields(record.raw_result),
+        frame.fields if frame is not None else _extract_fields(record.raw_result),
         bool(reasons),
         tuple(dict.fromkeys(reasons)),
         "hard checks passed",

@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-08-01",
+  "models": {
+    "agent": "openai/gpt-oss-120b",
+    "router": "openai/gpt-oss-120b",
+    "observer": "openai/gpt-oss-120b"
+  },
+  "secrets_recorded": false,
+  "cases": [
+    {
+      "id": "skill_contract_active_headcount",
+      "question": "นับพนักงานที่ยังปฏิบัติงานแยกตามแผนก",
+      "route": "active_headcount_by_department",
+      "route_confidence": 0.99,
+      "mcp_roles_completed": ["grouped_active_headcount"],
+      "result": {
+        "total": 25,
+        "groups": 8
+      },
+      "context_fidelity": {
+        "status": "supported",
+        "frames": "1/1",
+        "numeric_precision": 1.0,
+        "canonical_label_recall": 1.0,
+        "required_claim_recall": 1.0
+      }
+    },
+    {
+      "id": "general_certificate_counts",
+      "question": "แสดงจำนวนใบรับรองแยกตามชื่อใบรับรอง",
+      "route": null,
+      "claim_ledger_claims": 1,
+      "observation_sequence": ["query_more", "accept"],
+      "proved_claim_ids": ["claim_001"],
+      "final_claims": 7,
+      "duplicate_claims": 0,
+      "unsupported_business_interpretations": 0,
+      "transient_mcp_retries": 1,
+      "context_fidelity": {
+        "status": "supported",
+        "frames": "2/2",
+        "numeric_precision": 1.0
+      }
+    }
+  ],
+  "regression": {
+    "non_lab8_tests": "125/125",
+    "lab8_tests": "2/2",
+    "v2_incidents_offline": "17/17"
+  }
+}

@@ -50,6 +50,7 @@ class EvidenceState:
     """Append-only accepted tool evidence; no domain-specific interpretation."""
 
     records: list[EvidenceRecord] = field(default_factory=list)
+    frames: list[Any] = field(default_factory=list)
     structured_observations: list[Any] = field(default_factory=list)
 
     def accept(self, record: EvidenceRecord) -> None:
@@ -59,10 +60,24 @@ class EvidenceState:
     def add_observation(self, observation: Any) -> None:
         self.structured_observations.append(observation)
 
+    def add_frame(self, frame: Any) -> None:
+        if all(
+            getattr(item, "evidence_id", None)
+            != getattr(frame, "evidence_id", None)
+            for item in self.frames
+        ):
+            self.frames.append(frame)
+
     def render_structured(self) -> str:
-        if not self.structured_observations:
+        if not self.structured_observations and not self.frames:
             return "[no structured observations]"
         blocks = []
+        for frame in self.frames:
+            if hasattr(frame, "to_dict"):
+                blocks.append(json.dumps({
+                    "observer": "evidence_frame",
+                    **frame.to_dict(),
+                }, ensure_ascii=False, default=str))
         for observation in self.structured_observations:
             if not hasattr(observation, "facts"):
                 blocks.append(json.dumps({

@@ -42,6 +42,7 @@ QUALITATIVE_TERMS = (
     "indicates", "suggests", "reflects", "implies", "important",
     "balanced", "efficient", "risk", "therefore", "because",
     "แสดงถึง", "สะท้อน", "บ่งชี้", "หมายความว่า", "สำคัญ",
+    "แสดงว่า", "ทำให้", "ชี้ว่า", "อนุมานได้ว่า",
     "สมดุล", "มีประสิทธิภาพ", "ความเสี่ยง", "ดังนั้น", "เนื่องจาก",
     "สามารถนำไปใช้", "เหมาะสม", "สอดคล้อง", "แนวโน้ม", "ส่งผล",
     "ยุติธรรม", "กลยุทธ์", "strategic", "trend",
@@ -448,9 +449,15 @@ def verify_claims(
         for raw in observation.supported_claims
     )
     observer_claims = tuple(observation.supported_claims)
-    draft_claims = tuple(
-        claim for claim in _draft_candidates(proposed_answer)
-        if claim not in observer_claims
+    # The Observer allowlist is authoritative when it is non-empty.  Pulling
+    # additional lines back from the original draft after the Observer removed
+    # them reintroduces precisely the claims that the semantic review rejected.
+    # Draft recovery remains only as a bounded fallback for an Observer that
+    # accidentally returns an empty allowlist.
+    draft_claims = (
+        ()
+        if observer_claims
+        else _draft_candidates(proposed_answer)
     )
     for raw in observer_claims + draft_claims:
         claim = str(raw).strip()

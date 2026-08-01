@@ -10,6 +10,7 @@ from typing import Any
 from labs.core import config, llm
 from labs.lab6_todo.claim_ledger import ClaimLedger, ClaimRequirement
 from labs.lab6_todo.evidence_state import EvidenceRecord
+from labs.lab6_todo.evidence_frame import EvidenceFrame
 
 
 class NextAction(str, Enum):
@@ -194,8 +195,14 @@ def observe_tool_result(
     active_step: str | None,
     ledger: ClaimLedger,
     evidence: EvidenceRecord,
+    frame: EvidenceFrame | None = None,
     timeout: float = 45,
 ) -> DynamicObservation:
+    frame_block = (
+        json.dumps(frame.to_dict(), ensure_ascii=False, default=str)
+        if frame is not None
+        else "[not available]"
+    )
     payload = (
         f"USER QUESTION:\n{question}\n\n"
         f"ACTIVE STEP:\n{active_step or '[none]'}\n\n"
@@ -203,6 +210,7 @@ def observe_tool_result(
         f"EVIDENCE ID: {evidence.evidence_id}\n"
         f"TOOL: {evidence.tool_name}\n"
         f"ARGUMENTS: {json.dumps(evidence.arguments, ensure_ascii=False)}\n"
+        f"EVIDENCE FRAME:\n{frame_block}\n"
         f"RESULT:\n{evidence.raw_result[:16_000]}"
     )
     response = llm.chat(
@@ -273,13 +281,21 @@ def observe_tool_result(
             evidence_id=evidence.evidence_id,
             derivation=derivation,
         ))
-    grounded_fields = tuple(
-        field for field in map(str, data.get("fields", []))
-        if _appears_in_evidence(field, source_text)
+    grounded_fields = (
+        frame.fields
+        if frame is not None and frame.fields
+        else tuple(
+            field for field in map(str, data.get("fields", []))
+            if _appears_in_evidence(field, source_text)
+        )
     )
-    grounded_labels = tuple(
-        label for label in map(str, data.get("canonical_labels", []))
-        if _appears_in_evidence(label, evidence.raw_result)
+    grounded_labels = (
+        frame.canonical_labels
+        if frame is not None and frame.canonical_labels
+        else tuple(
+            label for label in map(str, data.get("canonical_labels", []))
+            if _appears_in_evidence(label, evidence.raw_result)
+        )
     )
     missing_requests = []
     for item in data.get("missing_evidence", []):
@@ -312,7 +328,11 @@ def observe_tool_result(
         )
     return DynamicObservation(
         evidence_id=evidence.evidence_id,
-        action_succeeded=bool(data.get("action_succeeded")),
+        action_succeeded=(
+            frame.action_succeeded
+            if frame is not None
+            else bool(data.get("action_succeeded"))
+        ),
         supports_active_step=bool(data.get("supports_active_step")),
         evidence_complete=bool(data.get("evidence_complete")),
         grain=str(data.get("grain", "unknown")),

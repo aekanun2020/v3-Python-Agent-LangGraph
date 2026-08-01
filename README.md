@@ -1,6 +1,6 @@
 # v3-Python-Agent-LangGraph
 
-## สถานะปัจจุบัน: Pure Python Agent + bounded-domain Skills + Hybrid Contract Router
+## สถานะปัจจุบัน: Evidence-centric Pure Python Agent
 
 งานพัฒนาล่าสุดอยู่ที่ **Lab 6** และไม่ใช้ LangGraph ใน critical path:
 
@@ -13,17 +13,27 @@ Question
   -> deterministic id/anchor/constraint/span gate
   -> Skill contract หรือ abstain เข้า general path
 
-Skill contract -> MCP evidence -> deterministic checks
-               -> fail-closed Claim Gate -> Answer
+Skill contract -> MCP evidence -> deterministic checks -> Claim Gate -> Answer
+
+General path  -> MCP tool call -> EvidenceFrame
+              -> Python Observation
+              -> LLM Observer เมื่อ claim ยังไม่ครบ/เสี่ยงเชิงความหมาย
+              -> verified claim allowlist -> Answer
+              -> Context Fidelity measurement
 ```
 
-แนวคิดสำคัญคือ Observation เพียงอย่างเดียวไม่รู้ความหมายทางธุรกิจ:
+เป้าหมายหลักคือ **ความแม่นยำตาม context ที่ได้จาก tool** ไม่ใช่การเพิ่ม
+safety policy เฉพาะโดเมน Observation เพียงอย่างเดียวยังไม่พอ:
 
 - **Router** เสนอ intent family แต่ไม่ได้มีอำนาจรับ evidence หรืออนุมัติคำตอบ
 - **Skill** เก็บ semantics และ policy ของ bounded domain
 - **Contract** นิยาม query, grain, field, label และ completion rule ที่ runtime ตรวจได้
 - **Observation** ตรวจผล tool เทียบกับ state และ contract
 - **Claim Gate** ปล่อยเฉพาะ claim ที่ accepted evidence รองรับ
+- **EvidenceFrame** ล็อก field, row, filter, group, aggregation, label
+  และตัวเลขจาก tool แบบ deterministic ก่อนให้ LLM ตีความ
+- **Context Fidelity** วัด numeric precision, exact-label recall,
+  required-claim recall และประโยคอนุมานที่ไม่มีหลักฐาน
 
 Runtime core ค้นหา contracts จาก
 `skills/*/references/answer_contracts.json`; ไฟล์ generic
@@ -63,6 +73,7 @@ contract-owned constraints, confidence และ exact spans ก่อนรั�
 [Lab 6 — current architecture](labs/lab6_todo/README.md),
 [v3 Hybrid Router acceptance report](artifacts/v3_semantic_router_acceptance_report.md),
 [V2 Incident Replay report](artifacts/v2_incident_replay_report.md),
+[v3.1 Evidence-context report](artifacts/v3_1_evidence_context_report.md),
 [HR report](artifacts/hr_skill_run4_run5_report.md) และ
 [Finance report](artifacts/finance_skill_run3_run4_report.md)
 
@@ -132,7 +143,7 @@ python -m pytest tests --ignore=tests/test_lab8_planner.py -q
 python -m unittest -v tests.test_lab8_planner
 ```
 
-ผลทดสอบ local ล่าสุด: non-Lab 8 `117 passed` + 35 subtests;
+ผลทดสอบ local ล่าสุด: non-Lab 8 `125 passed`;
 Lab 8 แยก `2 passed`
 
 รัน routing acceptance ค่าเริ่มต้น (`semantic-v3`, hybrid, fail on error):

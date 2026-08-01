@@ -29,6 +29,7 @@ from labs.lab6_todo.evidence_state import (
     SemanticVerdict,
     SemanticViolation,
 )
+from labs.lab6_todo.evidence_frame import build_evidence_frame
 from labs.lab6_todo.evidence_contract import (
     ContractDecision,
     contract_claims,
@@ -190,6 +191,63 @@ class Phase2BTests(unittest.TestCase):
         self.assertEqual(observation.facts[0].evidence_id, "call-1")
         self.assertEqual(observation.canonical_labels, ("ผลิต",))
         self.assertEqual(chat.call_args.kwargs["model"], config.OBSERVER_MODEL)
+
+    @patch("labs.lab6_todo.dynamic_observer.llm.chat")
+    def test_evidence_frame_is_authoritative_for_fields_labels_and_success(
+        self,
+        chat,
+    ):
+        chat.return_value = fake_response({
+            "action_succeeded": False,
+            "supports_active_step": True,
+            "evidence_complete": True,
+            "grain": "department",
+            "fields": ["invented_field"],
+            "canonical_labels": ["การผลิต"],
+            "facts": [],
+            "proved_claim_ids": ["claim_001"],
+            "contradictions": [],
+            "missing_evidence": [],
+            "next_action": "accept",
+            "reason": "grouped count returned",
+        })
+        ledger = ClaimLedger([
+            ClaimRequirement(
+                "claim_001",
+                "count by department",
+                "group",
+                ("department", "employee_count"),
+            )
+        ])
+        record = EvidenceRecord.from_tool(
+            "call-grounded",
+            "execute_query_tool",
+            {
+                "query": (
+                    "SELECT department, COUNT(*) AS employee_count "
+                    "FROM employees GROUP BY department"
+                )
+            },
+            "department  employee_count\nผลิต  3",
+        )
+        frame = build_evidence_frame(record)
+
+        observation = observe_tool_result(
+            "นับพนักงานแยกแผนก",
+            "query grouped count",
+            ledger,
+            record,
+            frame=frame,
+        )
+
+        self.assertTrue(observation.action_succeeded)
+        self.assertEqual(
+            observation.fields,
+            ("department", "employee_count"),
+        )
+        self.assertEqual(observation.canonical_labels, ("ผลิต",))
+        self.assertNotIn("invented_field", observation.fields)
+        self.assertNotIn("การผลิต", observation.canonical_labels)
 
     @patch("labs.lab6_todo.dynamic_observer.llm.chat")
     def test_query_more_names_specific_missing_evidence(self, chat):
@@ -497,6 +555,36 @@ class Phase2BTests(unittest.TestCase):
         self.assertIn("ผลิต: 3 คน", emitted)
         self.assertIn("บัญชี: 2 คน", emitted)
         self.assertNotIn("สะท้อน", emitted)
+
+    def test_claim_gate_does_not_reintroduce_draft_after_observer_allowlist(self):
+        evidence = EvidenceState()
+        evidence.accept(EvidenceRecord.from_tool(
+            "call-certificates",
+            "execute_query_tool",
+            {},
+            "certificate_name certificate_count\nCPA 1\nCFA 1",
+        ))
+        observation = ObservationState(
+            verdict=SemanticVerdict.REWRITE,
+            reason="remove unsupported interpretation",
+            supported_claims=("CPA has count 1", "CFA has count 1"),
+            unsupported_claims=(
+                "ทุกใบรับรองมี 1 ใบ แสดงว่าทีมมีทักษะหลากหลาย",
+            ),
+            revised_answer="ignored",
+        )
+        emitted = verify_then_emit(
+            "แสดงจำนวนใบรับรองแยกตามชื่อ",
+            observation,
+            evidence,
+            proposed_answer=(
+                "CPA | 1\nCFA | 1\n"
+                "ทุกใบรับรองมี 1 ใบ แสดงว่าทีมมีทักษะหลากหลาย"
+            ),
+        )
+        self.assertEqual(emitted.count("CPA"), 1)
+        self.assertEqual(emitted.count("CFA"), 1)
+        self.assertNotIn("ทักษะหลากหลาย", emitted)
 
     def test_direct_zero_claim_cannot_pass_via_arithmetic_closure(self):
         evidence = EvidenceState()

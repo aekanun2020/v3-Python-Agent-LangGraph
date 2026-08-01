@@ -4,21 +4,30 @@ Lab นี้เริ่มจาก TodoWrite แบบ Pure Python แล้�
 การวางแผน การเรียก MCP การรับหลักฐาน และการตรวจคำตอบออกจากกันอย่างชัดเจน
 โดยไม่ใช้ LangGraph
 
-เป้าหมายปัจจุบันไม่ใช่ทำให้ LLM “ตอบเก่งทุกเรื่อง” แต่ทำให้คำตอบใน bounded
-domain ตรวจสอบย้อนกลับได้ และไม่ปล่อย claim ที่เกินหลักฐาน
+เป้าหมายปัจจุบันคือทำให้คำตอบแม่นยำตาม context จาก MCP tool
+ทั้งใน bounded-domain Skill path และ general path โดยไม่ให้ LLM เปลี่ยน
+field, label, grain หรือตัวเลขที่ tool ส่งกลับมา
 
 ## สิ่งที่ผู้เรียนจะเห็น
 
 - `TodoState` เก็บแผนงานหลายขั้นในหน่วยความจำ
 - `ContextState` เก็บ goal, phase, action/error signatures และ budgets
 - `EvidenceState` เก็บผล MCP ที่ผ่านการยอมรับพร้อม provenance
+- `EvidenceFrame` แปลงผล tool เป็น structured context ด้วย Python:
+  success, result kind, fields, rows, SQL filter/group/aggregation, grain,
+  canonical labels, numbers และ hash
 - Dynamic Observation ตรวจผลหลัง tool call และเลือก
   `accept / query_more / replan / stop`
 - deterministic checks ตรวจ error, query role, grain, field, label และความครบ
 - Hybrid Contract Router ใช้ lexical fast path ก่อน แล้วค่อยขอ semantic
   candidate เมื่อ lexical ไม่ชัด
-- LLM Semantic Observer ถูกเรียกเฉพาะเส้นทางทั่วไปที่มีความเสี่ยงด้านความหมาย
+- LLM Dynamic Observer ถูกเรียกเมื่อ claim ยังไม่ครบหรือ tool result
+  เสี่ยงทางความหมาย; field/label/success ยังยึด EvidenceFrame
+- LLM Final Observer สร้าง supported-claim allowlist; เมื่อ allowlist
+  ไม่ว่าง Python จะไม่ดึงประโยคจาก draft ที่ Observer ตัดทิ้งกลับมา
 - Claim Gate ประกอบคำตอบแบบ fail-closed จาก claim ที่ตรวจแล้ว
+- Context Fidelity รายงาน numeric precision, exact canonical-label recall,
+  required-claim recall และ unsupported semantic interpretations ก่อพิมพ์ผล
 - Skill contracts ให้ semantics และ acceptance criteria ของ bounded domain
 
 ## สถาปัตยกรรมปัจจุบัน

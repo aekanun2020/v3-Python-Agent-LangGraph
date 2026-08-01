@@ -29,10 +29,15 @@ from labs.lab6_todo.evidence_state import (
     ObservationState,
     SemanticVerdict,
 )
+from labs.lab6_todo.evidence_frame import (
+    build_evidence_frame,
+    reconcile_answer_with_context,
+)
 from labs.lab6_todo.claim_ledger import ClaimLedger
 from labs.lab6_todo.claim_gate import verify_then_emit
 from labs.lab6_todo.evidence_contract import (
     ContractDecision,
+    contract_claims,
     missing_role_queries,
     repair_query_arguments,
     terminal_contract_verdict,
@@ -123,7 +128,42 @@ def build_tools(registry: ToolRegistry) -> list[dict]:
     return todo_tools + registry.openai_tools
 
 
-def _print_final(content: str, todo: TodoState, context: ContextState) -> str:
+def _print_final(
+    content: str,
+    todo: TodoState,
+    context: ContextState,
+    evidence: EvidenceState | None = None,
+    contract: dict | None = None,
+) -> str:
+    if evidence is not None:
+        required_claims = (
+            contract_claims(
+                context.original_goal,
+                evidence,
+                contract=contract,
+            )
+            if contract is not None
+            else ()
+        )
+        fidelity = reconcile_answer_with_context(
+            context.original_goal,
+            content,
+            evidence,
+            required_claims=required_claims,
+        )
+        print(
+            "[CONTEXT FIDELITY] "
+            f"status={fidelity.status} "
+            f"frames={fidelity.successful_frames}/{fidelity.evidence_frames} "
+            f"numeric_precision={fidelity.numeric_precision:.3f} "
+            f"label_recall={fidelity.canonical_label_recall} "
+            f"claim_recall={fidelity.required_claim_recall}"
+        )
+        if fidelity.unsupported_interpretations:
+            print(
+                "[CONTEXT FIDELITY DETAIL] unsupported_interpretations="
+                f"{list(fidelity.unsupported_interpretations)}"
+            )
     print("-" * 60)
     print(f"[answer]\n{content}")
     print("-" * 60)
@@ -210,6 +250,7 @@ def fulfill_metric_contract(
         )
         if validation.decision is ContractDecision.ACCEPT:
             evidence.accept(record)
+            evidence.add_frame(build_evidence_frame(record))
             print(f"[METRIC CONTRACT EXECUTED] role={role_id}")
         else:
             print(
@@ -297,6 +338,16 @@ def _run_impl(
         on_semantic_call=budget.consume_router,
     )
     selected_contract = route.contract
+
+    def emit_final(content: str) -> str:
+        return _print_final(
+            content,
+            todo,
+            context,
+            evidence=evidence,
+            contract=selected_contract,
+        )
+
     print(
         f"[CONTRACT ROUTING] path={route.path.value} "
         f"contract={route.contract_id} confidence={route.confidence:.2f} "
@@ -304,7 +355,24 @@ def _run_impl(
         f"reason={route.reason}"
     )
     if dynamic_observer:
-        print("[ROUTING] deterministic-first; claim planner disabled")
+        print("[ROUTING] deterministic-first; evidence-centric observation")
+    if dynamic_observer and selected_contract is None:
+        try:
+            budget.consume_observer()
+            ledger = build_claim_ledger(
+                question,
+                timeout=budget.call_timeout(45),
+            )
+            print(
+                "[CLAIM LEDGER] built from question for general path; "
+                f"claims={len(ledger.claims)}"
+            )
+        except Exception as error:
+            print(
+                "[CLAIM LEDGER ERROR] "
+                f"{type(error).__name__}: {error}; continuing with "
+                "tool-context frames"
+            )
     tools = build_tools(registry)
     messages = [
         {"role": "system", "content": SYSTEM},
@@ -350,7 +418,7 @@ def _run_impl(
             "contract evidence composed"
         )
         context.set_phase(AgentPhase.ANSWER)
-        return _print_final(content, todo, context)
+        return emit_final(content)
     for step in range(1, max_steps + 1):
         try:
             budget.consume_agent()
@@ -445,13 +513,16 @@ def _run_impl(
                             record = EvidenceRecord.from_tool(
                                 call.id, name, args, result
                             )
+                            frame = build_evidence_frame(record)
                             context.add_evidence_ref(call.id)
                             if not dynamic_observer:
                                 evidence.accept(record)
+                                evidence.add_frame(frame)
                             if dynamic_observer:
                                 deterministic = observe_deterministically(
                                     question,
                                     record,
+                                    frame,
                                 )
                                 contract_validation = validate_evidence_contract(
                                     question,
@@ -468,6 +539,7 @@ def _run_impl(
                                     and contract_accepts
                                 ):
                                     evidence.accept(record)
+                                    evidence.add_frame(frame)
                                 evidence.add_observation(deterministic)
                                 print(
                                     "[PYTHON OBSERVATION] "
@@ -499,9 +571,23 @@ def _run_impl(
                                 risk_signature = (
                                     deterministic.risk_reasons
                                 )
+                                observation_signature = (
+                                    risk_signature
+                                    if risk_signature
+                                    else (
+                                        "claim-coverage",
+                                        frame.result_hash,
+                                    )
+                                )
+                                unresolved_claims_need_observation = bool(
+                                    ledger.unresolved
+                                )
                                 needs_llm_observer = (
-                                    deterministic.semantic_risk
-                                    and risk_signature
+                                    (
+                                        deterministic.semantic_risk
+                                        or unresolved_claims_need_observation
+                                    )
+                                    and observation_signature
                                     not in reviewed_risk_signatures
                                 )
                                 if not needs_llm_observer:
@@ -529,7 +615,7 @@ def _run_impl(
                                     continue
                             if dynamic_observer:
                                 reviewed_risk_signatures.add(
-                                    risk_signature
+                                    observation_signature
                                 )
                                 try:
                                     budget.consume_observer()
@@ -538,6 +624,7 @@ def _run_impl(
                                         context.active_step,
                                         ledger,
                                         record,
+                                        frame=frame,
                                         timeout=budget.call_timeout(45),
                                     )
                                     evidence.add_observation(observation)
@@ -656,7 +743,7 @@ def _run_impl(
             )
             print(f"[FINAL ROUTING] risks={list(final_risks)}")
             if not final_risks:
-                return _print_final(proposed, todo, context)
+                return emit_final(proposed)
             try:
                 budget.consume_final_review()
             except RuntimeBudgetExhausted as error:
@@ -664,7 +751,7 @@ def _run_impl(
                     "ไม่สามารถตรวจรับรองคำตอบได้ภายในงบการทำงาน: "
                     f"{error}"
                 )
-                return _print_final(proposed, todo, context)
+                return emit_final(proposed)
             try:
                 observation = review_final_answer(
                     question,
@@ -692,7 +779,7 @@ def _run_impl(
                     contract=selected_contract,
                 )
                 print("[FINAL CLAIM GATE] observer-error fallback composed")
-                return _print_final(proposed, todo, context)
+                return emit_final(proposed)
             if dynamic_observer:
                 observation = enforce_claim_alignment(
                     observation,
@@ -747,7 +834,7 @@ def _run_impl(
                     budget.call_timeout(60),
                     selected_contract,
                 )
-        return _print_final(proposed, todo, context)
+        return emit_final(proposed)
 
     # ชนเพดาน max_steps — บังคับให้โมเดลสรุปปิดท้าย จะได้ไม่จบแบบเงียบๆ โดยไม่มีบทสรุป
     messages.append({"role": "user",
@@ -766,7 +853,7 @@ def _run_impl(
             + ", ".join(claim.claim_id for claim in ledger.unresolved)
         )
         context.set_phase(AgentPhase.ANSWER)
-        return _print_final(content, todo, context)
+        return emit_final(content)
     context.set_phase(AgentPhase.ANSWER)
     content = final.choices[0].message.content or ""
     if dynamic_observer:
@@ -785,7 +872,7 @@ def _run_impl(
         )
         print(f"[FINAL ROUTING] risks={list(final_risks)}")
         if not final_risks:
-            return _print_final(content, todo, context)
+            return emit_final(content)
         try:
             budget.consume_final_review()
             observation = review_final_answer(
@@ -819,7 +906,7 @@ def _run_impl(
                 contract=selected_contract,
             )
             print("[FINAL CLAIM GATE] observer-error fallback composed")
-            return _print_final(content, todo, context)
+            return emit_final(content)
         print(
             f"[FINAL OBSERVATION] verdict={observation.verdict.value} "
             f"reason={observation.reason}"
@@ -856,7 +943,7 @@ def _run_impl(
                 "ถึงขีดจำกัดขั้นตอนและหลักฐานยังไม่พอสำหรับตอบ: "
                 + observation.reason
             )
-    return _print_final(content, todo, context)
+    return emit_final(content)
 
 
 def run(
