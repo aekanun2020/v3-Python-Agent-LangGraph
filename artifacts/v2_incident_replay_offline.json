@@ -1,0 +1,349 @@
+{
+  "suite_id": "v2-incidents-v1",
+  "generated_at": "2026-08-01T10:40:53.512770+00:00",
+  "manifest_sha256": "cb1384a8128b824ec818882eae477b4277449102b40e093e00a23981337e8968",
+  "router_fingerprint": {
+    "prompt_version": "hybrid-contract-router-v3",
+    "gate_version": "skill-grounded-admission-gate-v1",
+    "gate_source_sha256": "611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab",
+    "catalog_sha256": "ed3112d6292f38d4d51d068895a6659233f6b75c8d0a342607183f1a018c4377",
+    "model": "anthropic/claude-sonnet-4.6",
+    "request_timeout_seconds": 30.0,
+    "max_output_tokens": 1600,
+    "reasoning_effort": "low",
+    "minimum_confidence": 0.8
+  },
+  "mode": "offline",
+  "live_router_repeats": 0,
+  "mcp_tools_discovered": [],
+  "summary": {
+    "incidents_total": 17,
+    "incidents_passed": 17,
+    "incidents_failed": 0,
+    "not_applicable_by_removal": 2,
+    "live_routing_attempts": 0,
+    "live_routing_passed": 0,
+    "live_contracts_total": 0,
+    "live_contracts_passed": 0
+  },
+  "decision_projection_sha256": "c9e39eed092462883aede032a20417eeab9529b417cbd81d517f5372320c1499",
+  "results": [
+    {
+      "id": "v2_001_planner_step_dict_crash",
+      "historical_symptom": "validate_plan_descriptions called lower() on a dict step and raised AttributeError.",
+      "layer": "planner_protocol",
+      "disposition": "not_applicable_by_removal",
+      "check_type": "source_absence",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "unexpected_existing_paths": [],
+        "forbidden_matches": []
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_002_plan_write_state_rejections",
+      "historical_symptom": "Runs rejected plan_write ordering, duplicate plan_write, final-synthesis steps, or missing in_progress steps.",
+      "layer": "planner_protocol",
+      "disposition": "not_applicable_by_removal",
+      "check_type": "source_absence",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "unexpected_existing_paths": [],
+        "forbidden_matches": []
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_003_required_tool_choice_provider_error",
+      "historical_symptom": "Alibaba thinking mode rejected tool_choice=required or an object with HTTP 400.",
+      "layer": "provider_compatibility",
+      "disposition": "fixed_by_removal_and_live_replay",
+      "check_type": "source_absence",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "unexpected_existing_paths": [],
+        "forbidden_matches": []
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_004_none_or_empty_final_answer",
+      "historical_symptom": "The agent completed tool calls but printed None or an empty final answer.",
+      "layer": "final_gate",
+      "disposition": "fixed",
+      "check_type": "unit_tests",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "tests_run": 2,
+        "failures": [],
+        "errors": [],
+        "runner_output": "----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_005_repeated_rejection_or_action_loop",
+      "historical_symptom": "The same final rejection or tool action repeated without bounded recovery.",
+      "layer": "control_state",
+      "disposition": "fixed",
+      "check_type": "unit_tests",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "tests_run": 4,
+        "failures": [],
+        "errors": [],
+        "runner_output": "----------------------------------------------------------------------\nRan 4 tests in 0.024s\n\nOK"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_006_mcp_retry_classification",
+      "historical_symptom": "Transport failures and business/permanent failures were not separated consistently.",
+      "layer": "tool_recovery",
+      "disposition": "fixed",
+      "check_type": "unit_tests",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "tests_run": 2,
+        "failures": [],
+        "errors": [],
+        "runner_output": "----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nOK"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_007_headcount_missing_wrong_or_relabelled",
+      "historical_symptom": "Headcount runs returned no answer, zero, incomplete max/min rows, or changed canonical department labels.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed",
+      "check_type": "route_and_contract",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": "active_headcount_by_department",
+        "actual_contract": "active_headcount_by_department",
+        "path": "semantic",
+        "reason": "active employee headcount grouped by department"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_008_employment_length_approval_semantics",
+      "historical_symptom": "funded_amnt or post-origination data was described as proof that employment length affects approval.",
+      "layer": "semantic_routing",
+      "disposition": "fixed_fail_closed",
+      "check_type": "route_only",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": null,
+        "actual_contract": null,
+        "path": "abstain",
+        "reason": "fixed contract constraint is unproven: retain_na_segment"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_009_loan_status_as_approval_decision",
+      "historical_symptom": "Current/Fully Paid loan_status values were treated as approval/rejection outcomes.",
+      "layer": "semantic_routing",
+      "disposition": "fixed_fail_closed",
+      "check_type": "route_only",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": null,
+        "actual_contract": null,
+        "path": "abstain",
+        "reason": "missing grounded terms: สัดส่วน; no grounded one-of term"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_010_review_coverage_wrong_grain",
+      "historical_symptom": "Review-record count was used as employee coverage, distinct grain was lost, or shortfall was called percent instead of percentage points.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed",
+      "check_type": "route_and_contract",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": "performance_review_coverage",
+        "actual_contract": "performance_review_coverage",
+        "path": "semantic",
+        "reason": "distinct active employee review coverage"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_011_training_flag_as_valid_certification",
+      "historical_symptom": "certificate_obtained on a training record was treated as proof of a current-valid employee certification.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed_refusal",
+      "check_type": "route_and_contract",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": "training_certificate_semantic_separation",
+        "actual_contract": "training_certificate_semantic_separation",
+        "path": "semantic",
+        "reason": "training flag and certification are different evidence grains"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_012_project_concentration_relabelling",
+      "historical_symptom": "The answer invented HIGH_RISK and a currency instead of applying the declared concentration policy.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed",
+      "check_type": "route_and_contract",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": "top_two_project_concentration",
+        "actual_contract": "top_two_project_concentration",
+        "path": "semantic",
+        "reason": "top-two project-value concentration policy"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_013_project_value_as_efficiency",
+      "historical_symptom": "A descriptive project-value-per-head ratio was relabelled as productivity or efficiency and assigned an unsupported currency.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed_refusal",
+      "check_type": "route_and_contract",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": "project_value_per_active_employee",
+        "actual_contract": "project_value_per_active_employee",
+        "path": "semantic",
+        "reason": "literal project-value per active employee ratio only"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_014_staffing_recommendation_without_evidence",
+      "historical_symptom": "Descriptive headcount was turned into add/reduce staffing recommendations.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed_refusal",
+      "check_type": "route_and_contract",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": "staffing_decision_insufficient",
+        "actual_contract": "staffing_decision_insufficient",
+        "path": "semantic",
+        "reason": "staffing decision based only on headcount"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_015_observer_json_parser_failures",
+      "historical_symptom": "Wrapped JSON and literal JSON control characters caused Observer/parser failures.",
+      "layer": "provider_output_parsing",
+      "disposition": "fixed",
+      "check_type": "unit_tests",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "tests_run": 2,
+        "failures": [],
+        "errors": [],
+        "runner_output": "----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_016_successful_sql_wrong_semantics",
+      "historical_symptom": "A syntactically successful query used the wrong Unicode filter or incomplete grain and was still accepted.",
+      "layer": "evidence_contract",
+      "disposition": "fixed",
+      "check_type": "unit_tests",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "tests_run": 4,
+        "failures": [],
+        "errors": [],
+        "runner_output": "----------------------------------------------------------------------\nRan 4 tests in 0.001s\n\nOK"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_017_substring_and_constraint_misrouting",
+      "historical_symptom": "Literal keyword matching ignored negation, population, operator, top-N, and bucket-boundary conflicts.",
+      "layer": "semantic_routing",
+      "disposition": "fixed",
+      "check_type": "unit_tests",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "tests_run": 6,
+        "failures": [],
+        "errors": [],
+        "runner_output": "----------------------------------------------------------------------\nRan 6 tests in 0.006s\n\nOK"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    }
+  ]
+}

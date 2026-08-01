@@ -282,17 +282,22 @@ Final sequential acceptance runs ที่มี fingerprint เดียวก�
 (`hybrid-contract-router-v3`, `openai/gpt-oss-120b`) ได้ paraphrase `20/20`
 และ boundary `20/20` ทั้งสองรอบ โดยไม่มี false match และ decision
 projection SHA-256 เดียวกันที่
-`ccf0fda7ea1de47c13ba7f234e7caf139a11b189f4346cecdfbef4ef862eb87d`;
+`e4b45b61f53ce754374629939f202567ced3f0bb3a9b5f90b66829ba57e3e50a`;
 gate source SHA-256 คือ
 `611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab`
 และ catalog SHA-256 คือ
-`b04c656c71e0c66c964341ecc233519780fc59af75070f1c92dbc6dddaf03034`;
+`ed3112d6292f38d4d51d068895a6659233f6b75c8d0a342607183f1a018c4377`;
 run 1 ตรวจ live MCP ครบ `20/20`
 contracts และได้คำตอบไม่ว่าง `20/20` ดู
 [acceptance report](../../artifacts/v3_semantic_router_acceptance_report.md)
 รวมถึง Agent E2E คำถามนับพนักงานที่ยังปฏิบัติงานแยกตามแผนก
 ที่ route แบบ semantic เข้า `active_headcount_by_department`, รัน
 `grouped_active_headcount` และได้ 25 คนครบ 8 แผนกตาม accepted evidence
+
+V2 Incident Replay Suite freeze failure ที่เคยพบจริง 17 incidents หลังแก้
+staffing-route regression ผ่าน live run สองรอบติดต่อกันที่ `17/17`, routing
+`40/40` และ contracts `6/6` ต่อรอบ ดู
+[incident report](../../artifacts/v2_incident_replay_report.md)
 
 หลักที่ใช้ตีความผลคือ:
 
@@ -305,9 +310,10 @@ contracts และได้คำตอบไม่ว่าง `20/20` ดู
 ```bash
 python -m pytest tests --ignore=tests/test_lab8_planner.py -q
 python -m unittest -v tests.test_lab8_planner
+python scripts/replay_v2_incidents.py --progress
 ```
 
-ผลทดสอบ local ล่าสุด: non-Lab 8 `113 passed` + 35 subtests;
+ผลทดสอบ local ล่าสุด: non-Lab 8 `117 passed` + 35 subtests;
 Lab 8 แยก `2 passed`
 
 รัน routing suite ค่าเริ่มต้น:

@@ -1,0 +1,324 @@
+{
+  "suite_id": "v2-incidents-v1",
+  "frozen_before_first_run": true,
+  "scope": "Incidents observed during the v2 Pure Python Planner, Dynamic Observation, Evidence Contract, and Skill iterations.",
+  "incidents": [
+    {
+      "id": "v2_001_planner_step_dict_crash",
+      "historical_symptom": "validate_plan_descriptions called lower() on a dict step and raised AttributeError.",
+      "layer": "planner_protocol",
+      "disposition": "not_applicable_by_removal",
+      "check": {
+        "type": "source_absence",
+        "paths_must_not_exist": ["labs/lab6_todo/agent_planner.py"],
+        "search_paths": ["labs/lab6_todo"],
+        "forbidden_patterns": ["validate_plan_descriptions", "NON_EVIDENCE_STEP_WORDS"]
+      }
+    },
+    {
+      "id": "v2_002_plan_write_state_rejections",
+      "historical_symptom": "Runs rejected plan_write ordering, duplicate plan_write, final-synthesis steps, or missing in_progress steps.",
+      "layer": "planner_protocol",
+      "disposition": "not_applicable_by_removal",
+      "check": {
+        "type": "source_absence",
+        "search_paths": ["labs/lab6_todo"],
+        "forbidden_patterns": ["plan_write", "plan_revise", "PlannerState"]
+      }
+    },
+    {
+      "id": "v2_003_required_tool_choice_provider_error",
+      "historical_symptom": "Alibaba thinking mode rejected tool_choice=required or an object with HTTP 400.",
+      "layer": "provider_compatibility",
+      "disposition": "fixed_by_removal_and_live_replay",
+      "check": {
+        "type": "source_absence",
+        "search_paths": ["labs"],
+        "forbidden_patterns": ["tool_choice"]
+      }
+    },
+    {
+      "id": "v2_004_none_or_empty_final_answer",
+      "historical_symptom": "The agent completed tool calls but printed None or an empty final answer.",
+      "layer": "final_gate",
+      "disposition": "fixed",
+      "check": {
+        "type": "unit_tests",
+        "tests": [
+          "tests.test_lab6_phase2b.Phase2BTests.test_final_router_rejects_empty_answer",
+          "tests.test_lab6_evidence_state.EvidenceStateTests.test_parse_rewrite_requires_complete_revised_answer"
+        ]
+      }
+    },
+    {
+      "id": "v2_005_repeated_rejection_or_action_loop",
+      "historical_symptom": "The same final rejection or tool action repeated without bounded recovery.",
+      "layer": "control_state",
+      "disposition": "fixed",
+      "check": {
+        "type": "unit_tests",
+        "tests": [
+          "tests.test_lab6_context_state.ContextStateTests.test_same_action_and_result_twice_detects_loop",
+          "tests.test_lab6_context_state.ContextStateTests.test_repeated_error_uses_type_and_message",
+          "tests.test_lab6_phase2b.Phase2BTests.test_whole_run_budget_and_call_budgets_are_enforced",
+          "tests.test_lab6_phase2b.Phase2BTests.test_hard_deadline_interrupts_blocking_work"
+        ]
+      }
+    },
+    {
+      "id": "v2_006_mcp_retry_classification",
+      "historical_symptom": "Transport failures and business/permanent failures were not separated consistently.",
+      "layer": "tool_recovery",
+      "disposition": "fixed",
+      "check": {
+        "type": "unit_tests",
+        "tests": [
+          "tests.test_lab6_phase2b.Phase2BTests.test_mcp_retry_recovers_from_transient_503",
+          "tests.test_lab6_phase2b.Phase2BTests.test_mcp_retry_does_not_retry_permanent_400"
+        ]
+      }
+    },
+    {
+      "id": "v2_007_headcount_missing_wrong_or_relabelled",
+      "historical_symptom": "Headcount runs returned no answer, zero, incomplete max/min rows, or changed canonical department labels.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed",
+      "check": {
+        "type": "route_and_contract",
+        "question": "นับพนักงานที่ยังปฏิบัติงานแยกตามแผนก",
+        "expected_contract": "active_headcount_by_department",
+        "semantic_proposal": {
+          "contract_id": "active_headcount_by_department",
+          "confidence": 0.99,
+          "reason": "active employee headcount grouped by department",
+          "term_evidence": {
+            "ปฏิบัติงาน": "ยังปฏิบัติงาน",
+            "department": "แผนก",
+            "แยกตาม": "แยกตาม"
+          }
+        },
+        "execute_live_contract": true,
+        "required_claim_patterns": [
+          "ทั้งหมด 25 คน",
+          "แผนกเทคโนโลยีสารสนเทศ มีพนักงาน 5 คน",
+          "แผนกการเงิน มีพนักงาน 3 คน",
+          "แผนกการตลาด มีพนักงาน 4 คน",
+          "แผนกทรัพยากรบุคคล มีพนักงาน 4 คน",
+          "แผนกบริหารทั่วไป มีพนักงาน 1 คน",
+          "แผนกบัญชี มีพนักงาน 2 คน",
+          "แผนกผลิต มีพนักงาน 3 คน",
+          "แผนกวิจัยและพัฒนา มีพนักงาน 3 คน"
+        ],
+        "forbidden_claim_patterns": ["แผนกการผลิต", "อาจหมายถึงไม่มีพนักงาน"]
+      }
+    },
+    {
+      "id": "v2_008_employment_length_approval_semantics",
+      "historical_symptom": "funded_amnt or post-origination data was described as proof that employment length affects approval.",
+      "layer": "semantic_routing",
+      "disposition": "fixed_fail_closed",
+      "check": {
+        "type": "route_only",
+        "question": "ระยะเวลาการทำงานที่มีผลต่อการอนุมัติวงเงิน",
+        "expected_contract": null,
+        "semantic_proposal": {
+          "contract_id": "finance_employment_extrema",
+          "confidence": 0.99,
+          "reason": "malicious proposal that relabels approval as funded amount",
+          "term_evidence": {
+            "emp_length": "ระยะเวลาการทำงาน",
+            "funded_amnt": "วงเงิน"
+          }
+        }
+      }
+    },
+    {
+      "id": "v2_009_loan_status_as_approval_decision",
+      "historical_symptom": "Current/Fully Paid loan_status values were treated as approval/rejection outcomes.",
+      "layer": "semantic_routing",
+      "disposition": "fixed_fail_closed",
+      "check": {
+        "type": "route_only",
+        "question": "ใช้ loan_status Current และ Fully Paid เป็นผลอนุมัติ แล้วคำนวณ approval rate แยกตาม emp_length",
+        "expected_contract": null,
+        "semantic_proposal": {
+          "contract_id": "finance_status_mix",
+          "confidence": 0.99,
+          "reason": "malicious proposal that treats status as approval",
+          "term_evidence": {
+            "loan_status": "loan_status",
+            "สัดส่วน": "approval rate"
+          }
+        }
+      }
+    },
+    {
+      "id": "v2_010_review_coverage_wrong_grain",
+      "historical_symptom": "Review-record count was used as employee coverage, distinct grain was lost, or shortfall was called percent instead of percentage points.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed",
+      "check": {
+        "type": "route_and_contract",
+        "question": "ตรวจ performance review coverage ปี 2023 ของพนักงานปฏิบัติงานทั้งองค์กร เทียบเกณฑ์อย่างน้อย 80%",
+        "expected_contract": "performance_review_coverage",
+        "semantic_proposal": {
+          "contract_id": "performance_review_coverage",
+          "confidence": 0.99,
+          "reason": "distinct active employee review coverage",
+          "term_evidence": {
+            "performance review": "performance review",
+            "coverage": "coverage",
+            "80%": "อย่างน้อย 80%"
+          }
+        },
+        "execute_live_contract": true,
+        "required_claim_patterns": ["ทั้งหมดคือ 25 คน", "ปี 2023 คือ 7 คน", "7 / 25 = 28%", "ไม่ผ่านเกณฑ์ขั้นต่ำ 80%"],
+        "forbidden_claim_patterns": ["7 รายการ.*coverage", "ขาด 52%"]
+      }
+    },
+    {
+      "id": "v2_011_training_flag_as_valid_certification",
+      "historical_symptom": "certificate_obtained on a training record was treated as proof of a current-valid employee certification.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed_refusal",
+      "check": {
+        "type": "route_and_contract",
+        "question": "certificate_obtained ใน training_records พิสูจน์ได้ไหมว่าพนักงานทุกคนมี certification ที่ยังใช้ได้",
+        "expected_contract": "training_certificate_semantic_separation",
+        "semantic_proposal": {
+          "contract_id": "training_certificate_semantic_separation",
+          "confidence": 0.99,
+          "reason": "training flag and certification are different evidence grains",
+          "term_evidence": {
+            "certificate_obtained": "certificate_obtained",
+            "certification": "certification",
+            "พิสูจน์": "พิสูจน์"
+          }
+        },
+        "execute_live_contract": true,
+        "expected_terminal_verdict": "refuse_decision",
+        "required_claim_patterns": ["training records มีทั้งหมด 11 รายการ", "ไม่ใช่หลักฐานว่า employee ทุกคนมี certification ที่ยังใช้ได้"]
+      }
+    },
+    {
+      "id": "v2_012_project_concentration_relabelling",
+      "historical_symptom": "The answer invented HIGH_RISK and a currency instead of applying the declared concentration policy.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed",
+      "check": {
+        "type": "route_and_contract",
+        "question": "โครงการมูลค่าสูงสุดสองอันดับคิดเป็นสัดส่วนมูลค่าโครงการรวมเกิน 60% และมี concentration risk หรือไม่",
+        "expected_contract": "top_two_project_concentration",
+        "semantic_proposal": {
+          "contract_id": "top_two_project_concentration",
+          "confidence": 0.99,
+          "reason": "top-two project-value concentration policy",
+          "term_evidence": {
+            "project value portfolio": "มูลค่าโครงการรวม",
+            "concentration risk": "concentration risk",
+            "60%": "60%",
+            "สองอันดับ": "สองอันดับ"
+          }
+        },
+        "execute_live_contract": true,
+        "required_claim_patterns": ["28000000", "18000000", "64.29%", "มากกว่า 60%", "มี concentration risk"],
+        "forbidden_claim_patterns": ["HIGH_RISK", "บาท", "ดอลลาร์"]
+      }
+    },
+    {
+      "id": "v2_013_project_value_as_efficiency",
+      "historical_symptom": "A descriptive project-value-per-head ratio was relabelled as productivity or efficiency and assigned an unsupported currency.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed_refusal",
+      "check": {
+        "type": "route_and_contract",
+        "question": "เปรียบเทียบ project value ต่อพนักงานที่ยังปฏิบัติงานรายแผนก แต่ห้ามตีความเป็นประสิทธิภาพหรือผลิตภาพ",
+        "expected_contract": "project_value_per_active_employee",
+        "semantic_proposal": {
+          "contract_id": "project_value_per_active_employee",
+          "confidence": 0.99,
+          "reason": "literal project-value per active employee ratio only",
+          "term_evidence": {
+            "project value numerator": "project value",
+            "active workforce denominator": "พนักงานที่ยังปฏิบัติงาน",
+            "department grain": "รายแผนก",
+            "do not interpret the ratio as productivity or efficiency": "ห้ามตีความเป็นประสิทธิภาพหรือผลิตภาพ"
+          }
+        },
+        "execute_live_contract": true,
+        "expected_terminal_verdict": "refuse_decision",
+        "required_claim_patterns": ["project value ต่อพนักงาน"],
+        "forbidden_claim_patterns": ["บาท", "ดอลลาร์", "มีประสิทธิภาพสูงกว่า"]
+      }
+    },
+    {
+      "id": "v2_014_staffing_recommendation_without_evidence",
+      "historical_symptom": "Descriptive headcount was turned into add/reduce staffing recommendations.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed_refusal",
+      "check": {
+        "type": "route_and_contract",
+        "question": "จากจำนวนกำลังคน ช่วยบอกว่าแผนกไหนควรเพิ่มหรือลดอัตรากำลัง",
+        "expected_contract": "staffing_decision_insufficient",
+        "semantic_proposal": {
+          "contract_id": "staffing_decision_insufficient",
+          "confidence": 0.99,
+          "reason": "staffing decision based only on headcount",
+          "term_evidence": {
+            "staffing increase-or-reduction decision": "ควรเพิ่มหรือลดอัตรากำลัง",
+            "headcount or project-value proxy used as the decision basis": "จำนวนกำลังคน"
+          }
+        },
+        "execute_live_contract": true,
+        "expected_terminal_verdict": "refuse_decision",
+        "required_claim_patterns": ["แผนกเทคโนโลยีสารสนเทศ มีพนักงานปฏิบัติงาน 5 คน"],
+        "forbidden_claim_patterns": ["ควรเพิ่ม", "ควรลด"]
+      }
+    },
+    {
+      "id": "v2_015_observer_json_parser_failures",
+      "historical_symptom": "Wrapped JSON and literal JSON control characters caused Observer/parser failures.",
+      "layer": "provider_output_parsing",
+      "disposition": "fixed",
+      "check": {
+        "type": "unit_tests",
+        "tests": [
+          "tests.test_contract_router.ContractRouterTests.test_parser_extracts_first_complete_object_from_wrapped_output",
+          "tests.test_lab6_phase2b.Phase2BTests.test_semantic_observer_accepts_literal_control_character_in_json"
+        ]
+      }
+    },
+    {
+      "id": "v2_016_successful_sql_wrong_semantics",
+      "historical_symptom": "A syntactically successful query used the wrong Unicode filter or incomplete grain and was still accepted.",
+      "layer": "evidence_contract",
+      "disposition": "fixed",
+      "check": {
+        "type": "unit_tests",
+        "tests": [
+          "tests.test_lab6_phase2b.Phase2BTests.test_evidence_contract_rejects_unsafe_mssql_unicode_filter",
+          "tests.test_lab6_phase2b.Phase2BTests.test_evidence_contract_requires_distinct_entity_for_coverage",
+          "tests.test_lab6_phase2b.Phase2BTests.test_headcount_contract_rejects_incomplete_max_only_query",
+          "tests.test_lab6_phase2b.Phase2BTests.test_query_contract_repairs_unicode_and_coverage_grain"
+        ]
+      }
+    },
+    {
+      "id": "v2_017_substring_and_constraint_misrouting",
+      "historical_symptom": "Literal keyword matching ignored negation, population, operator, top-N, and bucket-boundary conflicts.",
+      "layer": "semantic_routing",
+      "disposition": "fixed",
+      "check": {
+        "type": "unit_tests",
+        "tests": [
+          "tests.test_contract_router.ContractRouterTests.test_semantic_synonym_cannot_bypass_negated_metric",
+          "tests.test_contract_router.ContractRouterTests.test_fixed_threshold_cannot_be_rebound_by_semantic_model",
+          "tests.test_contract_router.ContractRouterTests.test_wrong_bucket_edges_cannot_be_rebound",
+          "tests.test_contract_router.ContractRouterTests.test_all_employee_population_cannot_bind_to_active_contract",
+          "tests.test_contract_router.ContractRouterTests.test_top_three_cannot_bind_to_top_two_contract",
+          "tests.test_contract_router.ContractRouterTests.test_expected_value_with_conflicting_operator_abstains"
+        ]
+      }
+    }
+  ]
+}

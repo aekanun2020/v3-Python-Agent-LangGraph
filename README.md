@@ -62,6 +62,7 @@ contract-owned constraints, confidence และ exact spans ก่อนรั�
 อ่านรายละเอียดและวิธีรันที่
 [Lab 6 — current architecture](labs/lab6_todo/README.md),
 [v3 Hybrid Router acceptance report](artifacts/v3_semantic_router_acceptance_report.md),
+[V2 Incident Replay report](artifacts/v2_incident_replay_report.md),
 [HR report](artifacts/hr_skill_run4_run5_report.md) และ
 [Finance report](artifacts/finance_skill_run3_run4_report.md)
 
@@ -72,16 +73,20 @@ contract-owned constraints, confidence และ exact spans ก่อนรั�
 
 | Run | Paraphrases | Near-boundary | False matches | Routing median | Semantic median / p95 | Live MCP / answer |
 |---|---:|---:|---:|---:|---:|---:|
-| Acceptance 1 | 20/20 | 20/20 | 0 | 4.045236s | 4.807690s / 10.413516s | 20/20 / 20/20 |
-| Acceptance 2 | 20/20 | 20/20 | 0 | 3.489238s | 4.325542s / 10.446251s | — |
+| Acceptance 1 | 20/20 | 20/20 | 0 | 3.527605s | 4.726401s / 10.942734s | 20/20 / 20/20 |
+| Acceptance 2 | 20/20 | 20/20 | 0 | 3.671955s | 4.467017s / 9.059617s | — |
 
-ทั้งสองรอบมี lexical routes 13, semantic routes 8, semantic attempts 27 และ
+ทั้งสองรอบมี lexical routes 14, semantic routes 7, semantic attempts 26 และ
 abstentions 19 เท่ากัน decision projection SHA-256 ตรงกันที่
-`ccf0fda7ea1de47c13ba7f234e7caf139a11b189f4346cecdfbef4ef862eb87d`
+`e4b45b61f53ce754374629939f202567ced3f0bb3a9b5f90b66829ba57e3e50a`
 fingerprint ระบุ gate source `611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab`
-และ catalog `b04c656c71e0c66c964341ecc233519780fc59af75070f1c92dbc6dddaf03034`
+และ catalog `ed3112d6292f38d4d51d068895a6659233f6b75c8d0a342607183f1a018c4377`
 ดูรายละเอียด suite history, live evidence และข้อจำกัดใน
 [acceptance report](artifacts/v3_semantic_router_acceptance_report.md)
+
+V2 Incident Replay หลังแก้ regression ผ่านสอง live runs ติดต่อกัน:
+incidents `17/17`, routing attempts `40/40` และ contracts `6/6` ต่อรอบ
+ดู [incident report](artifacts/v2_incident_replay_report.md)
 
 ## Quick start สำหรับผู้เรียน
 
@@ -127,7 +132,7 @@ python -m pytest tests --ignore=tests/test_lab8_planner.py -q
 python -m unittest -v tests.test_lab8_planner
 ```
 
-ผลทดสอบ local ล่าสุด: non-Lab 8 `113 passed` + 35 subtests;
+ผลทดสอบ local ล่าสุด: non-Lab 8 `117 passed` + 35 subtests;
 Lab 8 แยก `2 passed`
 
 รัน routing acceptance ค่าเริ่มต้น (`semantic-v3`, hybrid, fail on error):

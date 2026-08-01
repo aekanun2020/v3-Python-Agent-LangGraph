@@ -294,6 +294,19 @@
         ["ลดคน", "เพิ่มคน", "รับเพิ่ม", "ลดอัตรากำลัง", "เพิ่มอัตรากำลัง"],
         ["headcount", "จำนวนกำลังคน", "กำลังคน", "project value", "มูลค่าโครงการ", "มูลค่างาน"]
       ],
+      "lexical_pattern_groups": [
+        [
+          "(?:ลด|เพิ่ม|รับเพิ่ม|ตัด)[^\\n.!?]{0,12}(?:คน|อัตรากำลัง)",
+          "(?:staffing|headcount)[^\\n.!?]{0,18}(?:increase|reduction|reduce|add|cut)"
+        ],
+        [
+          "\\bheadcount\\b",
+          "จำนวนกำลังคน",
+          "กำลังคน",
+          "project[_\\s-]*value",
+          "มูลค่า(?:ของ)?(?:งาน|โครงการ)"
+        ]
+      ],
       "concept_evidence_patterns": {
         "staffing increase-or-reduction decision": [
           "(?:ลด|เพิ่ม|รับเพิ่ม|ตัด)[^\\n.!?]{0,12}(?:คน|อัตรากำลัง)",

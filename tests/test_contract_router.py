@@ -423,6 +423,20 @@ class ContractRouterTests(unittest.TestCase):
             "staffing_decision_insufficient",
         )
 
+    def test_staffing_decision_has_skill_owned_lexical_fast_path(self):
+        calls = []
+        decision = route_metric_contract(
+            "จากจำนวนกำลังคน ช่วยบอกว่าแผนกไหนควรเพิ่มหรือลดอัตรากำลัง",
+            resolver=lambda *_: calls.append("semantic"),
+            on_semantic_call=lambda: calls.append("budget"),
+        )
+        self.assertEqual(decision.path, RoutingPath.LEXICAL)
+        self.assertEqual(
+            decision.contract_id,
+            "staffing_decision_insufficient",
+        )
+        self.assertEqual(calls, [])
+
     def test_unknown_or_low_confidence_candidate_abstains(self):
         unknown = validate_semantic_proposal("question", {
             "contract_id": "not-a-contract",

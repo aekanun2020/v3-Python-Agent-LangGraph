@@ -1,0 +1,980 @@
+{
+  "suite_id": "v2-incidents-v1",
+  "generated_at": "2026-08-01T10:39:53.725540+00:00",
+  "manifest_sha256": "cb1384a8128b824ec818882eae477b4277449102b40e093e00a23981337e8968",
+  "router_fingerprint": {
+    "prompt_version": "hybrid-contract-router-v3",
+    "gate_version": "skill-grounded-admission-gate-v1",
+    "gate_source_sha256": "611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab",
+    "catalog_sha256": "b04c656c71e0c66c964341ecc233519780fc59af75070f1c92dbc6dddaf03034",
+    "model": "openai/gpt-oss-120b",
+    "request_timeout_seconds": 30.0,
+    "max_output_tokens": 1600,
+    "reasoning_effort": "low",
+    "minimum_confidence": 0.8
+  },
+  "mode": "live",
+  "live_router_repeats": 5,
+  "mcp_tools_discovered": 5,
+  "summary": {
+    "incidents_total": 17,
+    "incidents_passed": 16,
+    "incidents_failed": 1,
+    "not_applicable_by_removal": 2,
+    "live_routing_attempts": 40,
+    "live_routing_passed": 36,
+    "live_contracts_total": 6,
+    "live_contracts_passed": 6
+  },
+  "decision_projection_sha256": "ad8cee4a139286ae51dbb2dffd2da3780d9d518effd3e3118368b6a2f9f4b444",
+  "results": [
+    {
+      "id": "v2_001_planner_step_dict_crash",
+      "historical_symptom": "validate_plan_descriptions called lower() on a dict step and raised AttributeError.",
+      "layer": "planner_protocol",
+      "disposition": "not_applicable_by_removal",
+      "check_type": "source_absence",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "unexpected_existing_paths": [],
+        "forbidden_matches": []
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_002_plan_write_state_rejections",
+      "historical_symptom": "Runs rejected plan_write ordering, duplicate plan_write, final-synthesis steps, or missing in_progress steps.",
+      "layer": "planner_protocol",
+      "disposition": "not_applicable_by_removal",
+      "check_type": "source_absence",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "unexpected_existing_paths": [],
+        "forbidden_matches": []
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_003_required_tool_choice_provider_error",
+      "historical_symptom": "Alibaba thinking mode rejected tool_choice=required or an object with HTTP 400.",
+      "layer": "provider_compatibility",
+      "disposition": "fixed_by_removal_and_live_replay",
+      "check_type": "source_absence",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "unexpected_existing_paths": [],
+        "forbidden_matches": []
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_004_none_or_empty_final_answer",
+      "historical_symptom": "The agent completed tool calls but printed None or an empty final answer.",
+      "layer": "final_gate",
+      "disposition": "fixed",
+      "check_type": "unit_tests",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "tests_run": 2,
+        "failures": [],
+        "errors": [],
+        "runner_output": "----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_005_repeated_rejection_or_action_loop",
+      "historical_symptom": "The same final rejection or tool action repeated without bounded recovery.",
+      "layer": "control_state",
+      "disposition": "fixed",
+      "check_type": "unit_tests",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "tests_run": 4,
+        "failures": [],
+        "errors": [],
+        "runner_output": "----------------------------------------------------------------------\nRan 4 tests in 0.025s\n\nOK"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_006_mcp_retry_classification",
+      "historical_symptom": "Transport failures and business/permanent failures were not separated consistently.",
+      "layer": "tool_recovery",
+      "disposition": "fixed",
+      "check_type": "unit_tests",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "tests_run": 2,
+        "failures": [],
+        "errors": [],
+        "runner_output": "----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nOK"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_007_headcount_missing_wrong_or_relabelled",
+      "historical_symptom": "Headcount runs returned no answer, zero, incomplete max/min rows, or changed canonical department labels.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed",
+      "check_type": "route_and_contract",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": "active_headcount_by_department",
+        "actual_contract": "active_headcount_by_department",
+        "path": "semantic",
+        "reason": "active employee headcount grouped by department"
+      },
+      "live_routing_passed": true,
+      "live_routing": {
+        "expected_contract": "active_headcount_by_department",
+        "attempts": [
+          {
+            "attempt": 1,
+            "actual_contract": "active_headcount_by_department",
+            "path": "semantic",
+            "confidence": 0.99,
+            "reason": "User asks to count active employees grouped by department, matching required concepts and fixed constraint.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 8.503092,
+            "passed": true
+          },
+          {
+            "attempt": 2,
+            "actual_contract": "active_headcount_by_department",
+            "path": "semantic",
+            "confidence": 0.99,
+            "reason": "User asks to count active employees grouped by department, matching required concepts and fixed constraint.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 7.617796,
+            "passed": true
+          },
+          {
+            "attempt": 3,
+            "actual_contract": "active_headcount_by_department",
+            "path": "semantic",
+            "confidence": 0.99,
+            "reason": "User asks to count active employees grouped by department, matching required concepts and fixed constraint.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 7.578242,
+            "passed": true
+          },
+          {
+            "attempt": 4,
+            "actual_contract": "active_headcount_by_department",
+            "path": "semantic",
+            "confidence": 0.99,
+            "reason": "User asks to count active employees grouped by department, matching required concepts and fixed constraint.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 6.485622,
+            "passed": true
+          },
+          {
+            "attempt": 5,
+            "actual_contract": "active_headcount_by_department",
+            "path": "semantic",
+            "confidence": 0.99,
+            "reason": "User asks to count active employees grouped by department, matching required concepts and fixed constraint.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 7.149679,
+            "passed": true
+          }
+        ],
+        "stable_projection": true
+      },
+      "live_contract_passed": true,
+      "live_contract": {
+        "contract_id": "active_headcount_by_department",
+        "satisfied": true,
+        "missing_roles": [],
+        "terminal_verdict": "approve",
+        "claims": [
+          "พนักงานที่มีสถานะ `ปฏิบัติงาน` มีทั้งหมด 25 คน",
+          "แผนกเทคโนโลยีสารสนเทศ มีพนักงาน 5 คน",
+          "แผนกการเงิน มีพนักงาน 3 คน",
+          "แผนกการตลาด มีพนักงาน 4 คน",
+          "แผนกทรัพยากรบุคคล มีพนักงาน 4 คน",
+          "แผนกบริหารทั่วไป มีพนักงาน 1 คน",
+          "แผนกบัญชี มีพนักงาน 2 คน",
+          "แผนกผลิต มีพนักงาน 3 คน",
+          "แผนกวิจัยและพัฒนา มีพนักงาน 3 คน"
+        ],
+        "required_pattern_matches": {
+          "ทั้งหมด 25 คน": true,
+          "แผนกเทคโนโลยีสารสนเทศ มีพนักงาน 5 คน": true,
+          "แผนกการเงิน มีพนักงาน 3 คน": true,
+          "แผนกการตลาด มีพนักงาน 4 คน": true,
+          "แผนกทรัพยากรบุคคล มีพนักงาน 4 คน": true,
+          "แผนกบริหารทั่วไป มีพนักงาน 1 คน": true,
+          "แผนกบัญชี มีพนักงาน 2 คน": true,
+          "แผนกผลิต มีพนักงาน 3 คน": true,
+          "แผนกวิจัยและพัฒนา มีพนักงาน 3 คน": true
+        },
+        "forbidden_pattern_matches": {
+          "แผนกการผลิต": false,
+          "อาจหมายถึงไม่มีพนักงาน": false
+        },
+        "roles": [
+          {
+            "role_id": "grouped_active_headcount",
+            "query": "SELECT department, COUNT(*) AS employee_count FROM employees WHERE status = N'ปฏิบัติงาน' GROUP BY department ORDER BY department",
+            "result": "       department  employee_count\nเทคโนโลยีสารสนเทศ               5\n          การเงิน               3\n          การตลาด               4\n    ทรัพยากรบุคคล               4\n     บริหารทั่วไป               1\n            บัญชี               2\n             ผลิต               3\n    วิจัยและพัฒนา               3"
+          }
+        ],
+        "elapsed_seconds": 0.212412
+      }
+    },
+    {
+      "id": "v2_008_employment_length_approval_semantics",
+      "historical_symptom": "funded_amnt or post-origination data was described as proof that employment length affects approval.",
+      "layer": "semantic_routing",
+      "disposition": "fixed_fail_closed",
+      "check_type": "route_only",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": null,
+        "actual_contract": null,
+        "path": "abstain",
+        "reason": "fixed contract constraint is unproven: retain_na_segment"
+      },
+      "live_routing_passed": true,
+      "live_routing": {
+        "expected_contract": null,
+        "attempts": [
+          {
+            "attempt": 1,
+            "actual_contract": null,
+            "path": "abstain",
+            "confidence": 0.0,
+            "reason": "No contract matches the required concepts and constraints of the question.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 3.446573,
+            "passed": true
+          },
+          {
+            "attempt": 2,
+            "actual_contract": null,
+            "path": "abstain",
+            "confidence": 0.0,
+            "reason": "No contract matches the required concepts and constraints of the question.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 4.195118,
+            "passed": true
+          },
+          {
+            "attempt": 3,
+            "actual_contract": null,
+            "path": "abstain",
+            "confidence": 0.0,
+            "reason": "No contract matches the required concepts and constraints.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 3.922931,
+            "passed": true
+          },
+          {
+            "attempt": 4,
+            "actual_contract": null,
+            "path": "abstain",
+            "confidence": 0.0,
+            "reason": "No contract matches the required concepts and constraints of the question.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 3.654501,
+            "passed": true
+          },
+          {
+            "attempt": 5,
+            "actual_contract": null,
+            "path": "abstain",
+            "confidence": 0.0,
+            "reason": "No contract matches the required concepts and constraints of the question.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 5.006052,
+            "passed": true
+          }
+        ],
+        "stable_projection": true
+      },
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_009_loan_status_as_approval_decision",
+      "historical_symptom": "Current/Fully Paid loan_status values were treated as approval/rejection outcomes.",
+      "layer": "semantic_routing",
+      "disposition": "fixed_fail_closed",
+      "check_type": "route_only",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": null,
+        "actual_contract": null,
+        "path": "abstain",
+        "reason": "missing grounded terms: สัดส่วน; no grounded one-of term"
+      },
+      "live_routing_passed": true,
+      "live_routing": {
+        "expected_contract": null,
+        "attempts": [
+          {
+            "attempt": 1,
+            "actual_contract": null,
+            "path": "abstain",
+            "confidence": 0.0,
+            "reason": "User request is to calculate approval rate by employment length, which is excluded from all listed contracts and no contract permits approval rate calculations.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 5.897943,
+            "passed": true
+          },
+          {
+            "attempt": 2,
+            "actual_contract": null,
+            "path": "abstain",
+            "confidence": 0.0,
+            "reason": "User request is to calculate approval rate by employment length, which is excluded from all listed contracts and no contract permits approval rate calculations.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 5.104262,
+            "passed": true
+          },
+          {
+            "attempt": 3,
+            "actual_contract": null,
+            "path": "abstain",
+            "confidence": 0.0,
+            "reason": "User request is to calculate approval rate by employment length, which is excluded from all listed contracts and no contract permits approval rate calculations.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 3.817267,
+            "passed": true
+          },
+          {
+            "attempt": 4,
+            "actual_contract": null,
+            "path": "abstain",
+            "confidence": 0.0,
+            "reason": "No contract matches the request for calculating approval rate by employment length; all contracts either exclude approval rate or target different metrics.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 1.428651,
+            "passed": true
+          },
+          {
+            "attempt": 5,
+            "actual_contract": null,
+            "path": "abstain",
+            "confidence": 0.0,
+            "reason": "User request is to calculate approval rate by employment length, which is excluded from all listed contracts and no contract permits approval rate calculations.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 4.560586,
+            "passed": true
+          }
+        ],
+        "stable_projection": true
+      },
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_010_review_coverage_wrong_grain",
+      "historical_symptom": "Review-record count was used as employee coverage, distinct grain was lost, or shortfall was called percent instead of percentage points.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed",
+      "check_type": "route_and_contract",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": "performance_review_coverage",
+        "actual_contract": "performance_review_coverage",
+        "path": "semantic",
+        "reason": "distinct active employee review coverage"
+      },
+      "live_routing_passed": true,
+      "live_routing": {
+        "expected_contract": "performance_review_coverage",
+        "attempts": [
+          {
+            "attempt": 1,
+            "actual_contract": "performance_review_coverage",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.00318,
+            "passed": true
+          },
+          {
+            "attempt": 2,
+            "actual_contract": "performance_review_coverage",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.002347,
+            "passed": true
+          },
+          {
+            "attempt": 3,
+            "actual_contract": "performance_review_coverage",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.00203,
+            "passed": true
+          },
+          {
+            "attempt": 4,
+            "actual_contract": "performance_review_coverage",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.001571,
+            "passed": true
+          },
+          {
+            "attempt": 5,
+            "actual_contract": "performance_review_coverage",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.001989,
+            "passed": true
+          }
+        ],
+        "stable_projection": true
+      },
+      "live_contract_passed": true,
+      "live_contract": {
+        "contract_id": "performance_review_coverage",
+        "satisfied": true,
+        "missing_roles": [],
+        "terminal_verdict": "approve",
+        "claims": [
+          "พนักงานที่ปฏิบัติงานทั้งหมดคือ 25 คน",
+          "พนักงานที่มี performance review ปี 2023 คือ 7 คน",
+          "Evidence coverage ของพนักงานที่มี review เท่ากับ 7 / 25 = 28%",
+          "ไม่ผ่านเกณฑ์ขั้นต่ำ 80%"
+        ],
+        "required_pattern_matches": {
+          "ทั้งหมดคือ 25 คน": true,
+          "ปี 2023 คือ 7 คน": true,
+          "7 / 25 = 28%": true,
+          "ไม่ผ่านเกณฑ์ขั้นต่ำ 80%": true
+        },
+        "forbidden_pattern_matches": {
+          "7 รายการ.*coverage": false,
+          "ขาด 52%": false
+        },
+        "roles": [
+          {
+            "role_id": "active_employee_denominator",
+            "query": "SELECT COUNT(*) AS active_employee_count FROM employees WHERE status = N'ปฏิบัติงาน'",
+            "result": " active_employee_count\n                    25"
+          },
+          {
+            "role_id": "distinct_reviewed_employee_numerator",
+            "query": "SELECT COUNT(DISTINCT employee_id) AS reviewed_employee_count FROM performance_reviews WHERE review_period = N'2023'",
+            "result": " reviewed_employee_count\n                       7"
+          }
+        ],
+        "elapsed_seconds": 0.493213
+      }
+    },
+    {
+      "id": "v2_011_training_flag_as_valid_certification",
+      "historical_symptom": "certificate_obtained on a training record was treated as proof of a current-valid employee certification.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed_refusal",
+      "check_type": "route_and_contract",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": "training_certificate_semantic_separation",
+        "actual_contract": "training_certificate_semantic_separation",
+        "path": "semantic",
+        "reason": "training flag and certification are different evidence grains"
+      },
+      "live_routing_passed": true,
+      "live_routing": {
+        "expected_contract": "training_certificate_semantic_separation",
+        "attempts": [
+          {
+            "attempt": 1,
+            "actual_contract": "training_certificate_semantic_separation",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.002115,
+            "passed": true
+          },
+          {
+            "attempt": 2,
+            "actual_contract": "training_certificate_semantic_separation",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.001756,
+            "passed": true
+          },
+          {
+            "attempt": 3,
+            "actual_contract": "training_certificate_semantic_separation",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.001246,
+            "passed": true
+          },
+          {
+            "attempt": 4,
+            "actual_contract": "training_certificate_semantic_separation",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.001208,
+            "passed": true
+          },
+          {
+            "attempt": 5,
+            "actual_contract": "training_certificate_semantic_separation",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.001153,
+            "passed": true
+          }
+        ],
+        "stable_projection": true
+      },
+      "live_contract_passed": true,
+      "live_contract": {
+        "contract_id": "training_certificate_semantic_separation",
+        "satisfied": true,
+        "missing_roles": [],
+        "terminal_verdict": "refuse_decision",
+        "claims": [
+          "training records มีทั้งหมด 11 รายการ",
+          "ทุกรายการอบรมทั้ง 11 รายการมี `certificate_obtained = True`",
+          "`certificate_obtained` เป็นหลักฐานที่ grain ของ training record ไม่ใช่หลักฐานว่า employee ทุกคนมี certification ที่ยังใช้ได้"
+        ],
+        "required_pattern_matches": {
+          "training records มีทั้งหมด 11 รายการ": true,
+          "ไม่ใช่หลักฐานว่า employee ทุกคนมี certification ที่ยังใช้ได้": true
+        },
+        "forbidden_pattern_matches": {},
+        "roles": [
+          {
+            "role_id": "training_certificate_flags",
+            "query": "SELECT COUNT(*) AS training_record_count, SUM(CASE WHEN certificate_obtained = 1 THEN 1 ELSE 0 END) AS obtained_true_count FROM training_records",
+            "result": " training_record_count  obtained_true_count\n                    11                   11"
+          },
+          {
+            "role_id": "certification_entity_records",
+            "query": "SELECT COUNT(*) AS certification_record_count, COUNT(DISTINCT employee_id) AS certified_employee_count FROM certifications",
+            "result": " certification_record_count  certified_employee_count\n                          7                         7"
+          }
+        ],
+        "elapsed_seconds": 0.300629
+      }
+    },
+    {
+      "id": "v2_012_project_concentration_relabelling",
+      "historical_symptom": "The answer invented HIGH_RISK and a currency instead of applying the declared concentration policy.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed",
+      "check_type": "route_and_contract",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": "top_two_project_concentration",
+        "actual_contract": "top_two_project_concentration",
+        "path": "semantic",
+        "reason": "top-two project-value concentration policy"
+      },
+      "live_routing_passed": true,
+      "live_routing": {
+        "expected_contract": "top_two_project_concentration",
+        "attempts": [
+          {
+            "attempt": 1,
+            "actual_contract": "top_two_project_concentration",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.002318,
+            "passed": true
+          },
+          {
+            "attempt": 2,
+            "actual_contract": "top_two_project_concentration",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.001338,
+            "passed": true
+          },
+          {
+            "attempt": 3,
+            "actual_contract": "top_two_project_concentration",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.002046,
+            "passed": true
+          },
+          {
+            "attempt": 4,
+            "actual_contract": "top_two_project_concentration",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.00155,
+            "passed": true
+          },
+          {
+            "attempt": 5,
+            "actual_contract": "top_two_project_concentration",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.001418,
+            "passed": true
+          }
+        ],
+        "stable_projection": true
+      },
+      "live_contract_passed": true,
+      "live_contract": {
+        "contract_id": "top_two_project_concentration",
+        "satisfied": true,
+        "missing_roles": [],
+        "terminal_verdict": "approve",
+        "claims": [
+          "มูลค่าโครงการรวมทั้งหมดคือ 28000000",
+          "มูลค่าโครงการสูงสุดสองอันดับรวมคือ 18000000",
+          "สัดส่วน top two ต่อทั้งหมดคือ 64.29%",
+          "เกณฑ์นโยบายคือ มากกว่า 60%",
+          "มี concentration risk"
+        ],
+        "required_pattern_matches": {
+          "28000000": true,
+          "18000000": true,
+          "64.29%": true,
+          "มากกว่า 60%": true,
+          "มี concentration risk": true
+        },
+        "forbidden_pattern_matches": {
+          "HIGH_RISK": false,
+          "บาท": false,
+          "ดอลลาร์": false
+        },
+        "roles": [
+          {
+            "role_id": "portfolio_total_and_top_two",
+            "query": "WITH ranked AS (SELECT project_value, ROW_NUMBER() OVER (ORDER BY project_value DESC) AS rn FROM projects) SELECT SUM(project_value) AS total_project_value, SUM(CASE WHEN rn <= 2 THEN project_value ELSE 0 END) AS top_two_project_value FROM ranked",
+            "result": " total_project_value  top_two_project_value\n          28000000.0             18000000.0"
+          }
+        ],
+        "elapsed_seconds": 0.089137
+      }
+    },
+    {
+      "id": "v2_013_project_value_as_efficiency",
+      "historical_symptom": "A descriptive project-value-per-head ratio was relabelled as productivity or efficiency and assigned an unsupported currency.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed_refusal",
+      "check_type": "route_and_contract",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": "project_value_per_active_employee",
+        "actual_contract": "project_value_per_active_employee",
+        "path": "semantic",
+        "reason": "literal project-value per active employee ratio only"
+      },
+      "live_routing_passed": true,
+      "live_routing": {
+        "expected_contract": "project_value_per_active_employee",
+        "attempts": [
+          {
+            "attempt": 1,
+            "actual_contract": "project_value_per_active_employee",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.002983,
+            "passed": true
+          },
+          {
+            "attempt": 2,
+            "actual_contract": "project_value_per_active_employee",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.003078,
+            "passed": true
+          },
+          {
+            "attempt": 3,
+            "actual_contract": "project_value_per_active_employee",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.00118,
+            "passed": true
+          },
+          {
+            "attempt": 4,
+            "actual_contract": "project_value_per_active_employee",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.001096,
+            "passed": true
+          },
+          {
+            "attempt": 5,
+            "actual_contract": "project_value_per_active_employee",
+            "path": "lexical",
+            "confidence": 1.0,
+            "reason": "literal question_terms_all/any matched",
+            "semantic_attempted": false,
+            "elapsed_seconds": 0.00119,
+            "passed": true
+          }
+        ],
+        "stable_projection": true
+      },
+      "live_contract_passed": true,
+      "live_contract": {
+        "contract_id": "project_value_per_active_employee",
+        "satisfied": true,
+        "missing_roles": [],
+        "terminal_verdict": "refuse_decision",
+        "claims": [
+          "project value ต่อพนักงานของ เทคโนโลยีสารสนเทศ = 5e+06 / 5 = 1000000.00",
+          "project value ต่อพนักงานของ การเงิน = 2e+06 / 3 = 666666.67",
+          "project value ต่อพนักงานของ การตลาด = 3e+06 / 4 = 750000.00",
+          "project value ต่อพนักงานของ ผลิต = 8e+06 / 3 = 2666666.67",
+          "project value ต่อพนักงานของ วิจัยและพัฒนา = 1e+07 / 3 = 3333333.33"
+        ],
+        "required_pattern_matches": {
+          "project value ต่อพนักงาน": true
+        },
+        "forbidden_pattern_matches": {
+          "บาท": false,
+          "ดอลลาร์": false,
+          "มีประสิทธิภาพสูงกว่า": false
+        },
+        "roles": [
+          {
+            "role_id": "department_value_and_headcount",
+            "query": "WITH active_headcount AS (SELECT department, COUNT(*) AS active_employee_count FROM employees WHERE status = N'ปฏิบัติงาน' GROUP BY department), project_totals AS (SELECT e.department, SUM(p.project_value) AS project_value FROM projects p JOIN employees e ON e.employee_id = p.employee_id GROUP BY e.department) SELECT h.department, h.active_employee_count, p.project_value FROM active_headcount h JOIN project_totals p ON p.department = h.department ORDER BY h.department",
+            "result": "       department  active_employee_count  project_value\nเทคโนโลยีสารสนเทศ                      5      5000000.0\n          การเงิน                      3      2000000.0\n          การตลาด                      4      3000000.0\n             ผลิต                      3      8000000.0\n    วิจัยและพัฒนา                      3     10000000.0"
+          }
+        ],
+        "elapsed_seconds": 0.089808
+      }
+    },
+    {
+      "id": "v2_014_staffing_recommendation_without_evidence",
+      "historical_symptom": "Descriptive headcount was turned into add/reduce staffing recommendations.",
+      "layer": "routing_evidence_answer",
+      "disposition": "fixed_refusal",
+      "check_type": "route_and_contract",
+      "passed": false,
+      "offline_passed": true,
+      "offline": {
+        "expected_contract": "staffing_decision_insufficient",
+        "actual_contract": "staffing_decision_insufficient",
+        "path": "semantic",
+        "reason": "staffing decision based only on headcount"
+      },
+      "live_routing_passed": false,
+      "live_routing": {
+        "expected_contract": "staffing_decision_insufficient",
+        "attempts": [
+          {
+            "attempt": 1,
+            "actual_contract": null,
+            "path": "abstain",
+            "confidence": 0.99,
+            "reason": "one evidence span cannot prove every routing concept",
+            "semantic_attempted": true,
+            "elapsed_seconds": 8.653177,
+            "passed": false
+          },
+          {
+            "attempt": 2,
+            "actual_contract": null,
+            "path": "abstain",
+            "confidence": 0.99,
+            "reason": "one evidence span cannot prove every routing concept",
+            "semantic_attempted": true,
+            "elapsed_seconds": 8.591549,
+            "passed": false
+          },
+          {
+            "attempt": 3,
+            "actual_contract": null,
+            "path": "abstain",
+            "confidence": 0.99,
+            "reason": "one evidence span cannot prove every routing concept",
+            "semantic_attempted": true,
+            "elapsed_seconds": 7.708122,
+            "passed": false
+          },
+          {
+            "attempt": 4,
+            "actual_contract": "staffing_decision_insufficient",
+            "path": "semantic",
+            "confidence": 1.0,
+            "reason": "The user asks to recommend which department should increase or decrease staffing based solely on headcount, which matches the refuse_decision contract for staffing decisions without sufficient evidence.",
+            "semantic_attempted": true,
+            "elapsed_seconds": 8.250911,
+            "passed": true
+          },
+          {
+            "attempt": 5,
+            "actual_contract": null,
+            "path": "abstain",
+            "confidence": 0.99,
+            "reason": "one evidence span cannot prove every routing concept",
+            "semantic_attempted": true,
+            "elapsed_seconds": 9.435747,
+            "passed": false
+          }
+        ],
+        "stable_projection": false
+      },
+      "live_contract_passed": true,
+      "live_contract": {
+        "contract_id": "staffing_decision_insufficient",
+        "satisfied": true,
+        "missing_roles": [],
+        "terminal_verdict": "refuse_decision",
+        "claims": [
+          "แผนกเทคโนโลยีสารสนเทศ มีพนักงานปฏิบัติงาน 5 คน",
+          "แผนกการเงิน มีพนักงานปฏิบัติงาน 3 คน",
+          "แผนกการตลาด มีพนักงานปฏิบัติงาน 4 คน",
+          "แผนกทรัพยากรบุคคล มีพนักงานปฏิบัติงาน 4 คน",
+          "แผนกบริหารทั่วไป มีพนักงานปฏิบัติงาน 1 คน",
+          "แผนกบัญชี มีพนักงานปฏิบัติงาน 2 คน",
+          "แผนกผลิต มีพนักงานปฏิบัติงาน 3 คน",
+          "แผนกวิจัยและพัฒนา มีพนักงานปฏิบัติงาน 3 คน"
+        ],
+        "required_pattern_matches": {
+          "แผนกเทคโนโลยีสารสนเทศ มีพนักงานปฏิบัติงาน 5 คน": true
+        },
+        "forbidden_pattern_matches": {
+          "ควรเพิ่ม": false,
+          "ควรลด": false
+        },
+        "roles": [
+          {
+            "role_id": "descriptive_active_headcount",
+            "query": "SELECT department, COUNT(*) AS employee_count FROM employees WHERE status = N'ปฏิบัติงาน' GROUP BY department ORDER BY department",
+            "result": "       department  employee_count\nเทคโนโลยีสารสนเทศ               5\n          การเงิน               3\n          การตลาด               4\n    ทรัพยากรบุคคล               4\n     บริหารทั่วไป               1\n            บัญชี               2\n             ผลิต               3\n    วิจัยและพัฒนา               3"
+          }
+        ],
+        "elapsed_seconds": 0.277114
+      }
+    },
+    {
+      "id": "v2_015_observer_json_parser_failures",
+      "historical_symptom": "Wrapped JSON and literal JSON control characters caused Observer/parser failures.",
+      "layer": "provider_output_parsing",
+      "disposition": "fixed",
+      "check_type": "unit_tests",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "tests_run": 2,
+        "failures": [],
+        "errors": [],
+        "runner_output": "----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_016_successful_sql_wrong_semantics",
+      "historical_symptom": "A syntactically successful query used the wrong Unicode filter or incomplete grain and was still accepted.",
+      "layer": "evidence_contract",
+      "disposition": "fixed",
+      "check_type": "unit_tests",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "tests_run": 4,
+        "failures": [],
+        "errors": [],
+        "runner_output": "----------------------------------------------------------------------\nRan 4 tests in 0.002s\n\nOK"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    },
+    {
+      "id": "v2_017_substring_and_constraint_misrouting",
+      "historical_symptom": "Literal keyword matching ignored negation, population, operator, top-N, and bucket-boundary conflicts.",
+      "layer": "semantic_routing",
+      "disposition": "fixed",
+      "check_type": "unit_tests",
+      "passed": true,
+      "offline_passed": true,
+      "offline": {
+        "tests_run": 6,
+        "failures": [],
+        "errors": [],
+        "runner_output": "----------------------------------------------------------------------\nRan 6 tests in 0.014s\n\nOK"
+      },
+      "live_routing_passed": null,
+      "live_routing": null,
+      "live_contract_passed": null,
+      "live_contract": null
+    }
+  ]
+}

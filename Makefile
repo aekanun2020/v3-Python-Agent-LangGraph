@@ -1,6 +1,6 @@
 PYTHON ?= python
 
-.PHONY: test test-lab8 proof run-agent run-planner evaluate-routing compile
+.PHONY: test test-lab8 proof run-agent run-planner evaluate-routing replay-v2-incidents compile
 
 test:
 	$(PYTHON) -m pytest tests --ignore=tests/test_lab8_planner.py -q
@@ -19,6 +19,9 @@ run-planner:
 
 evaluate-routing:
 	$(PYTHON) scripts/evaluate_skill_routing.py --suite-version semantic-v3 --routing-mode hybrid --progress
+
+replay-v2-incidents:
+	$(PYTHON) scripts/replay_v2_incidents.py --progress
 
 compile:
 	$(PYTHON) -m compileall -q labs scripts tests

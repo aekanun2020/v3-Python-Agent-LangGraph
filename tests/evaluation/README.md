@@ -149,10 +149,15 @@ paraphrase recall `55%`, boundary accuracy `95%`, false match `5%`; live MCP
 Final `semantic-v3 + hybrid` sequential acceptance artifacts ที่มี router
 fingerprint เดียวกันบันทึก paraphrase `20/20` และ boundary `20/20`
 ทั้งสองรอบโดยไม่มี false match; decision projection SHA-256 เท่ากับ
-`ccf0fda7ea1de47c13ba7f234e7caf139a11b189f4346cecdfbef4ef862eb87d`
+`e4b45b61f53ce754374629939f202567ced3f0bb3a9b5f90b66829ba57e3e50a`
 gate source SHA-256 คือ
 `611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab`
 และ catalog SHA-256 คือ
-`b04c656c71e0c66c964341ecc233519780fc59af75070f1c92dbc6dddaf03034`
+`ed3112d6292f38d4d51d068895a6659233f6b75c8d0a342607183f1a018c4377`
 run 1 ผ่าน live MCP `20/20` contracts และได้คำตอบไม่ว่าง `20/20` ดู
 [acceptance report](../../artifacts/v3_semantic_router_acceptance_report.md)
+
+เหตุการณ์จริงจาก v2 แยกเป็น manifest ที่
+[`v2_incidents.json`](v2_incidents.json) และ replay ด้วย
+`scripts/replay_v2_incidents.py`; หลังแก้ regression ที่ suite พบ live run 2–3
+ผ่าน incidents `17/17`, routing `40/40` และ contracts `6/6` ต่อรอบ

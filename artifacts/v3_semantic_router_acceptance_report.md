@@ -9,7 +9,7 @@
 - paraphrases `20/20` และ near-boundaries `20/20` ทั้งสองรอบ
 - false matches `0`
 - decision projection SHA-256 เหมือนกันทั้งสองรอบ:
-  `ccf0fda7ea1de47c13ba7f234e7caf139a11b189f4346cecdfbef4ef862eb87d`
+  `e4b45b61f53ce754374629939f202567ced3f0bb3a9b5f90b66829ba57e3e50a`
 - live MSSQL MCP contract completion `20/20` และ non-empty answers `20/20`
 
 ผลนี้พิสูจน์เฉพาะ 20 declared intent paraphrases และ 20 near-boundary
@@ -111,7 +111,7 @@ Typed-constraint audit จาก v2 พบอีก 1 จุด จึงสร�
 - gate source SHA-256:
   `611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab`
 - catalog SHA-256:
-  `b04c656c71e0c66c964341ecc233519780fc59af75070f1c92dbc6dddaf03034`
+  `ed3112d6292f38d4d51d068895a6659233f6b75c8d0a342607183f1a018c4377`
 - router model: `openai/gpt-oss-120b`
 - timeout: 30 seconds, no retry
 - max output: 1,600 tokens, reasoning effort: low
@@ -119,13 +119,13 @@ Typed-constraint audit จาก v2 พบอีก 1 จุด จึงสร�
 
 ## Router paths และ latency
 
-ทั้งสองรอบมี lexical routes 13, semantic routes 8, semantic attempts 27
+ทั้งสองรอบมี lexical routes 14, semantic routes 7, semantic attempts 26
 และ abstentions 19 เท่ากัน
 
 | Run | Routing median | Semantic median | Semantic p95 |
 |---|---:|---:|---:|
-| Acceptance 1 | 4.045236s | 4.807690s | 10.413516s |
-| Acceptance 2 | 3.489238s | 4.325542s | 10.446251s |
+| Acceptance 1 | 3.527605s | 4.726401s | 10.942734s |
+| Acceptance 2 | 3.671955s | 4.467017s | 9.059617s |
 
 ตัวเลขนี้วัด sequential (`--workers 1`) ให้ใกล้เคียงกับหนึ่ง request ต่อครั้ง
 ไม่ใช่ throughput benchmark และไม่ได้หมายความว่า LLM path เป็น deterministic
@@ -158,7 +158,7 @@ Artifacts:
 
 ## Automated tests
 
-- non-Lab 8 suite: `113 passed` + 35 subtests
+- non-Lab 8 suite: `117 passed` + 35 subtests
 - Lab 8 separate unittest: `2 passed`
 
 ```bash
