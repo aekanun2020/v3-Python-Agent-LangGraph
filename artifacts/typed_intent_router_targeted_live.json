@@ -1,0 +1,258 @@
+{
+  "suite_id": "v2-full-question-replay-v1",
+  "generated_at": "2026-08-02T14:30:07.557759+00:00",
+  "runtime_commit": "9bbe1de86a5db208be33faa22058fb6bab701840",
+  "source_commit": "f33546aea94620e1e27425d34517e76a9443a5c2",
+  "manifest_sha256": "e27dee9b362f2df0c630dc6605c050c1058a42be858077d19bb74eabcd575daa",
+  "question_projection_sha256": "e90b98c24b5aa3836f8c2d05ff0f24eb1c2a453afc44d0edeba755d9c1602fb1",
+  "router_fingerprint": {
+    "prompt_version": "hybrid-contract-router-v3",
+    "gate_version": "skill-grounded-admission-gate-v2",
+    "gate_source_sha256": "fc80907c98b69547f6a0af952de3d1ece2e833dc468cd93e42b520a0e4b8b505",
+    "catalog_sha256": "fb266e1893a6f4650c57a8bb15f4bcd711fb57cd7a7a55f6bab516bdb6328090",
+    "model": "openai/gpt-oss-120b",
+    "request_timeout_seconds": 30.0,
+    "max_output_tokens": 1600,
+    "reasoning_effort": "low",
+    "minimum_confidence": 0.8
+  },
+  "models": {
+    "agent": "qwen/qwen3.5-35b-a3b",
+    "router": "openai/gpt-oss-120b",
+    "observer": "openai/gpt-oss-120b"
+  },
+  "mcp_tools_discovered": 5,
+  "mcp_endpoint_recorded": false,
+  "summary": {
+    "questions_total": 4,
+    "questions_passed": 4,
+    "questions_failed": 0,
+    "routing_passed": 4,
+    "contract_live_passed": 4,
+    "contract_live_total": 4,
+    "general_agent_live_passed": 0,
+    "general_agent_live_total": 0
+  },
+  "contract_evidence": {
+    "expert_skill_record_share": {
+      "evidence_sha256": "af630a39a7761d468a1e9731ee5d9ed0f6f0fd21e877706db730f1289ef5b304",
+      "roles": [
+        {
+          "role_id": "expert_share_by_category",
+          "query": "WITH category AS (SELECT skill_category, COUNT(*) AS total_skills, SUM(CASE WHEN proficiency_level = N'เชี่ยวชาญ' THEN 1 ELSE 0 END) AS expert_count FROM skills GROUP BY skill_category) SELECT skill_category, total_skills, expert_count FROM category UNION ALL SELECT N'รวมทั้งหมด' AS skill_category, SUM(total_skills) AS total_skills, SUM(expert_count) AS expert_count FROM category ORDER BY skill_category",
+          "result": "skill_category  total_skills  expert_count\n        เทคนิค             8             4\n    การสื่อสาร             1             0\n   คอมพิวเตอร์             3             1\n        บริหาร             3             1\n    รวมทั้งหมด            15             6"
+        }
+      ]
+    },
+    "finance_employment_extrema": {
+      "evidence_sha256": "e84463ddd2f16d456255c4191594f52deacf21fe1a2ec8b85141fcc9f1aa6597",
+      "roles": [
+        {
+          "role_id": "employment_extrema",
+          "query": "WITH s AS (SELECT e.emp_length, COUNT_BIG(*) AS loan_count, AVG(l.funded_amnt) AS avg_funded_amnt, AVG(l.int_rate) * 100 AS avg_int_rate_pct, AVG(l.dti) AS avg_dti FROM loans_fact l JOIN emp_length_dim e ON l.emp_length_id=e.emp_length_id GROUP BY e.emp_length), r AS (SELECT *, ROW_NUMBER() OVER (ORDER BY avg_funded_amnt DESC, emp_length) AS highest, ROW_NUMBER() OVER (ORDER BY avg_funded_amnt ASC, emp_length) AS lowest_overall FROM s), n AS (SELECT *, ROW_NUMBER() OVER (ORDER BY avg_funded_amnt ASC, emp_length) AS lowest_non_na FROM s WHERE emp_length <> 'N/A'), extrema AS (SELECT 'highest' AS extreme_type, emp_length, loan_count, avg_funded_amnt, avg_int_rate_pct, avg_dti, 1 AS sort_order FROM r WHERE highest=1 UNION ALL SELECT 'lowest_overall', emp_length, loan_count, avg_funded_amnt, avg_int_rate_pct, avg_dti, 2 FROM r WHERE lowest_overall=1 UNION ALL SELECT 'lowest_non_na', emp_length, loan_count, avg_funded_amnt, avg_int_rate_pct, avg_dti, 3 FROM n WHERE lowest_non_na=1) SELECT extreme_type, emp_length, loan_count, CAST(avg_funded_amnt AS decimal(20,6)) AS avg_funded_amnt, CAST(avg_int_rate_pct AS decimal(12,6)) AS avg_int_rate_pct, CAST(avg_dti AS decimal(12,6)) AS avg_dti FROM extrema ORDER BY sort_order",
+          "result": "  extreme_type emp_length  loan_count  avg_funded_amnt  avg_int_rate_pct   avg_dti\n       highest  10+ years      478304     16514.623963         12.851166 19.227889\nlowest_overall        N/A      108470     12263.196506         13.207055 22.875127\n lowest_non_na     1 year       95926     14488.151023         13.198205 18.420589"
+        }
+      ]
+    },
+    "training_hours_portfolio": {
+      "evidence_sha256": "1e26726d2e2cd701d1d2a99ca0c6651ca2936afed8fdef6d9a47f6b8d21db293",
+      "roles": [
+        {
+          "role_id": "hours_by_training_type",
+          "query": "SELECT training_type, SUM(hours) AS training_hours FROM training_records GROUP BY training_type ORDER BY training_type",
+          "result": "training_type  training_hours\n        ภายใน               8\n       ภายนอก             152\n      ออนไลน์              92"
+        }
+      ]
+    },
+    "performance_review_coverage": {
+      "evidence_sha256": "70895967bbddd6da3825afee6dadaf3df4e82ffda4f1ed13a82242a45e223d29",
+      "roles": [
+        {
+          "role_id": "active_employee_denominator",
+          "query": "SELECT COUNT(*) AS active_employee_count FROM employees WHERE status = N'ปฏิบัติงาน'",
+          "result": " active_employee_count\n                    25"
+        },
+        {
+          "role_id": "distinct_reviewed_employee_numerator",
+          "query": "SELECT COUNT(DISTINCT employee_id) AS reviewed_employee_count FROM performance_reviews WHERE review_period = N'2023'",
+          "result": " reviewed_employee_count\n                       7"
+        }
+      ]
+    }
+  },
+  "results": [
+    {
+      "id": "v2q_018",
+      "question": "จาก skill records ทั้งหมด จงวิเคราะห์สัดส่วนระดับ `เชี่ยวชาญ` และตรวจว่าสูงถึงเป้าหมาย 50% หรือไม่ พร้อมแยกตาม `skill_category`",
+      "category": "hr_primary_q1_q10",
+      "evaluation_mode": "contract_live",
+      "expected_contract": "expert_skill_record_share",
+      "actual_contract": "expert_skill_record_share",
+      "route_passed": true,
+      "route": {
+        "path": "lexical",
+        "confidence": 1.0,
+        "reason": "literal question_terms_all/any matched",
+        "semantic_attempted": false
+      },
+      "route_error": null,
+      "passed": true,
+      "contract": {
+        "evidence_sha256": "af630a39a7761d468a1e9731ee5d9ed0f6f0fd21e877706db730f1289ef5b304",
+        "satisfied": true,
+        "missing_roles": [],
+        "claim_count": 5,
+        "claims": [
+          "เทคนิค มี skill records 8 รายการ และระดับเชี่ยวชาญ 4 รายการ คิดเป็น 50.00% ซึ่งไม่ผ่านเกณฑ์ มากกว่า 50%",
+          "การสื่อสาร มี skill records 1 รายการ และระดับเชี่ยวชาญ 0 รายการ คิดเป็น 0.00% ซึ่งไม่ผ่านเกณฑ์ มากกว่า 50%",
+          "คอมพิวเตอร์ มี skill records 3 รายการ และระดับเชี่ยวชาญ 1 รายการ คิดเป็น 33.33% ซึ่งไม่ผ่านเกณฑ์ มากกว่า 50%",
+          "บริหาร มี skill records 3 รายการ และระดับเชี่ยวชาญ 1 รายการ คิดเป็น 33.33% ซึ่งไม่ผ่านเกณฑ์ มากกว่า 50%",
+          "รวมทั้งหมด มี skill records 15 รายการ และระดับเชี่ยวชาญ 6 รายการ คิดเป็น 40.00% ซึ่งไม่ผ่านเกณฑ์ มากกว่า 50%"
+        ],
+        "answer_sha256": "db8c18397f215a952bc7db7efa395eafda892eb9e209dd743c7cf3ba45027cc8",
+        "context_fidelity": {
+          "status": "supported",
+          "evidence_frames": 1,
+          "successful_frames": 1,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": 1.0,
+          "required_claim_recall": 1.0,
+          "unsupported_numbers": [],
+          "unsupported_interpretations": [],
+          "missing_labels": [],
+          "missing_claims": []
+        }
+      },
+      "elapsed_seconds": 0.187143
+    },
+    {
+      "id": "v2q_021",
+      "question": "จำแนกตาม emp_length แล้ว กลุ่มใดมี funded_amnt เฉลี่ยสูงสุดและต่ำสุด รายงานจำนวน int_rate เฉลี่ย และ dti เฉลี่ยของกลุ่มดังกล่าว พร้อมระบุกลุ่มต่ำสุดเมื่อไม่รวม N/A",
+      "category": "finance_primary_q1_q10",
+      "evaluation_mode": "contract_live",
+      "expected_contract": "finance_employment_extrema",
+      "actual_contract": "finance_employment_extrema",
+      "route_passed": true,
+      "route": {
+        "path": "lexical",
+        "confidence": 1.0,
+        "reason": "literal question_terms_all/any matched",
+        "semantic_attempted": false
+      },
+      "route_error": null,
+      "passed": true,
+      "contract": {
+        "evidence_sha256": "e84463ddd2f16d456255c4191594f52deacf21fe1a2ec8b85141fcc9f1aa6597",
+        "satisfied": true,
+        "missing_roles": [],
+        "claim_count": 3,
+        "claims": [
+          "extreme_type=highest; emp_length=10+ years; loan_count=478304; avg_funded_amnt=16514.623963; avg_int_rate_pct=12.851166; avg_dti=19.227889",
+          "extreme_type=lowest_overall; emp_length=N/A; loan_count=108470; avg_funded_amnt=12263.196506; avg_int_rate_pct=13.207055; avg_dti=22.875127",
+          "extreme_type=lowest_non_na; emp_length=1 year; loan_count=95926; avg_funded_amnt=14488.151023; avg_int_rate_pct=13.198205; avg_dti=18.420589"
+        ],
+        "answer_sha256": "88940ff612d2332f323bf2a4dc6de0b309108d6683c5af7fdddebb9b3ca7087b",
+        "context_fidelity": {
+          "status": "supported",
+          "evidence_frames": 1,
+          "successful_frames": 1,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": 1.0,
+          "unsupported_numbers": [],
+          "unsupported_interpretations": [],
+          "missing_labels": [],
+          "missing_claims": []
+        }
+      },
+      "elapsed_seconds": 0.248698
+    },
+    {
+      "id": "v2q_024",
+      "question": "ชั่วโมงอบรมของบริษัทกระจายตาม `training_type` อย่างไร และประเภทใดเกินนโยบาย concentration limit 50% ของชั่วโมงอบรมทั้งหมด",
+      "category": "hr_primary_q1_q10",
+      "evaluation_mode": "contract_live",
+      "expected_contract": "training_hours_portfolio",
+      "actual_contract": "training_hours_portfolio",
+      "route_passed": true,
+      "route": {
+        "path": "lexical",
+        "confidence": 1.0,
+        "reason": "literal question_terms_all/any matched",
+        "semantic_attempted": false
+      },
+      "route_error": null,
+      "passed": true,
+      "contract": {
+        "evidence_sha256": "1e26726d2e2cd701d1d2a99ca0c6651ca2936afed8fdef6d9a47f6b8d21db293",
+        "satisfied": true,
+        "missing_roles": [],
+        "claim_count": 4,
+        "claims": [
+          "ชั่วโมงอบรมทั้งหมดคือ 252 ชั่วโมง",
+          "ภายใน 8 ชั่วโมง (3.17%) ไม่เกินนโยบาย concentration limit มากกว่า 50%",
+          "ภายนอก 152 ชั่วโมง (60.32%) เกินนโยบาย concentration limit มากกว่า 50%",
+          "ออนไลน์ 92 ชั่วโมง (36.51%) ไม่เกินนโยบาย concentration limit มากกว่า 50%"
+        ],
+        "answer_sha256": "20545f184f740d96fd2463f8c92d9260e40dd85a068a5e588ae4c1cf37c7b5a8",
+        "context_fidelity": {
+          "status": "supported",
+          "evidence_frames": 1,
+          "successful_frames": 1,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": 1.0,
+          "required_claim_recall": 1.0,
+          "unsupported_numbers": [],
+          "unsupported_interpretations": [],
+          "missing_labels": [],
+          "missing_claims": []
+        }
+      },
+      "elapsed_seconds": 0.10976
+    },
+    {
+      "id": "v2q_039",
+      "question": "มีพนักงานที่ปฏิบัติงาน 25 คน แต่มี performance review ปี 2023 จำนวน 7 รายการ ก่อนเปรียบเทียบผลงานระหว่างแผนก จงคำนวณ evidence coverage และประเมินว่าผ่านเกณฑ์ขั้นต่ำ 80% หรือไม่",
+      "category": "hr_primary_q1_q10",
+      "evaluation_mode": "contract_live",
+      "expected_contract": "performance_review_coverage",
+      "actual_contract": "performance_review_coverage",
+      "route_passed": true,
+      "route": {
+        "path": "lexical",
+        "confidence": 1.0,
+        "reason": "literal question_terms_all/any matched",
+        "semantic_attempted": false
+      },
+      "route_error": null,
+      "passed": true,
+      "contract": {
+        "evidence_sha256": "70895967bbddd6da3825afee6dadaf3df4e82ffda4f1ed13a82242a45e223d29",
+        "satisfied": true,
+        "missing_roles": [],
+        "claim_count": 4,
+        "claims": [
+          "พนักงานที่ปฏิบัติงานทั้งหมดคือ 25 คน",
+          "พนักงานที่มี performance review ปี 2023 คือ 7 คน",
+          "Evidence coverage ของพนักงานที่มี review เท่ากับ 7 / 25 = 28%",
+          "ไม่ผ่านเกณฑ์ขั้นต่ำ 80%"
+        ],
+        "answer_sha256": "c04d8a7fa421c96e7e838fa5939a7883b50a1c5992bc6cd409594f9f047c0a88",
+        "context_fidelity": {
+          "status": "supported",
+          "evidence_frames": 2,
+          "successful_frames": 2,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": 1.0,
+          "unsupported_numbers": [],
+          "unsupported_interpretations": [],
+          "missing_labels": [],
+          "missing_claims": []
+        }
+      },
+      "elapsed_seconds": 0.212638
+    }
+  ],
+  "decision_projection_sha256": "36cb2f07da7b9d2b9f8a4160cd9f8e7b2a7d47230eea7d13d1bee8122743dbbe"
+}

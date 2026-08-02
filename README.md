@@ -1,5 +1,33 @@
 # v3-Python-Agent-LangGraph
 
+## Experimental typed-intent router (Full-63)
+
+branch `codex/typed-intent-router` ได้รันคำถาม frozen เดิมครบ 63 ข้อกับ live
+OpenRouter + MSSQL MCP แล้ว โดยไม่รวม latency ในคะแนน:
+
+| รายการ | ผล |
+|---|---:|
+| Router implementation | `9bbe1de86a5db208be33faa22058fb6bab701840` |
+| Replay binding fix | `1a573c40fbcbfa4d1cb505f01d894e2b9fea5c45` |
+| Raw one-shot | `59/63` |
+| Controlled adjusted automated | `63/63` |
+| Semantic audited | **`62/63`** |
+| Typed incidents Q018/Q021/Q024/Q039 | **`4/4`** |
+
+ผลดิบที่ไม่ผ่านมี Q003/Q004 จาก budget/timeout และผ่านเมื่อ controlled
+recheck ส่วน Q008/Q030 เป็น expected-route ของ frozen manifest ที่เก่ากว่า
+contract ใหม่ ไม่ใช่คำตอบผิด อย่างไรก็ตาม Q027 เป็น automated false positive:
+คำตอบบอกเพียงว่าทุกแผนกต่ำกว่า 80% แต่ไม่ได้รายงาน coverage รายแผนกตามที่ถาม
+จึงยังอ้างความถูกต้องเชิงความหมายได้เพียง 62/63 และยังไม่ควร merge เข้า main
+จนกว่าจะตัดสินใจว่าจะเพิ่ม department-grain contract สำหรับ Q027 หรือคงให้
+general path รับผิดชอบ
+
+รายละเอียด provenance, คำวินิจฉัยรายข้อ และ SHA-256 อยู่ใน
+[Typed-intent Full-63 report](artifacts/typed_intent_router_full63_report.md)
+และ [machine-readable baseline](artifacts/typed_intent_router_full63_baseline.json)
+คำถามเต็มทั้ง 63 ข้อยังคงอยู่ในตารางด้านล่างและใน
+[`tests/evaluation/v2_full_question_replay.json`](tests/evaluation/v2_full_question_replay.json)
+
 ## Latest verified baseline
 
 ผลล่าสุดที่มี live OpenRouter + read-only MSSQL MCP evidence ครบชุด บันทึกเมื่อ

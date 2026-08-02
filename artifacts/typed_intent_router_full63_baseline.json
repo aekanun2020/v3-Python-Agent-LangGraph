@@ -1,0 +1,37 @@
+{
+  "verified_at": "2026-08-02",
+  "branch": "codex/typed-intent-router",
+  "router_implementation_commit": "9bbe1de86a5db208be33faa22058fb6bab701840",
+  "replay_binding_fix_commit": "1a573c40fbcbfa4d1cb505f01d894e2b9fea5c45",
+  "previous_v3_baseline_commit": "28ddb9861b2b28fba51cddfacfe197a3ab145aea",
+  "v2_baseline_commit": "f33546aea94620e1e27425d34517e76a9443a5c2",
+  "suite": "V2 Full Question Replay",
+  "question_count": 63,
+  "scores": {
+    "raw_one_shot": 59,
+    "controlled_adjusted_automated": 63,
+    "semantic_audited": 62
+  },
+  "targeted_router_recovery": {
+    "passed": 4,
+    "total": 4,
+    "case_ids": ["v2q_018", "v2q_021", "v2q_024", "v2q_039"]
+  },
+  "remaining_semantic_failure_ids": ["v2q_027"],
+  "controlled_transient_rechecks": ["v2q_003", "v2q_004"],
+  "intentional_manifest_route_drift": ["v2q_008", "v2q_030"],
+  "models": {
+    "agent": "qwen/qwen3.5-35b-a3b",
+    "router": "openai/gpt-oss-120b",
+    "observer": "openai/gpt-oss-120b"
+  },
+  "latency_in_score": false,
+  "mcp_endpoint_recorded": false,
+  "artifacts": {
+    "full63": "typed_intent_router_full63_live.json",
+    "transient_recheck": "typed_intent_router_full63_recheck.json",
+    "q018_bound_recheck": "typed_intent_router_q018_bound_recheck.json",
+    "targeted": "typed_intent_router_targeted_live.json",
+    "report": "typed_intent_router_full63_report.md"
+  }
+}

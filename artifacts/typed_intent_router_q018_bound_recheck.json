@@ -1,0 +1,95 @@
+{
+  "suite_id": "v2-full-question-replay-v1",
+  "generated_at": "2026-08-02T16:22:34.237358+00:00",
+  "runtime_commit": "1a573c40fbcbfa4d1cb505f01d894e2b9fea5c45",
+  "source_commit": "f33546aea94620e1e27425d34517e76a9443a5c2",
+  "manifest_sha256": "afb91553627e419a6376b37626fec8c54ad9b3790bb02e834093a464f078b94d",
+  "question_projection_sha256": "e90b98c24b5aa3836f8c2d05ff0f24eb1c2a453afc44d0edeba755d9c1602fb1",
+  "router_fingerprint": {
+    "prompt_version": "hybrid-contract-router-v3",
+    "gate_version": "skill-grounded-admission-gate-v2",
+    "gate_source_sha256": "fc80907c98b69547f6a0af952de3d1ece2e833dc468cd93e42b520a0e4b8b505",
+    "catalog_sha256": "fb266e1893a6f4650c57a8bb15f4bcd711fb57cd7a7a55f6bab516bdb6328090",
+    "model": "openai/gpt-oss-120b",
+    "request_timeout_seconds": 30.0,
+    "max_output_tokens": 1600,
+    "reasoning_effort": "low",
+    "minimum_confidence": 0.8
+  },
+  "models": {
+    "agent": "qwen/qwen3.5-35b-a3b",
+    "router": "openai/gpt-oss-120b",
+    "observer": "openai/gpt-oss-120b"
+  },
+  "mcp_tools_discovered": 5,
+  "mcp_endpoint_recorded": false,
+  "summary": {
+    "questions_total": 1,
+    "questions_passed": 1,
+    "questions_failed": 0,
+    "routing_passed": 1,
+    "contract_live_passed": 1,
+    "contract_live_total": 1,
+    "general_agent_live_passed": 0,
+    "general_agent_live_total": 0
+  },
+  "contract_evidence": {
+    "expert_skill_record_share": {
+      "evidence_sha256": "af630a39a7761d468a1e9731ee5d9ed0f6f0fd21e877706db730f1289ef5b304",
+      "roles": [
+        {
+          "role_id": "expert_share_by_category",
+          "query": "WITH category AS (SELECT skill_category, COUNT(*) AS total_skills, SUM(CASE WHEN proficiency_level = N'เชี่ยวชาญ' THEN 1 ELSE 0 END) AS expert_count FROM skills GROUP BY skill_category) SELECT skill_category, total_skills, expert_count FROM category UNION ALL SELECT N'รวมทั้งหมด' AS skill_category, SUM(total_skills) AS total_skills, SUM(expert_count) AS expert_count FROM category ORDER BY skill_category",
+          "result": "skill_category  total_skills  expert_count\n        เทคนิค             8             4\n    การสื่อสาร             1             0\n   คอมพิวเตอร์             3             1\n        บริหาร             3             1\n    รวมทั้งหมด            15             6"
+        }
+      ]
+    }
+  },
+  "results": [
+    {
+      "id": "v2q_018",
+      "question": "จาก skill records ทั้งหมด จงวิเคราะห์สัดส่วนระดับ `เชี่ยวชาญ` และตรวจว่าสูงถึงเป้าหมาย 50% หรือไม่ พร้อมแยกตาม `skill_category`",
+      "category": "hr_primary_q1_q10",
+      "evaluation_mode": "contract_live",
+      "expected_contract": "expert_skill_record_share",
+      "actual_contract": "expert_skill_record_share",
+      "route_passed": true,
+      "route": {
+        "path": "lexical",
+        "confidence": 1.0,
+        "reason": "literal question_terms_all/any matched",
+        "semantic_attempted": false
+      },
+      "route_error": null,
+      "passed": true,
+      "contract": {
+        "evidence_sha256": "af630a39a7761d468a1e9731ee5d9ed0f6f0fd21e877706db730f1289ef5b304",
+        "satisfied": true,
+        "missing_roles": [],
+        "claim_count": 5,
+        "claims": [
+          "เทคนิค มี skill records 8 รายการ และระดับเชี่ยวชาญ 4 รายการ คิดเป็น 50.00% ซึ่งผ่านเกณฑ์ ไม่น้อยกว่า 50%",
+          "การสื่อสาร มี skill records 1 รายการ และระดับเชี่ยวชาญ 0 รายการ คิดเป็น 0.00% ซึ่งไม่ผ่านเกณฑ์ ไม่น้อยกว่า 50%",
+          "คอมพิวเตอร์ มี skill records 3 รายการ และระดับเชี่ยวชาญ 1 รายการ คิดเป็น 33.33% ซึ่งไม่ผ่านเกณฑ์ ไม่น้อยกว่า 50%",
+          "บริหาร มี skill records 3 รายการ และระดับเชี่ยวชาญ 1 รายการ คิดเป็น 33.33% ซึ่งไม่ผ่านเกณฑ์ ไม่น้อยกว่า 50%",
+          "รวมทั้งหมด มี skill records 15 รายการ และระดับเชี่ยวชาญ 6 รายการ คิดเป็น 40.00% ซึ่งไม่ผ่านเกณฑ์ ไม่น้อยกว่า 50%"
+        ],
+        "answer_sha256": "cf15e442e15bf28cae34cd3fc6963329fc4f7735b90a8bfd04ca26b9a4a8a696",
+        "context_fidelity": {
+          "status": "supported",
+          "evidence_frames": 1,
+          "successful_frames": 1,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": 1.0,
+          "required_claim_recall": 1.0,
+          "unsupported_numbers": [],
+          "unsupported_interpretations": [],
+          "missing_labels": [],
+          "missing_claims": []
+        }
+      },
+      "elapsed_seconds": 0.12187
+    }
+  ],
+  "decision_projection_sha256": "84dcaea140f75eb434292754a28c7d76f6904d1f92f1b80a001720cd32ee094a"
+}

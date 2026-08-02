@@ -1,0 +1,131 @@
+{
+  "suite_id": "v2-full-question-replay-v1",
+  "generated_at": "2026-08-02T16:18:31.498356+00:00",
+  "runtime_commit": "9bbe1de86a5db208be33faa22058fb6bab701840",
+  "source_commit": "f33546aea94620e1e27425d34517e76a9443a5c2",
+  "manifest_sha256": "8ff1f1cbeed68846ab6a0f2ff9efe695f955c298ef856324876db713127c9d6c",
+  "question_projection_sha256": "e90b98c24b5aa3836f8c2d05ff0f24eb1c2a453afc44d0edeba755d9c1602fb1",
+  "router_fingerprint": {
+    "prompt_version": "hybrid-contract-router-v3",
+    "gate_version": "skill-grounded-admission-gate-v2",
+    "gate_source_sha256": "fc80907c98b69547f6a0af952de3d1ece2e833dc468cd93e42b520a0e4b8b505",
+    "catalog_sha256": "fb266e1893a6f4650c57a8bb15f4bcd711fb57cd7a7a55f6bab516bdb6328090",
+    "model": "openai/gpt-oss-120b",
+    "request_timeout_seconds": 30.0,
+    "max_output_tokens": 1600,
+    "reasoning_effort": "low",
+    "minimum_confidence": 0.8
+  },
+  "models": {
+    "agent": "qwen/qwen3.5-35b-a3b",
+    "router": "openai/gpt-oss-120b",
+    "observer": "openai/gpt-oss-120b"
+  },
+  "mcp_tools_discovered": 5,
+  "mcp_endpoint_recorded": false,
+  "summary": {
+    "questions_total": 2,
+    "questions_passed": 2,
+    "questions_failed": 0,
+    "routing_passed": 2,
+    "contract_live_passed": 1,
+    "contract_live_total": 1,
+    "general_agent_live_passed": 1,
+    "general_agent_live_total": 1
+  },
+  "contract_evidence": {
+    "finance_application_mix": {
+      "evidence_sha256": "7751a12cd24475e858f3c559402572b4d4a1c903fe103cf373923d18aeaaca36",
+      "roles": [
+        {
+          "role_id": "application_mix",
+          "query": "SELECT a.application_type, COUNT_BIG(*) AS loan_count, CAST(100.0 * COUNT_BIG(*) / SUM(COUNT_BIG(*)) OVER () AS decimal(10,4)) AS portfolio_pct FROM loans_fact l JOIN application_type_dim a ON l.application_type_id = a.application_type_id GROUP BY a.application_type ORDER BY loan_count DESC",
+          "result": "application_type  loan_count  portfolio_pct\n      Individual     1320357        92.1754\n       Joint App      112083         7.8246"
+        }
+      ]
+    }
+  },
+  "results": [
+    {
+      "id": "v2q_003",
+      "question": "annual_inc ของ Joint App แบ่งตามช่วงรายได้",
+      "category": "finance_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches the request for Joint App annual income segmentation; existing contracts either require Individual applications or different metrics.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- Joint App application_type exists in loans_fact (evidence: call_04af4029341c442cb4a2e023).\n- Sample Joint App rows with annual_inc and annual_inc_joint values are shown (evidence: call_bd74067223154a13bd1d4582).",
+        "answer_sha256": "7fe510491788d920bcdf8cbe260b925ae9bdee1c2eb5024b428362467240a083",
+        "answer_nonempty": true,
+        "completed": true,
+        "insufficient_specification": false,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 5,
+          "evidence_frames": 5,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 139.086034,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=2\n[step 1] TODO_WRITE\n[ ] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหา table ที่เกี่ยวข้องกับ Annual Income และ Joint Application\n[ ] 2. เขียนและ execute T-SQL query เพื่อดึงข้อมูล annual_inc ของ Joint App แบ่งตามช่วงรายได้\n[ ] 3. วิเคราะห์และสรุปผลการจัดกลุ่มรายได้ตามช่วงต่างๆ\n[step 2] TODO_UPDATE -> {'index': 1, 'status': 'doing'}\n[~] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหา table ที่เกี่ยวข้องกับ Annual Income และ Joint Application\n[ ] 2. เขียนและ execute T-SQL query เพื่อดึงข้อมูล annual_inc ของ Joint App แบ่งตามช่วงรายได้\n[ ] 3. วิเคราะห์และสรุปผลการจัดกลุ่มรายได้ตามช่วงต่างๆ\n[PYTHON OBSERVATION] evidence=call_2bc7ac0636c94185983d34b8 decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_2bc7ac0636c94185983d34b8 supports=True complete=False proved=[] next=query_more reason=Schema identified tables with application_type but no data rows; annual_inc column missing, so both claims lack required record-level evidence\n[step 2] TOOL get_database_context\n[PYTHON OBSERVATION] evidence=call_bdb873435e0b4ceda13932aa decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_bdb873435e0b4ceda13932aa supports=True complete=False proved=[] next=query_more reason=Preview shows table structure but no Joint application rows; need distinct count of Joint applications and grouped annual_inc for Joint applications\n[step 3] TOOL preview_table\n[step 4] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[~] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหา table ที่เกี่ยวข้องกับ Annual Income และ Joint Application\n[~] 2. เขียนและ execute T-SQL query เพื่อดึงข้อมูล annual_inc ของ Joint App แบ่งตามช่วงรายได้\n[ ] 3. วิเคราะห์และสรุปผลการจัดกลุ่มรายได้ตามช่วงต่างๆ\n[PYTHON OBSERVATION] evidence=call_d402adad89264f89896041d3 decision=query_more type=empty risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_d402adad89264f89896041d3 supports=False complete=False proved=[] next=query_more reason=Query returned no results, so required evidence for both claims is missing.\n[step 5] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_04af4029341c442cb4a2e023 decision=accept type=query_result risk=False reasons=[]\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 6] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_bd74067223154a13bd1d4582 decision=accept type=query_result risk=False reasons=[]\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 7] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_39b4280e61ec43d586e7efb5 decision=accept type=query_result risk=True reasons=['conditional-metric', 'aggregate-comparison']\n[DYNAMIC OBSERVATION] evidence=call_39b4280e61ec43d586e7efb5 supports=False complete=False proved=[] next=query_more reason=The query failed due to an ORDER BY clause referencing a column not in the GROUP BY; a corrected query is needed to retrieve Joint App records and group annual_inc_joint into income ranges.\n[step 8] TOOL execute_query_tool\n[RECONCILIATION CHECK] evidence=call_275df4c2b5de4a898716ba6a cached=False pending=False\n[RECONCILIATION ROUTING] evidence=call_275df4c2b5de4a898716ba6a route=verify reasons=['conditional-metric', 'aggregate-comparison'] fields=['income_range', 'count_of_applications', 'avg_joint_income', 'min_income', 'max_income']\n[PYTHON OBSERVATION] evidence=call_275df4c2b5de4a898716ba6a decision=accept type=query_result risk=True reasons=['conditional-metric', 'aggregate-comparison']\n[LLM OBSERVER SKIPPED] awaiting deterministic reconciliation\n[step 9] TOOL execute_query_tool\n[RECONCILIATION CHECK] evidence=call_12940470a698488b8e2ecfdb cached=False pending=True\n[RECONCILIATION] primary=call_275df4c2b5de4a898716ba6a verification=call_12940470a698488b8e2ecfdb verdict=conflict reason=independent query returned conflicting rows or values\n[PYTHON OBSERVATION] evidence=call_12940470a698488b8e2ecfdb decision=accept type=query_result risk=True reasons=['conditional-metric', 'aggregate-comparison']\n[LLM OBSERVER SKIPPED] awaiting deterministic reconciliation\n[step 10] TOOL execute_query_tool\n[step 11] TODO_UPDATE -> {'index': 3, 'status': 'doing'}\n[~] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหา table ที่เกี่ยวข้องกับ Annual Income และ Joint Application\n[~] 2. เขียนและ execute T-SQL query เพื่อดึงข้อมูล annual_inc ของ Joint App แบ่งตามช่วงรายได้\n[~] 3. วิเคราะห์และสรุปผลการจัดกลุ่มรายได้ตามช่วงต่างๆ\n[FINAL ROUTING] risks=['unsupported-numbers:111080.64,11305,11385,135652.59,14622,160197.92,17073,185213.21,23000,23553,23679,273170,273170.16,3931,40%,40081.97,58%,63881.51,6535,7874821,87064.79', 'semantic-decision', 'qualitative-interpretation', 'risky-tool-semantics']\n[FINAL OBSERVATION] verdict=rewrite reason=Proposed answer contains many numeric counts and averages for income ranges that are not supported by any accepted evidence; only sample rows for Joint App are available.\n[FINAL CLAIM GATE] verify-then-emit; MCP disabled; observer_supported=2\n[CONTEXT FIDELITY] status=supported frames=5/5 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- Joint App application_type exists in loans_fact (evidence: call_04af4029341c442cb4a2e023).\n- Sample Joint App rows with annual_inc and annual_inc_joint values are shown (evidence: call_bd74067223154a13bd1d4582).\n------------------------------------------------------------\n[todo สุดท้าย]\n[~] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหา table ที่เกี่ยวข้องกับ Annual Income และ Joint Application\n[~] 2. เขียนและ execute T-SQL query เพื่อดึงข้อมูล annual_inc ของ Joint App แบ่งตามช่วงรายได้\n[~] 3. วิเคราะห์และสรุปผลการจัดกลุ่มรายได้ตามช่วงต่างๆ\n[context budget] BudgetState(steps=12, tool_calls=8, errors=0)\n"
+      },
+      "elapsed_seconds": 143.480709
+    },
+    {
+      "id": "v2q_004",
+      "question": "application_type แบบ Individual กับ Joint App มีสัดส่วนจำนวนรายการในพอร์ตร้อยละเท่าไร",
+      "category": "finance_unseen_paraphrases",
+      "evaluation_mode": "contract_live",
+      "expected_contract": "finance_application_mix",
+      "actual_contract": "finance_application_mix",
+      "route_passed": true,
+      "route": {
+        "path": "lexical",
+        "confidence": 1.0,
+        "reason": "literal question_terms_all/any matched",
+        "semantic_attempted": false
+      },
+      "route_error": null,
+      "passed": true,
+      "contract": {
+        "evidence_sha256": "7751a12cd24475e858f3c559402572b4d4a1c903fe103cf373923d18aeaaca36",
+        "satisfied": true,
+        "missing_roles": [],
+        "claim_count": 2,
+        "claims": [
+          "application_type=Individual; loan_count=1320357; portfolio_pct=92.1754",
+          "application_type=Joint App; loan_count=112083; portfolio_pct=7.8246"
+        ],
+        "answer_sha256": "6103cbc9d3be2e2f512551adfd2f0395945d7c46f51880a24592ca6e108de290",
+        "context_fidelity": {
+          "status": "supported",
+          "evidence_frames": 1,
+          "successful_frames": 1,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": 1.0,
+          "required_claim_recall": 1.0,
+          "unsupported_numbers": [],
+          "unsupported_interpretations": [],
+          "missing_labels": [],
+          "missing_claims": []
+        }
+      },
+      "elapsed_seconds": 0.352319
+    }
+  ],
+  "decision_projection_sha256": "bdaed707ad045ffa599d6123fc8872240d3ed0951f319de56d2e8aaf34d61e01"
+}
