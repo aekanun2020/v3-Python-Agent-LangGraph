@@ -30,6 +30,9 @@ Q1 = (
     "และยอดที่ได้รับ funding funded_amnt รวมเท่าใด "
     "และค่าเฉลี่ยต่อรายการเท่าใด"
 )
+FUNDING_RATIO_SEMANTIC_QUESTION = (
+    "funding_ratio คือ approval rate ใช่หรือไม่"
+)
 
 
 def contract(identifier: str) -> dict:
@@ -41,13 +44,48 @@ def contract(identifier: str) -> dict:
 
 
 class FinanceSkillContractTests(unittest.TestCase):
-    def test_all_ten_finance_contracts_are_loaded(self):
+    def test_all_eleven_finance_contracts_are_loaded(self):
         payload = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
-        self.assertEqual(len(payload["contracts"]), 10)
+        self.assertEqual(len(payload["contracts"]), 11)
         self.assertEqual(
             select_metric_contract(Q1)["id"],
             "finance_portfolio_totals",
         )
+
+    def test_funding_ratio_semantic_contract_proves_non_equivalence(self):
+        selected = select_metric_contract(FUNDING_RATIO_SEMANTIC_QUESTION)
+        self.assertIsNotNone(selected)
+        self.assertEqual(
+            selected["id"],
+            "finance_funding_ratio_semantics",
+        )
+        evidence = EvidenceState()
+        evidence.accept(EvidenceRecord.from_tool(
+            "finance-funding-ratio-semantics",
+            "execute_query_tool",
+            {"query": selected["roles"][0]["query_template"]},
+            (
+                "loan_count requested_total funded_total funding_ratio "
+                "approval_decision_column_count semantic_verdict\n"
+                "1432440 22017159100.00 22017131100.00 0.99999873 "
+                "0 not_approval_rate"
+            ),
+        ))
+        status = metric_contract_status(
+            FUNDING_RATIO_SEMANTIC_QUESTION,
+            evidence,
+        )
+        self.assertTrue(status.satisfied)
+        emitted = "\n".join(contract_claims(
+            FUNDING_RATIO_SEMANTIC_QUESTION,
+            evidence,
+        ))
+        self.assertIn("semantic_verdict=not_approval_rate", emitted)
+        self.assertIn(
+            "funding_ratio = SUM(funded_amnt) / SUM(loan_amnt)",
+            emitted,
+        )
+        self.assertIn("funding_ratio ไม่ใช่ approval rate", emitted)
 
     def test_generic_emitter_preserves_every_required_metric(self):
         selected = contract("finance_portfolio_totals")

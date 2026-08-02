@@ -105,6 +105,11 @@ Runtime ไม่ยอมรับ query เดิมที่ส่งซ้�
 สำเร็จ Skill contract path ที่มี versioned query roles และ completion rules
 อยู่แล้วจะไม่เรียก query ซ้ำโดยอัตโนมัติ
 
+ก่อน routing มี Requirement Gate ขนาดเล็กที่ตรวจเฉพาะกรณีผู้ใช้ระบุชัดว่า
+ต้องผ่านสองเงื่อนไข แต่ตรวจพบเงื่อนไขเปรียบเทียบจริงเพียงข้อเดียว กรณีนี้จบเป็น
+`insufficient_specification` โดยไม่เรียก MCP หรือ LLM ไม่ได้พยายามสร้างเงื่อนไขที่ขาดหาย
+ขึ้นเอง คำถามปกติและคำถามสองเงื่อนไขที่เขียนครบไม่ถูกขวาง
+
 การเลือก contract ใน v3 มีลำดับดังนี้:
 
 1. กันคำขอที่ negation ปฏิเสธ operation, negative-only หรือขอ schema เท่านั้น
@@ -260,6 +265,7 @@ semantic proposal ถ้า timeout ระบบจะ abstain โดยไม�
 | `evidence_state.py` | evidence/observation types และ provenance |
 | `evidence_contract.py` | ค้นหา Skill contracts, ตรวจ evidence และประกอบ contract claims |
 | `contract_router.py` | lexical fast path, semantic proposal และ deterministic anchor/span gate |
+| `requirement_gate.py` | ตรวจ explicit multi-condition specification ให้ครบก่อน tool call |
 | `dynamic_observer.py` | post-tool observation และ claim ledger |
 | `risk_router.py` | deterministic observation และ semantic-risk routing |
 | `semantic_observer.py` | LLM observer สำหรับความเสี่ยงด้านความหมาย |
@@ -361,8 +367,13 @@ python scripts/replay_v2_questions.py \
   --output artifacts/v2_full_question_replay_v3_run.json
 ```
 
-ผลทดสอบ local ล่าสุด: non-Lab 8 `132 passed`;
+ผลทดสอบ local ล่าสุด: non-Lab 8 `149 passed`, `52 subtests passed`;
 Lab 8 แยก `2 passed`
+
+Three-question strict replay ล่าสุดผ่าน `3/3`: Finance semantic identity
+ใช้ `finance_funding_ratio_semantics`, incomplete dual-condition request จบก่อน tool,
+และ HR all-employee department grain ใช้ `total_headcount_by_department` ดู
+[strict report](../../artifacts/reconcile_three_question_live_run3_report.md)
 
 รัน routing suite ค่าเริ่มต้น:
 

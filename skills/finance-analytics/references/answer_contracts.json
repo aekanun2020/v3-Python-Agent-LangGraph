@@ -263,6 +263,30 @@
       }
     },
     {
+      "id": "finance_funding_ratio_semantics",
+      "question_terms_all": ["funding_ratio", "approval rate"],
+      "question_terms_any": ["คือ", "ใช่หรือไม่", "เท่ากับ", "equivalent"],
+      "terminal_verdict": "approve",
+      "roles": [{
+        "id": "funding_ratio_semantic_evidence",
+        "table_terms": ["loans_fact"],
+        "query_terms_all": ["sum(l.loan_amnt)", "sum(l.funded_amnt)", "funding_ratio", "information_schema.columns", "approval_decision_column_count", "semantic_verdict"],
+        "query_terms_forbidden": ["loan_status", "current", "fully paid", "charged off"],
+        "result_fields_any": ["semantic_verdict"],
+        "result_must_contain": ["funding_ratio", "approval_decision_column_count", "not_approval_rate"],
+        "minimum_result_lines": 2,
+        "query_template": "WITH decision_schema AS (SELECT COUNT_BIG(*) AS decision_column_count FROM INFORMATION_SCHEMA.COLUMNS WHERE LOWER(COLUMN_NAME) IN ('approved','rejected','approval_status','approval_decision','decision') OR LOWER(COLUMN_NAME) LIKE '%approval%') SELECT COUNT_BIG(*) AS loan_count, CONVERT(varchar(40), CAST(SUM(l.loan_amnt) AS decimal(38,2))) AS requested_total, CONVERT(varchar(40), CAST(SUM(l.funded_amnt) AS decimal(38,2))) AS funded_total, CONVERT(varchar(40), CAST(SUM(l.funded_amnt)/NULLIF(SUM(l.loan_amnt),0) AS decimal(12,8))) AS funding_ratio, d.decision_column_count AS approval_decision_column_count, CASE WHEN d.decision_column_count=0 THEN 'not_approval_rate' ELSE 'schema_requires_review' END AS semantic_verdict FROM loans_fact l CROSS JOIN decision_schema d GROUP BY d.decision_column_count"
+      }],
+      "output": {
+        "role_id": "funding_ratio_semantic_evidence",
+        "required_columns": ["loan_count", "requested_total", "funded_total", "funding_ratio", "approval_decision_column_count", "semantic_verdict"],
+        "grounded_notes": [
+          "funding_ratio = SUM(funded_amnt) / SUM(loan_amnt)",
+          "funding_ratio ไม่ใช่ approval rate; approval rate ต้องมี approval/rejection decision population และ denominator ซึ่ง schema นี้ไม่มี"
+        ]
+      }
+    },
+    {
       "id": "finance_funding_gap_by_year",
       "question_terms_all": ["requested_total", "funded_total", "funding_gap", "funding_ratio"],
       "question_terms_any": ["แต่ละปี", "2016-2019", "approval rate"],

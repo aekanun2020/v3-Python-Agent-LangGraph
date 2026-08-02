@@ -1,0 +1,170 @@
+{
+  "suite_id": "reconciliation-three-question-v2",
+  "generated_at": "2026-08-02T01:55:57.484705+00:00",
+  "source_commit": "abe4b4726756174ab733f9cec7f13d08262eb80e+working-tree",
+  "manifest_sha256": "dca56d9799bd8884d827b719373047ee46e96927661a58929affb35b9d1bccc0",
+  "question_projection_sha256": "778bc23019f8bc313683b3208c3af775160b573c740d35545290959c6c6fe971",
+  "router_fingerprint": {
+    "prompt_version": "hybrid-contract-router-v3",
+    "gate_version": "skill-grounded-admission-gate-v1",
+    "gate_source_sha256": "611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab",
+    "catalog_sha256": "9d9a13746497de67286e04b9c444325c85d7c0003d644de2cdac031841cb2495",
+    "model": "openai/gpt-oss-120b",
+    "request_timeout_seconds": 30.0,
+    "max_output_tokens": 1600,
+    "reasoning_effort": "low",
+    "minimum_confidence": 0.8
+  },
+  "models": {
+    "agent": "qwen/qwen3.5-35b-a3b",
+    "router": "openai/gpt-oss-120b",
+    "observer": "openai/gpt-oss-120b"
+  },
+  "mcp_tools_discovered": 5,
+  "mcp_endpoint_recorded": false,
+  "summary": {
+    "questions_total": 3,
+    "questions_passed": 3,
+    "questions_failed": 0,
+    "routing_passed": 3,
+    "contract_live_passed": 1,
+    "contract_live_total": 1,
+    "general_agent_live_passed": 2,
+    "general_agent_live_total": 2
+  },
+  "contract_evidence": {
+    "finance_funding_ratio_semantics": {
+      "evidence_sha256": "1a1993624ef8df8b12aaf0f10cc3b828e3b273cb16c6a74945f53adba911042d",
+      "roles": [
+        {
+          "role_id": "funding_ratio_semantic_evidence",
+          "query": "WITH decision_schema AS (SELECT COUNT_BIG(*) AS decision_column_count FROM INFORMATION_SCHEMA.COLUMNS WHERE LOWER(COLUMN_NAME) IN ('approved','rejected','approval_status','approval_decision','decision') OR LOWER(COLUMN_NAME) LIKE '%approval%') SELECT COUNT_BIG(*) AS loan_count, CONVERT(varchar(40), CAST(SUM(l.loan_amnt) AS decimal(38,2))) AS requested_total, CONVERT(varchar(40), CAST(SUM(l.funded_amnt) AS decimal(38,2))) AS funded_total, CONVERT(varchar(40), CAST(SUM(l.funded_amnt)/NULLIF(SUM(l.loan_amnt),0) AS decimal(12,8))) AS funding_ratio, d.decision_column_count AS approval_decision_column_count, CASE WHEN d.decision_column_count=0 THEN 'not_approval_rate' ELSE 'schema_requires_review' END AS semantic_verdict FROM loans_fact l CROSS JOIN decision_schema d GROUP BY d.decision_column_count",
+          "result": " loan_count requested_total   funded_total funding_ratio  approval_decision_column_count  semantic_verdict\n    1432440  22017159100.00 22017131100.00    0.99999873                               0 not_approval_rate"
+        }
+      ]
+    }
+  },
+  "results": [
+    {
+      "id": "v2q_008",
+      "question": "funding_ratio คือ approval rate ใช่หรือไม่",
+      "category": "finance_boundary_semantics",
+      "evaluation_mode": "contract_live",
+      "expected_contract": "finance_funding_ratio_semantics",
+      "actual_contract": "finance_funding_ratio_semantics",
+      "route_passed": true,
+      "route": {
+        "path": "lexical",
+        "confidence": 1.0,
+        "reason": "literal question_terms_all/any matched",
+        "semantic_attempted": false
+      },
+      "route_error": null,
+      "passed": true,
+      "contract": {
+        "evidence_sha256": "1a1993624ef8df8b12aaf0f10cc3b828e3b273cb16c6a74945f53adba911042d",
+        "satisfied": true,
+        "missing_roles": [],
+        "claim_count": 3,
+        "claims": [
+          "loan_count=1432440; requested_total=22017159100.00; funded_total=22017131100.00; funding_ratio=0.99999873; approval_decision_column_count=0; semantic_verdict=not_approval_rate",
+          "funding_ratio = SUM(funded_amnt) / SUM(loan_amnt)",
+          "funding_ratio ไม่ใช่ approval rate; approval rate ต้องมี approval/rejection decision population และ denominator ซึ่ง schema นี้ไม่มี"
+        ],
+        "answer_sha256": "a23fa956f101eda35bd5aa612daa392f899711bf51f12e3e4e0215074e40bd5a",
+        "context_fidelity": {
+          "status": "supported",
+          "evidence_frames": 1,
+          "successful_frames": 1,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": 1.0,
+          "unsupported_numbers": [],
+          "unsupported_interpretations": [],
+          "missing_labels": [],
+          "missing_claims": []
+        }
+      },
+      "elapsed_seconds": 0.657286
+    },
+    {
+      "id": "v2q_015",
+      "question": "คัดช่วงอายุงานที่สัดส่วน Charged Off สูงกว่าค่าเฉลี่ยรวมแบบ strict และผ่านทั้งสองเงื่อนไข",
+      "category": "finance_incomplete_specification",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches all required concepts and constraints.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "คำขอยังระบุเงื่อนไขไม่ครบ: คำถามระบุว่าต้องผ่านสองเงื่อนไข แต่พบเงื่อนไขเปรียบเทียบที่ระบุชัดเพียง 1 เงื่อนไข; กรุณาระบุเงื่อนไขที่สองก่อนเรียก tool",
+        "answer_sha256": "80eb88f127d6dc77a658ad40bd5b0b2abe925cff773c9d8752ddf83e3a24e88b",
+        "answer_nonempty": true,
+        "completed": true,
+        "insufficient_specification": true,
+        "context_fidelity": {
+          "status": "insufficient_evidence",
+          "successful_frames": 0,
+          "evidence_frames": 0,
+          "numeric_precision": 0.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 0.00038,
+        "error": null,
+        "stdout": "[REQUIREMENT GATE] verdict=insufficient_specification declared=2 detected=1 reason=คำถามระบุว่าต้องผ่านสองเงื่อนไข แต่พบเงื่อนไขเปรียบเทียบที่ระบุชัดเพียง 1 เงื่อนไข; กรุณาระบุเงื่อนไขที่สองก่อนเรียก tool\n[CONTEXT FIDELITY] status=insufficient_evidence frames=0/0 numeric_precision=0.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nคำขอยังระบุเงื่อนไขไม่ครบ: คำถามระบุว่าต้องผ่านสองเงื่อนไข แต่พบเงื่อนไขเปรียบเทียบที่ระบุชัดเพียง 1 เงื่อนไข; กรุณาระบุเงื่อนไขที่สองก่อนเรียก tool\n------------------------------------------------------------\n[todo สุดท้าย]\n\n[context budget] BudgetState(steps=0, tool_calls=0, errors=0)\n"
+      },
+      "elapsed_seconds": 4.688463
+    },
+    {
+      "id": "v2q_030",
+      "question": "นับพนักงานทั้งหมดแยกตามแผนก",
+      "category": "hr_general_grounding",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches all required concepts, one_of_concepts, and fixed constraints. The request does not specify the active employee population required by the matching contract.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ยังไม่สามารถตอบข้อสรุปที่ร้องขอได้จากหลักฐานที่มี: No employee data rows were returned; cannot compute counts per department.",
+        "answer_sha256": "2fb169becd122e92817562928b2cb25c17dae231b5d77229ef2e75d3a1141ee8",
+        "answer_nonempty": true,
+        "completed": true,
+        "insufficient_specification": false,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 1,
+          "evidence_frames": 1,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 29.367618,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=1\n[step 1] TODO_WRITE\n[ ] 1. เรียก get_database_context เพื่อดู schema ของฐานข้อมูล\n[ ] 2. วิเคราะห์ schema หาตารางที่เกี่ยวข้องกับพนักงานและแผนก\n[ ] 3. เขียน T-SQL query นับพนักงานแยกตามแผนก\n[ ] 4. รัน query และรับผลลัพธ์\n[ ] 5. สรุปผลการวิเคราะห์เชิงธุรกิจ\n[PYTHON OBSERVATION] evidence=call_1d98af2c3466437e90e98415 decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_1d98af2c3466437e90e98415 supports=False complete=False proved=[] next=query_more reason=Schema information only; need actual employee data to count employees per department\n[step 2] TOOL get_database_context\n[step 3] TODO_UPDATE -> {'index': 1, 'status': 'done'}\n[x] 1. เรียก get_database_context เพื่อดู schema ของฐานข้อมูล\n[ ] 2. วิเคราะห์ schema หาตารางที่เกี่ยวข้องกับพนักงานและแผนก\n[ ] 3. เขียน T-SQL query นับพนักงานแยกตามแผนก\n[ ] 4. รัน query และรับผลลัพธ์\n[ ] 5. สรุปผลการวิเคราะห์เชิงธุรกิจ\n[step 4] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[x] 1. เรียก get_database_context เพื่อดู schema ของฐานข้อมูล\n[~] 2. วิเคราะห์ schema หาตารางที่เกี่ยวข้องกับพนักงานและแผนก\n[ ] 3. เขียน T-SQL query นับพนักงานแยกตามแผนก\n[ ] 4. รัน query และรับผลลัพธ์\n[ ] 5. สรุปผลการวิเคราะห์เชิงธุรกิจ\n[FINAL ROUTING] risks=['empty-answer']\n[FINAL OBSERVATION] verdict=query_more reason=No employee data rows were returned; cannot compute counts per department.\n[CONTEXT FIDELITY] status=supported frames=1/1 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nยังไม่สามารถตอบข้อสรุปที่ร้องขอได้จากหลักฐานที่มี: No employee data rows were returned; cannot compute counts per department.\n------------------------------------------------------------\n[todo สุดท้าย]\n[x] 1. เรียก get_database_context เพื่อดู schema ของฐานข้อมูล\n[~] 2. วิเคราะห์ schema หาตารางที่เกี่ยวข้องกับพนักงานและแผนก\n[ ] 3. เขียน T-SQL query นับพนักงานแยกตามแผนก\n[ ] 4. รัน query และรับผลลัพธ์\n[ ] 5. สรุปผลการวิเคราะห์เชิงธุรกิจ\n[context budget] BudgetState(steps=4, tool_calls=1, errors=0)\n"
+      },
+      "elapsed_seconds": 34.160061
+    }
+  ],
+  "decision_projection_sha256": "5c21e079615d687a394d82efa075e1bf5d35b6797c64499e512f37999308698a"
+}

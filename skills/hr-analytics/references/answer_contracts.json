@@ -2,6 +2,30 @@
   "version": "hr-answer-contracts-v2",
   "contracts": [
     {
+      "id": "total_headcount_by_department",
+      "question_terms_all": ["พนักงานทั้งหมด", "แผนก"],
+      "question_terms_any": ["นับ", "แยกตาม", "จำนวน"],
+      "terminal_verdict": "approve",
+      "roles": [{
+        "id": "grouped_total_headcount",
+        "table_terms": ["employees"],
+        "query_terms_all": ["count(", "group by", "department"],
+        "query_terms_forbidden": [" where ", " status ", " top ", " limit "],
+        "result_fields_any": ["employee_count"],
+        "result_must_contain": ["department", "employee_count"],
+        "minimum_result_lines": 3,
+        "query_template": "SELECT department, COUNT(*) AS employee_count FROM employees GROUP BY department ORDER BY department"
+      }],
+      "output": {
+        "role_id": "grouped_total_headcount",
+        "required_columns": ["department", "employee_count"],
+        "spaced_column": "department",
+        "grounded_notes": [
+          "population=พนักงานทุกรายในตาราง employees; ไม่กรอง status"
+        ]
+      }
+    },
+    {
       "id": "active_headcount_by_department",
       "question_terms_all": ["ปฏิบัติงาน", "department"],
       "question_terms_any": ["กี่คน", "แยกตาม"],

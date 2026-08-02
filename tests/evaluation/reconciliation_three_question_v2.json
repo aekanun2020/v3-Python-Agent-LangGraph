@@ -1,0 +1,35 @@
+{
+  "suite_id": "reconciliation-three-question-v2",
+  "generated_at": "2026-08-02T00:00:00+07:00",
+  "frozen_before_first_run": true,
+  "source_repository": "aekanun2020/v3-Python-Agent-LangGraph",
+  "source_commit": "abe4b4726756174ab733f9cec7f13d08262eb80e+working-tree",
+  "scope": "Three exact questions retained from the v2 replay inventory. Expectations describe the corrected v3 behavior before the first run of this suite.",
+  "question_count": 3,
+  "contract_live_count": 1,
+  "general_agent_live_count": 2,
+  "question_projection_sha256": "132592cdacf57576a537d03b4eedd47097f69f300a1076da6df21f15b096499d",
+  "cases": [
+    {
+      "id": "v2q_008",
+      "question": "funding_ratio คือ approval rate ใช่หรือไม่",
+      "category": "finance_boundary_semantics",
+      "expected_contract": "finance_funding_ratio_semantics",
+      "evaluation_mode": "contract_live"
+    },
+    {
+      "id": "v2q_015",
+      "question": "คัดช่วงอายุงานที่สัดส่วน Charged Off สูงกว่าค่าเฉลี่ยรวมแบบ strict และผ่านทั้งสองเงื่อนไข",
+      "category": "finance_incomplete_specification",
+      "expected_contract": null,
+      "evaluation_mode": "general_agent_live"
+    },
+    {
+      "id": "v2q_030",
+      "question": "นับพนักงานทั้งหมดแยกตามแผนก",
+      "category": "hr_general_grounding",
+      "expected_contract": null,
+      "evaluation_mode": "general_agent_live"
+    }
+  ]
+}

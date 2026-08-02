@@ -71,6 +71,7 @@ from labs.lab6_todo.phase2_runtime import (
     hard_deadline,
 )
 from labs.lab6_todo.contract_router import route_metric_contract
+from labs.lab6_todo.requirement_gate import assess_requirement_completeness
 
 SYSTEM = (
     "คุณคือ agent ที่ทำงานเป็นขั้นตอน ตอบเป็นภาษาไทย\n"
@@ -337,6 +338,23 @@ def _run_impl(
         max_final_reviews=max_semantic_reviews,
         max_mcp_calls=max_mcp_calls,
     )
+    requirement_assessment = assess_requirement_completeness(question)
+    if not requirement_assessment.complete:
+        print(
+            "[REQUIREMENT GATE] verdict=insufficient_specification "
+            f"declared={requirement_assessment.declared_count} "
+            f"detected={requirement_assessment.detected_count} "
+            f"reason={requirement_assessment.reason}"
+        )
+        context.set_phase(AgentPhase.ANSWER)
+        return _print_final(
+            "คำขอยังระบุเงื่อนไขไม่ครบ: "
+            + requirement_assessment.reason,
+            todo,
+            context,
+            evidence=evidence,
+            contract=None,
+        )
     route = route_metric_contract(
         question,
         semantic=(

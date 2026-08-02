@@ -2,6 +2,34 @@
   "version": "hr-routing-catalog-v1",
   "contracts": [
     {
+      "id": "total_headcount_by_department",
+      "intent": "Count every employee row grouped by department, without an employment-status filter.",
+      "exclude": "Active-only headcount, former-only headcount, one overall total, individual records, or a staffing recommendation.",
+      "required_concepts": ["all employee population", "department grain"],
+      "one_of_concepts": ["count operation"],
+      "critical_anchor_groups": [
+        ["พนักงานทั้งหมด", "all employees"],
+        ["แผนก", "department"]
+      ],
+      "concept_evidence_patterns": {
+        "all employee population": [
+          "พนักงาน(?:ทั้งหมด|ทุกคน)",
+          "บุคลากร(?:ทั้งหมด|ทุกคน)",
+          "\\ball\\s+(?:employees|staff|workforce)\\b"
+        ],
+        "department grain": [
+          "แยกตาม(?:แผนก|ฝ่าย)",
+          "ราย(?:แผนก|ฝ่าย)",
+          "\\bby\\s+departments?\\b"
+        ],
+        "count operation": [
+          "นับ(?:จำนวน)?",
+          "จำนวน(?:พนักงาน|คน)",
+          "\\b(?:count|headcount)\\b"
+        ]
+      }
+    },
+    {
       "id": "active_headcount_by_department",
       "intent": "Count active employees grouped by department.",
       "exclude": "All employees, former employees, one overall total, zero-headcount departments, individual records, or performance ranking.",

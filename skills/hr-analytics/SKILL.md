@@ -32,6 +32,8 @@ Use executable evidence contracts before narrative interpretation.
 ## Invariants
 
 - Preserve exact department, status, category, and proficiency labels.
+- Distinguish all-employee headcount from active-only headcount; never add a
+  `status` filter unless the selected contract declares that population.
 - Distinguish employee grain from training, review, skill, project, and
   certification record grain.
 - Use `COUNT(DISTINCT employee_id)` for employee coverage.

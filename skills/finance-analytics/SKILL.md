@@ -34,6 +34,8 @@ Use deterministic contracts before prose generation.
 - Treat `loan_amnt` as requested amount and `funded_amnt` as funded amount.
 - Treat `loan_status` as post-origination status, not approval/rejection.
 - Never call `SUM(funded_amnt) / SUM(loan_amnt)` an approval rate.
+- For a direct identity question, verify the amount-ratio formula and whether
+  an approval-decision population exists before emitting the semantic verdict.
 - Convert `int_rate` from fraction to percent only through explicit arithmetic.
 - Do not invent a currency.
 - Preserve exact category labels.

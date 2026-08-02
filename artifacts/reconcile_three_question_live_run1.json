@@ -1,0 +1,153 @@
+{
+  "suite_id": "v2-full-question-replay-v1",
+  "generated_at": "2026-08-02T01:34:07.367820+00:00",
+  "source_commit": "f33546aea94620e1e27425d34517e76a9443a5c2",
+  "manifest_sha256": "8fccbf131444c1450a9231df6085418d9197fec6b2f464d84817ae4b66b4e138",
+  "question_projection_sha256": "e90b98c24b5aa3836f8c2d05ff0f24eb1c2a453afc44d0edeba755d9c1602fb1",
+  "router_fingerprint": {
+    "prompt_version": "hybrid-contract-router-v3",
+    "gate_version": "skill-grounded-admission-gate-v1",
+    "gate_source_sha256": "611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab",
+    "catalog_sha256": "ed3112d6292f38d4d51d068895a6659233f6b75c8d0a342607183f1a018c4377",
+    "model": "openai/gpt-oss-120b",
+    "request_timeout_seconds": 30.0,
+    "max_output_tokens": 1600,
+    "reasoning_effort": "low",
+    "minimum_confidence": 0.8
+  },
+  "models": {
+    "agent": "qwen/qwen3.5-35b-a3b",
+    "router": "openai/gpt-oss-120b",
+    "observer": "openai/gpt-oss-120b"
+  },
+  "mcp_tools_discovered": 5,
+  "mcp_endpoint_recorded": false,
+  "summary": {
+    "questions_total": 3,
+    "questions_passed": 2,
+    "questions_failed": 1,
+    "routing_passed": 3,
+    "contract_live_passed": 0,
+    "contract_live_total": 0,
+    "general_agent_live_passed": 2,
+    "general_agent_live_total": 3
+  },
+  "contract_evidence": {},
+  "results": [
+    {
+      "id": "v2q_008",
+      "question": "funding_ratio คือ approval rate ใช่หรือไม่",
+      "category": "finance_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "The question asks whether funding_ratio is the same as approval rate, which is a semantic definition query. No contract matches this intent, and the finance_funding_gap_by_year contract explicitly excludes such semantic questions about approval rate.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ยังไม่สามารถตอบข้อสรุปที่ร้องขอได้จากหลักฐานที่มี: Definitions for funding_ratio and approval rate are missing, so equivalence cannot be determined.",
+        "answer_sha256": "88644c303cf9b8c3767541b6d4c5c7afe224d3a896bedfae096e8ce22122594c",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 2,
+          "evidence_frames": 2,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 53.485349,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=3\n[PYTHON OBSERVATION] evidence=call_b567f3006afa482fa2f2d10c decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_b567f3006afa482fa2f2d10c supports=False complete=False proved=[] next=query_more reason=Tool result only provides database schema; definitions for funding_ratio and approval rate are missing\n[step 1] TOOL get_database_context\n[step 2] TODO_WRITE\n[ ] 1. ตรวจสอบตาราง loans_fact ที่มีข้อมูลเงินกู้\n[ ] 2. ดูตัวอย่างข้อมูลเพื่อวิเคราะห์ฟิลด์ที่เกี่ยวข้อง\n[ ] 3. คำนวณและเปรียบเทียบ funding ratio vs approval rate\n[step 3] TODO_UPDATE -> {'index': 1, 'status': 'doing'}\n[~] 1. ตรวจสอบตาราง loans_fact ที่มีข้อมูลเงินกู้\n[ ] 2. ดูตัวอย่างข้อมูลเพื่อวิเคราะห์ฟิลด์ที่เกี่ยวข้อง\n[ ] 3. คำนวณและเปรียบเทียบ funding ratio vs approval rate\n[PYTHON OBSERVATION] evidence=call_d4dadd40e1c3495888d4cacd decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_d4dadd40e1c3495888d4cacd supports=True complete=False proved=[] next=query_more reason=Table preview provides loan records but does not include the required metadata definitions for funding_ratio and approval rate, which are needed to answer the user's question.\n[step 4] TOOL preview_table\n[step 5] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[~] 1. ตรวจสอบตาราง loans_fact ที่มีข้อมูลเงินกู้\n[~] 2. ดูตัวอย่างข้อมูลเพื่อวิเคราะห์ฟิลด์ที่เกี่ยวข้อง\n[ ] 3. คำนวณและเปรียบเทียบ funding ratio vs approval rate\n[FINAL ROUTING] risks=['empty-answer']\n[FINAL OBSERVATION] verdict=query_more reason=Definitions for funding_ratio and approval rate are missing, so equivalence cannot be determined.\n[CONTEXT FIDELITY] status=supported frames=2/2 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nยังไม่สามารถตอบข้อสรุปที่ร้องขอได้จากหลักฐานที่มี: Definitions for funding_ratio and approval rate are missing, so equivalence cannot be determined.\n------------------------------------------------------------\n[todo สุดท้าย]\n[~] 1. ตรวจสอบตาราง loans_fact ที่มีข้อมูลเงินกู้\n[~] 2. ดูตัวอย่างข้อมูลเพื่อวิเคราะห์ฟิลด์ที่เกี่ยวข้อง\n[ ] 3. คำนวณและเปรียบเทียบ funding ratio vs approval rate\n[context budget] BudgetState(steps=5, tool_calls=2, errors=0)\n"
+      },
+      "elapsed_seconds": 58.084014
+    },
+    {
+      "id": "v2q_015",
+      "question": "คัดช่วงอายุงานที่สัดส่วน Charged Off สูงกว่าค่าเฉลี่ยรวมแบบ strict และผ่านทั้งสองเงื่อนไข",
+      "category": "finance_unseen_paraphrases",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "User request does not explicitly mention all required concepts (e.g., 'int_rate') for any contract.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": false,
+      "general": {
+        "passed": false,
+        "runtime_contract": null,
+        "answer": "ถึงขีดจำกัดขั้นตอนและหลักฐานยังไม่พอสำหรับตอบ: The answer does not provide the employment length groups with Charged Off proportion strictly greater than the overall average because per‑group Charged Off proportions are missing from the accepted evidence.",
+        "answer_sha256": "ff4ddc7d55d6fabf4019e121443a263caf4855d32ca2b468a7d89571628d3e87",
+        "answer_nonempty": true,
+        "completed": false,
+        "context_fidelity": {
+          "status": "partially_supported",
+          "successful_frames": 6,
+          "evidence_frames": 6,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": true,
+        "elapsed_seconds": 133.035975,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=3\n[PYTHON OBSERVATION] evidence=call_30cdbb025f614abf94185ed4 decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_30cdbb025f614abf94185ed4 supports=False complete=False proved=[] next=query_more reason=Schema information only; no data rows to calculate overall or group‑level Charged Off proportions required for claims\n[step 1] TOOL get_database_context\n[step 2] TODO_WRITE\n[ ] 1. Preview ข้อมูลใน loans_fact และตารางที่เกี่ยวข้อง\n[ ] 2. คำนวณสัดส่วน Charged Off รวมทั้งหมดของพอร์ต\n[ ] 3. คำนวณสัดส่วน Charged Off แยกตาม employment_length\n[ ] 4. เปรียบเทียบและคัดกรองกลุ่มที่มีสัดส่วนสูงกว่าค่าเฉลี่ยแบบ strict\n[ ] 5. สรุปผลเชิงธุรกิจ\n[step 3] TODO_UPDATE -> {'index': 1, 'status': 'doing'}\n[~] 1. Preview ข้อมูลใน loans_fact และตารางที่เกี่ยวข้อง\n[ ] 2. คำนวณสัดส่วน Charged Off รวมทั้งหมดของพอร์ต\n[ ] 3. คำนวณสัดส่วน Charged Off แยกตาม employment_length\n[ ] 4. เปรียบเทียบและคัดกรองกลุ่มที่มีสัดส่วนสูงกว่าค่าเฉลี่ยแบบ strict\n[ ] 5. สรุปผลเชิงธุรกิจ\n[PYTHON OBSERVATION] evidence=call_d0a5aed8519149fd8a7de133 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_d0a5aed8519149fd8a7de133 supports=True complete=False proved=[] next=query_more reason=Preview did not include loan_status or employment length fields needed to compute Charged Off proportions for overall and per‑group calculations\n[step 4] TOOL preview_table\n[PYTHON OBSERVATION] evidence=call_1e7716f6b58d4f50b6945cda decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_1e7716f6b58d4f50b6945cda supports=False complete=False proved=[] next=query_more reason=Previewed loan_status_dim does not provide the loan records needed to compute overall or grouped Charged Off proportions; need to preview loans_fact (and related tables) to obtain counts.\n[step 5] TOOL preview_table\n[PYTHON OBSERVATION] evidence=call_9d5ec4d5444a4fd78e9b83da decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_9d5ec4d5444a4fd78e9b83da supports=True complete=False proved=[] next=query_more reason=The preview of emp_length_dim does not provide any loan_status counts needed to compute overall or per‑group Charged Off proportions.\n[step 6] TOOL preview_table\n[step 7] TODO_UPDATE -> {'index': 1, 'status': 'done'}\n[x] 1. Preview ข้อมูลใน loans_fact และตารางที่เกี่ยวข้อง\n[ ] 2. คำนวณสัดส่วน Charged Off รวมทั้งหมดของพอร์ต\n[ ] 3. คำนวณสัดส่วน Charged Off แยกตาม employment_length\n[ ] 4. เปรียบเทียบและคัดกรองกลุ่มที่มีสัดส่วนสูงกว่าค่าเฉลี่ยแบบ strict\n[ ] 5. สรุปผลเชิงธุรกิจ\n[step 8] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[x] 1. Preview ข้อมูลใน loans_fact และตารางที่เกี่ยวข้อง\n[~] 2. คำนวณสัดส่วน Charged Off รวมทั้งหมดของพอร์ต\n[ ] 3. คำนวณสัดส่วน Charged Off แยกตาม employment_length\n[ ] 4. เปรียบเทียบและคัดกรองกลุ่มที่มีสัดส่วนสูงกว่าค่าเฉลี่ยแบบ strict\n[ ] 5. สรุปผลเชิงธุรกิจ\n[RECONCILIATION CHECK] evidence=call_344c0ef23d4942778507674a cached=False pending=False\n[RECONCILIATION ROUTING] evidence=call_344c0ef23d4942778507674a route=verify reasons=['derived-ratio', 'conditional-metric', 'aggregate-comparison'] fields=['total_loans', 'charged_off_count', 'overall_charged_off_proportion']\n[PYTHON OBSERVATION] evidence=call_344c0ef23d4942778507674a decision=accept type=query_result risk=True reasons=['derived-ratio', 'conditional-metric', 'aggregate-comparison']\n[LLM OBSERVER SKIPPED] awaiting deterministic reconciliation\n[step 9] TOOL execute_query_tool\n[RECONCILIATION CHECK] evidence=call_edf063e85e9b4a279c973247 cached=False pending=True\n[RECONCILIATION] primary=call_344c0ef23d4942778507674a verification=call_edf063e85e9b4a279c973247 verdict=match reason=independent query returned the same rows and values\n[PYTHON OBSERVATION] evidence=call_edf063e85e9b4a279c973247 decision=accept type=query_result risk=True reasons=['derived-ratio', 'conditional-metric', 'aggregate-comparison']\n[DYNAMIC OBSERVER SKIPPED] dynamic observer budget exhausted; elapsed=111.7/240.0s agent=10/13 router=0/1 observer=5/5 final=0/1 mcp=6/8\n[step 10] TOOL execute_query_tool\n[step 11] TODO_UPDATE -> {'index': 2, 'status': 'done'}\n[x] 1. Preview ข้อมูลใน loans_fact และตารางที่เกี่ยวข้อง\n[x] 2. คำนวณสัดส่วน Charged Off รวมทั้งหมดของพอร์ต\n[ ] 3. คำนวณสัดส่วน Charged Off แยกตาม employment_length\n[ ] 4. เปรียบเทียบและคัดกรองกลุ่มที่มีสัดส่วนสูงกว่าค่าเฉลี่ยแบบ strict\n[ ] 5. สรุปผลเชิงธุรกิจ\n[step 12] TODO_UPDATE -> {'index': 3, 'status': 'doing'}\n[x] 1. Preview ข้อมูลใน loans_fact และตารางที่เกี่ยวข้อง\n[x] 2. คำนวณสัดส่วน Charged Off รวมทั้งหมดของพอร์ต\n[~] 3. คำนวณสัดส่วน Charged Off แยกตาม employment_length\n[ ] 4. เปรียบเทียบและคัดกรองกลุ่มที่มีสัดส่วนสูงกว่าค่าเฉลี่ยแบบ strict\n[ ] 5. สรุปผลเชิงธุรกิจ\n[FINAL ROUTING] risks=['unsupported-numbers:10.29%', 'semantic-decision', 'qualitative-interpretation', 'risky-tool-semantics']\n[FINAL OBSERVATION] verdict=query_more reason=The answer does not provide the employment length groups with Charged Off proportion strictly greater than the overall average because per‑group Charged Off proportions are missing from the accepted evidence.\n[CONTEXT FIDELITY] status=partially_supported frames=6/6 numeric_precision=1.000 label_recall=None claim_recall=None\n[CONTEXT FIDELITY DETAIL] unsupported_interpretations=['ถึงขีดจำกัดขั้นตอนและหลักฐานยังไม่พอสำหรับตอบ: The answer does not provide the employment length groups with Charged Off proportion strictly greater than the overall average because per‑group Charged Off proportions are missing from the accepted evidence.']\n------------------------------------------------------------\n[answer]\nถึงขีดจำกัดขั้นตอนและหลักฐานยังไม่พอสำหรับตอบ: The answer does not provide the employment length groups with Charged Off proportion strictly greater than the overall average because per‑group Charged Off proportions are missing from the accepted evidence.\n------------------------------------------------------------\n[todo สุดท้าย]\n[x] 1. Preview ข้อมูลใน loans_fact และตารางที่เกี่ยวข้อง\n[x] 2. คำนวณสัดส่วน Charged Off รวมทั้งหมดของพอร์ต\n[~] 3. คำนวณสัดส่วน Charged Off แยกตาม employment_length\n[ ] 4. เปรียบเทียบและคัดกรองกลุ่มที่มีสัดส่วนสูงกว่าค่าเฉลี่ยแบบ strict\n[ ] 5. สรุปผลเชิงธุรกิจ\n[context budget] BudgetState(steps=12, tool_calls=6, errors=0)\n"
+      },
+      "elapsed_seconds": 135.689625
+    },
+    {
+      "id": "v2q_030",
+      "question": "นับพนักงานทั้งหมดแยกตามแผนก",
+      "category": "hr_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches all required concepts, one_of_concepts, and fixed constraints. The request lacks the required fixed constraint for active employee population.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- เทคโนโลยีสารสนเทศ: 5 employees\n- การตลาด: 4 employees\n- ทรัพยากรบุคคล: 4 employees\n- การเงิน: 3 employees\n- ผลิต: 3 employees\n- วิจัยและพัฒนา: 3 employees\n- บัญชี: 2 employees\n- บริหารทั่วไป: 1 employee",
+        "answer_sha256": "de9bafe9f9e01dc021137bd69fea6d86b550b862600bb6c69bd82cc59423b7be",
+        "answer_nonempty": true,
+        "completed": true,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 6,
+          "evidence_frames": 6,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 110.654462,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=1\n[step 1] TODO_WRITE\n[ ] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางพนักงานและแผนก\n[ ] 2. อ่านข้อมูลตัวอย่างจากตารางที่เกี่ยวข้อง\n[ ] 3. เขียน T-SQL query สำหรับนับพนักงานแยกตามแผนก\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์\n[PYTHON OBSERVATION] evidence=call_e88da7c1f53b49fe924e54d4 decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_e88da7c1f53b49fe924e54d4 supports=False complete=False proved=[] next=query_more reason=Tool returned only schema metadata; no row data to count employees per department\n[step 2] TOOL get_database_context\n[step 3] TODO_UPDATE -> {'index': 1, 'status': 'done'}\n[x] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางพนักงานและแผนก\n[ ] 2. อ่านข้อมูลตัวอย่างจากตารางที่เกี่ยวข้อง\n[ ] 3. เขียน T-SQL query สำหรับนับพนักงานแยกตามแผนก\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์\n[step 3] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[x] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางพนักงานและแผนก\n[~] 2. อ่านข้อมูลตัวอย่างจากตารางที่เกี่ยวข้อง\n[ ] 3. เขียน T-SQL query สำหรับนับพนักงานแยกตามแผนก\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์\n[PYTHON OBSERVATION] evidence=call_ff9825d926ff4c8083fef8de decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_ff9825d926ff4c8083fef8de supports=True complete=False proved=[] next=query_more reason=Preview provides raw rows but does not include the aggregated count per department required by the claim.\n[step 3] TOOL preview_table\n[step 4] TODO_UPDATE -> {'index': 2, 'status': 'done'}\n[x] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางพนักงานและแผนก\n[x] 2. อ่านข้อมูลตัวอย่างจากตารางที่เกี่ยวข้อง\n[ ] 3. เขียน T-SQL query สำหรับนับพนักงานแยกตามแผนก\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์\n[step 4] TODO_UPDATE -> {'index': 3, 'status': 'doing'}\n[x] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางพนักงานและแผนก\n[x] 2. อ่านข้อมูลตัวอย่างจากตารางที่เกี่ยวข้อง\n[~] 3. เขียน T-SQL query สำหรับนับพนักงานแยกตามแผนก\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์\n[PYTHON OBSERVATION] evidence=call_a220368654da48b3bc3c9fb1 decision=accept type=query_result risk=False reasons=['aggregate-comparison']\n[DYNAMIC OBSERVATION] evidence=call_a220368654da48b3bc3c9fb1 supports=True complete=True proved=[] next=accept reason=The query result provides the count of employees per department, matching the required grain and fields for claim_001.\n[step 4] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_e129b66503ae426daa193a24 decision=accept type=query_result risk=True reasons=['distinct-grain', 'aggregate-comparison']\n[DYNAMIC OBSERVATION] evidence=call_e129b66503ae426daa193a24 supports=True complete=True proved=[] next=accept reason=Evidence provides department-level employee counts as required by claim_001.\n[step 5] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_0fc497df3be34939af5770d1 decision=accept type=query_result risk=False reasons=['aggregate-comparison']\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 6] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_ed73d87109a045349d95dbf0 decision=accept type=query_result risk=False reasons=['aggregate-comparison']\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 7] TOOL execute_query_tool\n[step 8] TODO_UPDATE -> {'index': 3, 'status': 'done'}\n[x] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางพนักงานและแผนก\n[x] 2. อ่านข้อมูลตัวอย่างจากตารางที่เกี่ยวข้อง\n[x] 3. เขียน T-SQL query สำหรับนับพนักงานแยกตามแผนก\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์\n[step 8] TODO_UPDATE -> {'index': 4, 'status': 'doing'}\n[x] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางพนักงานและแผนก\n[x] 2. อ่านข้อมูลตัวอย่างจากตารางที่เกี่ยวข้อง\n[x] 3. เขียน T-SQL query สำหรับนับพนักงานแยกตามแผนก\n[~] 4. รัน query และวิเคราะห์ผลลัพธ์\n[step 9] TODO_UPDATE -> {'index': 4, 'status': 'done'}\n[x] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางพนักงานและแผนก\n[x] 2. อ่านข้อมูลตัวอย่างจากตารางที่เกี่ยวข้อง\n[x] 3. เขียน T-SQL query สำหรับนับพนักงานแยกตามแผนก\n[x] 4. รัน query และวิเคราะห์ผลลัพธ์\n[FINAL ROUTING] risks=['empty-answer', 'risky-tool-semantics']\n[FINAL OBSERVATION] verdict=rewrite reason=The proposed answer is empty and does not provide the required employee counts per department.\n[FINAL CLAIM GATE] verify-then-emit; MCP disabled; observer_supported=8\n[CONTEXT FIDELITY] status=supported frames=6/6 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- เทคโนโลยีสารสนเทศ: 5 employees\n- การตลาด: 4 employees\n- ทรัพยากรบุคคล: 4 employees\n- การเงิน: 3 employees\n- ผลิต: 3 employees\n- วิจัยและพัฒนา: 3 employees\n- บัญชี: 2 employees\n- บริหารทั่วไป: 1 employee\n------------------------------------------------------------\n[todo สุดท้าย]\n[x] 1. ตรวจสอบโครงสร้างฐานข้อมูลเพื่อหาตารางพนักงานและแผนก\n[x] 2. อ่านข้อมูลตัวอย่างจากตารางที่เกี่ยวข้อง\n[x] 3. เขียน T-SQL query สำหรับนับพนักงานแยกตามแผนก\n[x] 4. รัน query และวิเคราะห์ผลลัพธ์\n[context budget] BudgetState(steps=14, tool_calls=6, errors=0)\n"
+      },
+      "elapsed_seconds": 115.631804
+    }
+  ],
+  "decision_projection_sha256": "135b21c2a98f8c2af18120d5cc6dcbe1f3e84f5c9617f31803cc31071c1e4b09"
+}

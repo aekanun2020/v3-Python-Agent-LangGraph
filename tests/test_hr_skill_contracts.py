@@ -42,8 +42,8 @@ class HRSkillIsolationTests(unittest.TestCase):
             / "references"
             / "answer_contracts.json"
         )
-        self.assertEqual(len(hr["contracts"]), 10)
-        self.assertEqual(len(finance["contracts"]), 10)
+        self.assertEqual(len(hr["contracts"]), 11)
+        self.assertEqual(len(finance["contracts"]), 11)
         hr_ids = {item["id"] for item in hr["contracts"]}
         finance_ids = {item["id"] for item in finance["contracts"]}
         self.assertFalse(hr_ids & finance_ids)
@@ -63,6 +63,28 @@ class HRSkillIsolationTests(unittest.TestCase):
             finance["id"],
             "finance_portfolio_totals",
         )
+
+    def test_total_headcount_contract_preserves_all_employee_population(self):
+        question = "นับพนักงานทั้งหมดแยกตามแผนก"
+        selected = select_metric_contract(question)
+        self.assertIsNotNone(selected)
+        self.assertEqual(selected["id"], "total_headcount_by_department")
+        evidence = EvidenceState()
+        evidence.accept(EvidenceRecord.from_tool(
+            "hr-total-headcount",
+            "execute_query_tool",
+            {"query": selected["roles"][0]["query_template"]},
+            (
+                "department  employee_count\n"
+                "เทคโนโลยีสารสนเทศ  5\n"
+                "ทรัพยากรบุคคล  4\n"
+                "บริหารทั่วไป  1"
+            ),
+        ))
+        emitted = "\n".join(contract_claims(question, evidence))
+        self.assertIn("department=เทคโนโลยีสารสนเทศ; employee_count=5", emitted)
+        self.assertIn("population=พนักงานทุกราย", emitted)
+        self.assertIn("ไม่กรอง status", emitted)
 
     def test_hr_contract_declares_percentage_suffix(self):
         question = (

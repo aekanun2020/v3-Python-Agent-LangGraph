@@ -300,6 +300,28 @@
       }
     },
     {
+      "id": "finance_funding_ratio_semantics",
+      "intent": "Answer whether funding_ratio is an approval rate by verifying the amount-ratio formula and the presence or absence of approval-decision fields.",
+      "exclude": "A yearly funding-gap report, loan-status mix, or an approval recommendation.",
+      "required_concepts": [
+        "funding ratio identity",
+        "approval rate identity comparison"
+      ],
+      "one_of_concepts": [],
+      "critical_anchor_groups": [
+        ["funding_ratio", "funding ratio"],
+        ["approval rate"]
+      ],
+      "concept_evidence_patterns": {
+        "funding ratio identity": ["\\bfunding[_\\s-]*ratio\\b"],
+        "approval rate identity comparison": [
+          "\\bapproval\\s+rate\\b[^\\n.!?]{0,24}(?:ใช่หรือไม่|เท่ากับ|equivalent|same)",
+          "(?:คือ|เท่ากับ|equivalent|same)[^\\n.!?]{0,24}\\bapproval\\s+rate\\b",
+          "\\bfunding[_\\s-]*ratio\\b[^\\n.!?]{0,24}\\bapproval\\s+rate\\b"
+        ]
+      }
+    },
+    {
       "id": "finance_funding_gap_by_year",
       "intent": "For each year 2016-2019, calculate requested total, funded total, funding gap, and funding ratio without calling it approval rate.",
       "exclude": "A semantic question about approval rate alone, one year only, or rejected-application analysis.",

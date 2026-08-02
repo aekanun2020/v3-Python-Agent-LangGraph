@@ -161,3 +161,10 @@ run 1 ผ่าน live MCP `20/20` contracts และได้คำตอบ�
 [`v2_incidents.json`](v2_incidents.json) และ replay ด้วย
 `scripts/replay_v2_incidents.py`; หลังแก้ regression ที่ suite พบ live run 2–3
 ผ่าน incidents `17/17`, routing `40/40` และ contracts `6/6` ต่อรอบ
+
+Three-question strict replay ใช้
+[`reconciliation_three_question_v3.json`](reconciliation_three_question_v3.json)
+ซึ่ง freeze expected routes ก่อรัน: semantic amount-ratio contract,
+pre-tool incomplete-specification stop และ all-employee department contract
+ผล live อยู่ที่
+[`artifacts/reconcile_three_question_live_run3.json`](../../artifacts/reconcile_three_question_live_run3.json)

@@ -6,6 +6,7 @@
 
 ```text
 Question
+  -> explicit multi-condition completeness gate
   -> negation/schema-only request guard
   -> exact/high-precision lexical fast path
   -> entity/concept identity + polarity/operator + typed-constraint gate
@@ -27,6 +28,8 @@ General path  -> MCP tool call -> EvidenceFrame
 safety policy เฉพาะโดเมน Observation เพียงอย่างเดียวยังไม่พอ:
 
 - **Router** เสนอ intent family แต่ไม่ได้มีอำนาจรับ evidence หรืออนุมัติคำตอบ
+- **Requirement Gate** หยุดก่อนเรียก tool เมื่อผู้ใช้ประกาศจำนวนเกณฑ์ชัดเจน
+  แต่ระบุเกณฑ์จริงไม่ครบ เช่นบอกว่ามีสองเงื่อนไขแต่ให้มาเพียงหนึ่ง
 - **Skill** เก็บ semantics และ policy ของ bounded domain
 - **Contract** นิยาม query, grain, field, label และ completion rule ที่ runtime ตรวจได้
 - **Observation** ตรวจผล tool เทียบกับ state และ contract
@@ -83,6 +86,7 @@ contract-owned constraints, confidence และ exact spans ก่อนรั�
 [v3.1 Evidence-context report](artifacts/v3_1_evidence_context_report.md),
 [HR report](artifacts/hr_skill_run4_run5_report.md) และ
 [Finance report](artifacts/finance_skill_run3_run4_report.md)
+และ [Three-question strict reconciliation report](artifacts/reconcile_three_question_live_run3_report.md)
 
 ### ผล Hybrid Router ล่าสุด
 
@@ -158,7 +162,7 @@ python -m pytest tests --ignore=tests/test_lab8_planner.py -q
 python -m unittest -v tests.test_lab8_planner
 ```
 
-ผลทดสอบ local ล่าสุด: non-Lab 8 `140 passed` และ `52 subtests passed`;
+ผลทดสอบ local ล่าสุด: non-Lab 8 `149 passed` และ `52 subtests passed`;
 Lab 8 แยก `2 passed`
 ผล live general-path Reconciliation ดูที่
 [Reconcile-first acceptance report](artifacts/reconciliation_first_report.md)

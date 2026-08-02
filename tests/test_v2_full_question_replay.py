@@ -4,11 +4,19 @@ from pathlib import Path
 
 from labs.lab6_todo.evidence_contract import metric_contract_by_id
 from scripts.build_v2_question_inventory import sha256
-from scripts.replay_v2_questions import _completed_answer, _parse_fidelity
+from scripts.replay_v2_questions import (
+    _completed_answer,
+    _insufficient_specification,
+    _parse_fidelity,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "tests" / "evaluation" / "v2_full_question_replay.json"
+THREE_QUESTION_MANIFESTS = (
+    ROOT / "tests" / "evaluation" / "reconciliation_three_question_v2.json",
+    ROOT / "tests" / "evaluation" / "reconciliation_three_question_v3.json",
+)
 
 
 class V2FullQuestionReplayTests(unittest.TestCase):
@@ -78,6 +86,35 @@ class V2FullQuestionReplayTests(unittest.TestCase):
         )
         self.assertFalse(_completed_answer(answer))
         self.assertTrue(_completed_answer("สรุปผลจากหลักฐานครบถ้วน"))
+
+    def test_requirement_gate_stop_is_a_valid_terminal_outcome(self):
+        self.assertTrue(_insufficient_specification(
+            "[REQUIREMENT GATE] verdict=insufficient_specification "
+            "declared=2 detected=1"
+        ))
+        self.assertFalse(_insufficient_specification(
+            "[CONTEXT FIDELITY] status=insufficient_evidence"
+        ))
+
+    def test_three_question_manifests_are_frozen_and_self_consistent(self):
+        for path in THREE_QUESTION_MANIFESTS:
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+            self.assertTrue(manifest["frozen_before_first_run"])
+            self.assertEqual(manifest["question_count"], 3)
+            self.assertEqual(len(manifest["cases"]), 3)
+            projection = [
+                {
+                    "id": item["id"],
+                    "question": item["question"],
+                    "expected_contract": item["expected_contract"],
+                    "evaluation_mode": item["evaluation_mode"],
+                }
+                for item in manifest["cases"]
+            ]
+            self.assertEqual(
+                sha256(projection),
+                manifest["question_projection_sha256"],
+            )
 
 
 if __name__ == "__main__":

@@ -93,6 +93,11 @@ def _completed_answer(answer: str) -> bool:
     )
 
 
+def _insufficient_specification(output: str) -> bool:
+    """Recognize a deliberate pre-tool stop as a valid terminal outcome."""
+    return "[REQUIREMENT GATE] verdict=insufficient_specification" in output
+
+
 def _checkpoint(path: Path | None, report: dict) -> None:
     if path is None:
         return
@@ -172,6 +177,7 @@ def _run_general(
         }
     output = stream.getvalue()
     fidelity = _parse_fidelity(output)
+    insufficient_specification = _insufficient_specification(output)
     route = re.search(
         r"\[CONTRACT ROUTING\].*?contract=(\S+)",
         output,
@@ -180,9 +186,12 @@ def _run_general(
     if route and route.group(1) not in {"None", "null"}:
         runtime_contract = route.group(1)
     fidelity_ok = bool(
-        fidelity
-        and fidelity["status"] in {"supported", "insufficient_evidence"}
-        and fidelity["numeric_precision"] == 1.0
+        insufficient_specification
+        or (
+            fidelity
+            and fidelity["status"] in {"supported", "insufficient_evidence"}
+            and fidelity["numeric_precision"] == 1.0
+        )
     )
     answer_ok = bool(answer.strip()) and answer.strip() not in {"None", "null"}
     unsupported_detail = "[CONTEXT FIDELITY DETAIL]" in output
@@ -202,6 +211,7 @@ def _run_general(
         "answer_sha256": hashlib.sha256(answer.encode("utf-8")).hexdigest(),
         "answer_nonempty": answer_ok,
         "completed": completed,
+        "insufficient_specification": insufficient_specification,
         "context_fidelity": fidelity,
         "unsupported_fidelity_detail": unsupported_detail,
         "elapsed_seconds": round(time.monotonic() - started, 6),
