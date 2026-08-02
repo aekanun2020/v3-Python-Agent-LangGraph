@@ -44,6 +44,39 @@ commit `6acce1d` มีหน้าที่บันทึก README, replay sc
 ตาม frozen manifest เดียวกัน ส่วน `57/63` เป็นผลปรับอย่างเป็นธรรมหลัง
 controlled recheck และ semantic audit ตามรายงาน ไม่ควรนำสองมุมนี้มาปนกัน
 
+### สรุปว่า V3 ดีขึ้นหรือแย่ลงอย่างไร
+
+**ภาพรวมดีขึ้น แต่ไม่ชนะทุกคำถาม** เมื่อเทียบ runtime commit ข้างต้น:
+
+| มุมเปรียบเทียบ | V2 | V3 | ผลต่าง |
+|---|---:|---:|---:|
+| Raw automated | 47/63 (74.6%) | 53/63 (84.1%) | V3 +6 ข้อ (+9.5 จุดร้อยละ) |
+| Fair adjusted | 47/63 (74.6%) | 57/63 (90.5%) | V3 +10 ข้อ (+15.9 จุดร้อยละ) |
+| ผ่านทั้งคู่ใน raw run | 41 ข้อ | 41 ข้อ | เท่ากัน |
+| ผ่านเฉพาะ V3 ใน raw run | — | 12 ข้อ | Q003, Q009, Q020, Q025, Q031, Q043, Q047, Q050, Q052, Q054, Q057, Q062 |
+| ผ่านเฉพาะ V2 ใน raw run | 6 ข้อ | — | Q008, Q018, Q021, Q024, Q030, Q041 |
+| ไม่ผ่านทั้งคู่ใน raw run | 4 ข้อ | 4 ข้อ | Q027, Q039, Q059, Q063 |
+
+Raw score เพียงอย่างเดียวสรุป semantic correctness ไม่ได้ หลังตรวจคำตอบกับ
+tool context และ controlled recheck พบภาพที่แม่นกว่าดังนี้:
+
+- **V3 ดีขึ้นชัดเจน** ใน Q008, Q015 และ Q030 เพราะแยก semantic identity,
+  หยุดคำขอที่ให้เงื่อนไขไม่ครบ และรักษา population/label ตาม evidence ได้ดีขึ้น
+  ส่วน Q059 คำตอบ V3 ถูกต้องแต่ scorer นับ user-supplied threshold เป็น
+  unsupported number จึงเป็น false negative
+- **V2 ยังดีกว่า V3** ใน Q018, Q021, Q024 และ Q039 เพราะ V3 typed router
+  เข้มเกินไปและ abstain ก่อนเข้า deterministic contract executor ทั้งที่โจทย์
+  มีข้อมูลพอ ปัญหาคือ threshold paraphrase, เงื่อนไขรวม/ไม่รวม N/A และการแยก
+  ตัวเลข operand ออกจาก fixed constraint
+- **ทั้งสองยังไม่น่าเชื่อถือ** ใน Q027 ซึ่งต้องรักษา grain ระดับแผนก และ Q063
+  ซึ่ง schema ไม่มี approval decision แต่ agent ยังเสี่ยงตีความสถานะหลังปล่อยกู้
+  เป็นการอนุมัติ
+- จึงสรุปได้ว่า V3 เพิ่มความแม่นยำโดยรวมและลด semantic relabelling หลายกรณี
+  แต่แลกกับ recall regression ของ valid analytical contracts 4 ข้อ
+
+ค่า `61/63` เป็นเพดานย้อนหลังเมื่อเลือกคำตอบที่ดีกว่าระหว่าง V2/V3 รายข้อ
+ไม่ใช่คะแนนของ router ที่สร้างและรันจริง จึงห้ามใช้เป็น production score
+
 <details>
 <summary><strong>คำถามเต็มทั้ง 63 ข้อและผล automated รายข้อของ V2/V3</strong></summary>
 
