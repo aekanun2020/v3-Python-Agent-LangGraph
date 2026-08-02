@@ -52,6 +52,11 @@ SEMANTIC_TARGET_TERMS = (
     "efficiency", "efficient", "productivity", "ประสิทธิภาพ",
     "พิสูจน์ได้หรือไม่", "prove whether", "ยืนยันได้หรือไม่",
 )
+RATIO_REQUEST_TERMS = (
+    "%", "percent", "percentage", "ratio", "rate", "coverage",
+    "เปอร์เซ็นต์", "ร้อยละ", "สัดส่วน", "อัตราส่วน", "อัตราร้อยละ",
+    "ความครอบคลุม",
+)
 
 
 def _numbers(text: str) -> tuple[float, ...]:
@@ -130,6 +135,37 @@ def _numbers_supported(
     )
 
 
+def _requested_numeric_operation(claim: str, question: str) -> bool:
+    """Do not turn valid arithmetic into an unrequested answer metric."""
+    lowered_claim = claim.casefold()
+    lowered_question = question.casefold()
+
+    def contains(text: str, terms: tuple[str, ...]) -> bool:
+        return any(
+            (
+                bool(re.search(rf"\b{re.escape(term)}\b", text))
+                if term.isascii() and term.isalpha()
+                else term in text
+            )
+            for term in terms
+        )
+
+    ratio_claim = "%" in claim or contains(
+        lowered_claim,
+        RATIO_REQUEST_TERMS,
+    )
+    if ratio_claim and not contains(lowered_question, RATIO_REQUEST_TERMS):
+        return False
+    average_terms = ("average", "avg", "mean", "เฉลี่ย")
+    average_claim = contains(
+        lowered_claim,
+        average_terms,
+    )
+    if average_claim and not contains(lowered_question, average_terms):
+        return False
+    return True
+
+
 def _draft_candidates(proposed_answer: str) -> tuple[str, ...]:
     """Extract only bounded factual candidates; prose remains LLM-reviewed."""
     candidates = []
@@ -145,6 +181,28 @@ def _draft_candidates(proposed_answer: str) -> tuple[str, ...]:
             continue
         candidates.append(text)
     return tuple(dict.fromkeys(candidates))
+
+
+def _canonicalize_parenthetical_labels(
+    claim: str,
+    evidence: EvidenceState,
+) -> str:
+    """Collapse an invented expansion such as 'Production (ผลิต)' to 'ผลิต'."""
+    labels = tuple(dict.fromkeys(
+        label
+        for frame in evidence.frames
+        for label in getattr(frame, "canonical_labels", ())
+        if label
+    ))
+    candidate = claim
+    token = r"[A-Za-z0-9_ก-๙.'’-]+"
+    for label in sorted(labels, key=len, reverse=True):
+        pattern = re.compile(
+            rf"(?:{token}\s+){{0,4}}{token}\s*"
+            rf"\(\s*{re.escape(label)}\s*\)"
+        )
+        candidate = pattern.sub(label, candidate)
+    return candidate
 
 
 def _grain_supported(
@@ -460,7 +518,10 @@ def verify_claims(
         else _draft_candidates(proposed_answer)
     )
     for raw in observer_claims + draft_claims:
-        claim = str(raw).strip()
+        claim = _canonicalize_parenthetical_labels(
+            str(raw).strip(),
+            evidence,
+        )
         if not claim:
             continue
         claim_type = classify_claim(claim)
@@ -474,6 +535,12 @@ def verify_claims(
         ):
             accepted = False
             reason = "numeric post-condition failed"
+        elif (
+            claim_type is ClaimType.NUMERIC
+            and not _requested_numeric_operation(claim, question)
+        ):
+            accepted = False
+            reason = "derived numeric operation was not requested"
         elif not _units_supported(claim, evidence):
             accepted = False
             reason = "unit is absent from accepted evidence"

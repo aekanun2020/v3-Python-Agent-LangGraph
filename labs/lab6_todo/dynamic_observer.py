@@ -98,6 +98,11 @@ CLAIM_PLANNER_SYSTEM = """Create a minimal claim ledger for a tool-using agent.
 Claims are evidence requirements, not answers. Be domain-neutral.
 Split only claims that need distinct evidence. Preserve the user's threshold,
 comparison operator and requested decision exactly.
+When the user requests only an aggregate or grouped summary, never introduce a
+raw-record, record-id, example-row, or entity-detail claim. The grouped output
+itself can prove both its canonical group labels and aggregate metric.
+Do not create a separate claim for the source table, schema discovery, or the
+fact that database data is real unless the user explicitly requests metadata.
 For coverage/rate claims, numerator and denominator must have the same grain.
 If the prompt gives record count over entity count, add a claim that verifies
 the numerator as COUNT(DISTINCT entity_id), unless the user explicitly requests

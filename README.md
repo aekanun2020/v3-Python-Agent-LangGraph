@@ -17,6 +17,7 @@ Skill contract -> MCP evidence -> deterministic checks -> Claim Gate -> Answer
 
 General path  -> MCP tool call -> EvidenceFrame
               -> Python Observation
+              -> quantitative risk? independent query + Python reconcile
               -> LLM Observer เมื่อ claim ยังไม่ครบ/เสี่ยงเชิงความหมาย
               -> verified claim allowlist -> Answer
               -> Context Fidelity measurement
@@ -32,6 +33,9 @@ safety policy เฉพาะโดเมน Observation เพียงอย�
 - **Claim Gate** ปล่อยเฉพาะ claim ที่ accepted evidence รองรับ
 - **EvidenceFrame** ล็อก field, row, filter, group, aggregation, label
   และตัวเลขจาก tool แบบ deterministic ก่อนให้ LLM ตีความ
+- **Reconciliation** พักผล aggregate/join/ratio บน general path
+  ไว้ก่อน แล้วขอ query อิสระที่ใช้ SQL shape ต่างกันแต่คืน
+  output contract เดียวกัน; Python รับ evidence เมื่อ rows/values ตรงกันเท่านั้น
 - **Context Fidelity** วัด numeric precision, exact-label recall,
   required-claim recall และประโยคอนุมานที่ไม่มีหลักฐาน
 
@@ -154,8 +158,10 @@ python -m pytest tests --ignore=tests/test_lab8_planner.py -q
 python -m unittest -v tests.test_lab8_planner
 ```
 
-ผลทดสอบ local ล่าสุด: non-Lab 8 `132 passed`;
+ผลทดสอบ local ล่าสุด: non-Lab 8 `140 passed` และ `52 subtests passed`;
 Lab 8 แยก `2 passed`
+ผล live general-path Reconciliation ดูที่
+[Reconcile-first acceptance report](artifacts/reconciliation_first_report.md)
 
 รัน routing acceptance ค่าเริ่มต้น (`semantic-v3`, hybrid, fail on error):
 

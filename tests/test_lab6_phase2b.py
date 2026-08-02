@@ -19,6 +19,7 @@ from labs.lab6_todo.claim_gate import (
     verify_then_emit,
 )
 from labs.lab6_todo.dynamic_observer import (
+    CLAIM_PLANNER_SYSTEM,
     NextAction,
     observe_tool_result,
 )
@@ -72,6 +73,16 @@ class Phase2BTests(unittest.TestCase):
             f"status {status}",
             request=request,
             response=response,
+        )
+
+    def test_claim_planner_does_not_expand_aggregate_into_raw_records(self):
+        self.assertIn(
+            "never introduce a\nraw-record",
+            CLAIM_PLANNER_SYSTEM,
+        )
+        self.assertIn(
+            "Do not create a separate claim for the source table",
+            CLAIM_PLANNER_SYSTEM,
         )
 
     def test_claim_ledger_tracks_proof_and_contradiction_by_known_id(self):
@@ -489,6 +500,61 @@ class Phase2BTests(unittest.TestCase):
         )
         self.assertTrue(any(item.startswith("unsupported-numbers:") for item in risks))
         self.assertIn("semantic-decision", risks)
+
+    def test_claim_gate_rejects_unrequested_derived_percentage(self):
+        evidence = EvidenceState()
+        evidence.accept(EvidenceRecord.from_tool(
+            "call-counts",
+            "execute_query_tool",
+            {"query": "SELECT degree_level, COUNT(*) AS n FROM education GROUP BY degree_level"},
+            "degree_level  n\nป.ตรี  9\nป.โท  2\nป.เอก  1",
+        ))
+        observation = ObservationState(
+            verdict=SemanticVerdict.REWRITE,
+            reason="remove speculation",
+            supported_claims=(
+                "ป.ตรี มี 9 รายการ",
+                "ป.ตรี คิดเป็น 75% ของทั้งหมด",
+            ),
+        )
+
+        answer = verify_then_emit(
+            "นับจำนวนประวัติการศึกษาแยกตามระดับ",
+            observation,
+            evidence,
+            contract=None,
+        )
+
+        self.assertIn("ป.ตรี มี 9 รายการ", answer)
+        self.assertNotIn("75%", answer)
+
+    def test_claim_gate_collapses_invented_parenthetical_label_expansion(self):
+        evidence = EvidenceState()
+        record = EvidenceRecord.from_tool(
+            "call-levels",
+            "execute_query_tool",
+            {"query": "SELECT degree_level, COUNT(*) AS n FROM education GROUP BY degree_level"},
+            "degree_level  n\nป.ตรี  9",
+        )
+        evidence.accept(record)
+        evidence.add_frame(build_evidence_frame(record))
+        observation = ObservationState(
+            verdict=SemanticVerdict.REWRITE,
+            reason="preserve canonical labels",
+            supported_claims=(
+                "ระดับปริญญาตรี (ป.ตรี) มี 9 รายการ",
+            ),
+        )
+
+        answer = verify_then_emit(
+            "นับประวัติการศึกษาแยกระดับ",
+            observation,
+            evidence,
+            contract=None,
+        )
+
+        self.assertIn("ป.ตรี มี 9 รายการ", answer)
+        self.assertNotIn("ปริญญาตรี", answer)
 
     def test_final_router_detects_unsupported_qualitative_interpretation(self):
         evidence = EvidenceState()

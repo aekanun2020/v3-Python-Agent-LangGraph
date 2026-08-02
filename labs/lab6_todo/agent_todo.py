@@ -53,6 +53,13 @@ from labs.lab6_todo.risk_router import (
     final_semantic_risk,
     observe_deterministically,
 )
+from labs.lab6_todo.reconciliation import (
+    ReconciliationVerdict,
+    build_reconciliation_request,
+    needs_reconciliation,
+    reconcile_frames,
+    result_fingerprint,
+)
 from labs.lab6_todo.semantic_observer import (
     apply_bounded_rewrite,
     enforce_claim_alignment,
@@ -380,6 +387,8 @@ def _run_impl(
     ]
     force_no_tools = False
     reviewed_risk_signatures: set[tuple[str, ...]] = set()
+    pending_reconciliation = None
+    reconciled_outputs: set[str] = set()
     terminal_verdict = (
         terminal_contract_verdict(question, contract=selected_contract)
         if dynamic_observer
@@ -533,13 +542,118 @@ def _run_impl(
                                     contract_validation.decision
                                     is ContractDecision.ACCEPT
                                 )
+                                reconciliation_fingerprint = (
+                                    result_fingerprint(frame)
+                                )
+                                reconciliation_needed = (
+                                    selected_contract is None
+                                    and needs_reconciliation(
+                                        deterministic,
+                                        frame,
+                                    )
+                                )
+                                reconciliation_cached = (
+                                    reconciliation_fingerprint
+                                    in reconciled_outputs
+                                )
+                                if reconciliation_needed:
+                                    print(
+                                        "[RECONCILIATION CHECK] "
+                                        f"evidence={call.id} "
+                                        f"cached={reconciliation_cached} "
+                                        f"pending={pending_reconciliation is not None}"
+                                    )
+                                reconciliation_waiting = False
                                 if (
                                     deterministic.decision
                                     is DeterministicDecision.ACCEPT
                                     and contract_accepts
                                 ):
-                                    evidence.accept(record)
-                                    evidence.add_frame(frame)
+                                    if (
+                                        pending_reconciliation is not None
+                                        and frame.result_kind == "tabular"
+                                    ):
+                                        primary_record, primary_frame = (
+                                            pending_reconciliation
+                                        )
+                                        reconciliation = reconcile_frames(
+                                            primary_frame,
+                                            frame,
+                                        )
+                                        evidence.add_reconciliation(
+                                            reconciliation
+                                        )
+                                        print(
+                                            "[RECONCILIATION] "
+                                            f"primary={primary_frame.evidence_id} "
+                                            f"verification={frame.evidence_id} "
+                                            f"verdict={reconciliation.verdict.value} "
+                                            f"reason={reconciliation.reason}"
+                                        )
+                                        if reconciliation.matched:
+                                            evidence.accept(primary_record)
+                                            evidence.add_frame(primary_frame)
+                                            evidence.accept(record)
+                                            evidence.add_frame(frame)
+                                            reconciled_outputs.add(
+                                                result_fingerprint(frame)
+                                            )
+                                            pending_reconciliation = None
+                                            dynamic_feedback.append(
+                                                "accept: independent query "
+                                                "reconciled this quantitative "
+                                                "result. Do not query this metric "
+                                                "again; answer now if no other "
+                                                "user requirement remains."
+                                            )
+                                        else:
+                                            reconciliation_waiting = True
+                                            next_action = (
+                                                "replan"
+                                                if reconciliation.verdict
+                                                is ReconciliationVerdict.CONFLICT
+                                                else "query_more"
+                                            )
+                                            dynamic_feedback.append(
+                                                f"{next_action}: independent "
+                                                "verification did not reconcile "
+                                                "with the primary result; "
+                                                f"{reconciliation.reason}"
+                                            )
+                                    elif (
+                                        pending_reconciliation is None
+                                        and reconciliation_needed
+                                        and not reconciliation_cached
+                                    ):
+                                        request = build_reconciliation_request(
+                                            deterministic,
+                                            frame,
+                                        )
+                                        pending_reconciliation = (
+                                            record,
+                                            frame,
+                                        )
+                                        reconciliation_waiting = True
+                                        dynamic_feedback.append(
+                                            request.instruction
+                                        )
+                                        print(
+                                            "[RECONCILIATION ROUTING] "
+                                            f"evidence={call.id} route=verify "
+                                            f"reasons={list(request.risk_reasons)} "
+                                            f"fields={list(request.expected_fields)}"
+                                        )
+                                    else:
+                                        evidence.accept(record)
+                                        evidence.add_frame(frame)
+                                        if (
+                                            reconciliation_cached
+                                        ):
+                                            print(
+                                                "[RECONCILIATION CACHE] "
+                                                f"evidence={call.id} "
+                                                "output already verified"
+                                            )
                                 evidence.add_observation(deterministic)
                                 print(
                                     "[PYTHON OBSERVATION] "
@@ -583,6 +697,8 @@ def _run_impl(
                                     ledger.unresolved
                                 )
                                 needs_llm_observer = (
+                                    not reconciliation_waiting
+                                    and
                                     (
                                         deterministic.semantic_risk
                                         or unresolved_claims_need_observation
@@ -591,10 +707,16 @@ def _run_impl(
                                     not in reviewed_risk_signatures
                                 )
                                 if not needs_llm_observer:
-                                    print(
-                                        "[LLM OBSERVER SKIPPED] "
-                                        "low risk or risk already reviewed"
-                                    )
+                                    if reconciliation_waiting:
+                                        print(
+                                            "[LLM OBSERVER SKIPPED] "
+                                            "awaiting deterministic reconciliation"
+                                        )
+                                    else:
+                                        print(
+                                            "[LLM OBSERVER SKIPPED] "
+                                            "low risk or risk already reviewed"
+                                        )
                                     print(f"[step {step}] TOOL {name}")
                                     report = context.observe_action(
                                         name,

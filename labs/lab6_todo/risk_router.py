@@ -51,7 +51,9 @@ SQL_RISK_PATTERNS = {
     "derived-ratio": r"(?<!\*)/(?!\*)|\bpercent(?:age)?\b|\brate\b",
     "conditional-metric": r"\bcase\b",
     "time-validity": r"\b(current_date|getdate|expiry|effective_date)\b",
-    "aggregate-comparison": r"\b(avg|sum|min|max)\s*\(",
+    "aggregate-comparison": (
+        r"\b(avg|sum|min|max|count|count_big)\s*\("
+    ),
 }
 DECISION_TERMS = (
     "recommend",
@@ -146,12 +148,18 @@ def observe_deterministically(
     question_lower = question.lower()
     if any(term in question_lower for term in DECISION_TERMS):
         reasons += ("semantic-decision",)
+    # A plain aggregate is quantitatively risky but not semantically
+    # ambiguous. Reconciliation handles it without spending an LLM review.
+    semantic_reasons = tuple(
+        reason for reason in reasons
+        if reason != "aggregate-comparison"
+    )
     return DeterministicObservation(
         True,
         DeterministicDecision.ACCEPT,
         "query_result",
         frame.fields if frame is not None else _extract_fields(record.raw_result),
-        bool(reasons),
+        bool(semantic_reasons),
         tuple(dict.fromkeys(reasons)),
         "hard checks passed",
     )

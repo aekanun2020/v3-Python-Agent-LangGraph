@@ -52,6 +52,7 @@ class EvidenceState:
     records: list[EvidenceRecord] = field(default_factory=list)
     frames: list[Any] = field(default_factory=list)
     structured_observations: list[Any] = field(default_factory=list)
+    reconciliations: list[Any] = field(default_factory=list)
 
     def accept(self, record: EvidenceRecord) -> None:
         if all(item.evidence_id != record.evidence_id for item in self.records):
@@ -68,8 +69,15 @@ class EvidenceState:
         ):
             self.frames.append(frame)
 
+    def add_reconciliation(self, reconciliation: Any) -> None:
+        self.reconciliations.append(reconciliation)
+
     def render_structured(self) -> str:
-        if not self.structured_observations and not self.frames:
+        if (
+            not self.structured_observations
+            and not self.frames
+            and not self.reconciliations
+        ):
             return "[no structured observations]"
         blocks = []
         for frame in self.frames:
@@ -127,6 +135,16 @@ class EvidenceState:
                 "claim_updates": observation.claim_updates,
                 "next_action": observation.next_action.value,
                 "reason": observation.reason,
+            }, ensure_ascii=False, default=str))
+        for reconciliation in self.reconciliations:
+            payload = (
+                reconciliation.to_dict()
+                if hasattr(reconciliation, "to_dict")
+                else reconciliation
+            )
+            blocks.append(json.dumps({
+                "observer": "reconciliation",
+                **payload,
             }, ensure_ascii=False, default=str))
         return "\n".join(blocks)
 

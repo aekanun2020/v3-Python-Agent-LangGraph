@@ -19,6 +19,8 @@ field, label, grain หรือตัวเลขที่ tool ส่งกล
 - Dynamic Observation ตรวจผลหลัง tool call และเลือก
   `accept / query_more / replan / stop`
 - deterministic checks ตรวจ error, query role, grain, field, label และความครบ
+- Reconciliation Router เลือกตรวจซ้ำเฉพาะผลเชิงคำนวณบน general path
+  โดยให้ query อิสระคืน columns เดิม แล้ว Python เปรียบเทียบ rows/values
 - Hybrid Contract Router ใช้ lexical fast path ก่อน แล้วค่อยขอ semantic
   candidate เมื่อ lexical ไม่ชัด
 - LLM Dynamic Observer ถูกเรียกเมื่อ claim ยังไม่ครบหรือ tool result
@@ -76,6 +78,32 @@ Exact terms + high-precision lexical aliases
                                                      v
                                                    Answer
 ```
+
+ใน general path ผล tabular ที่มี aggregate, join, ratio, conditional
+metric หรือ distinct grain จะเข้าทางลัดนี้ก่อน LLM Observer:
+
+```text
+Primary quantitative result
+          |
+          v
+Reconciliation Router ---- low risk ----> accept
+          |
+        verify
+          v
+Independent query (different SQL, same output columns)
+          |
+          v
+Python row/value comparison
+     |                    |
+   match            conflict/invalid
+     |                    |
+   accept          query_more / replan
+```
+
+Runtime ไม่ยอมรับ query เดิมที่ส่งซ้ำเป็น verification
+และยังไม่นำ primary result เข้า accepted evidence จนกว่าจะ reconcile
+สำเร็จ Skill contract path ที่มี versioned query roles และ completion rules
+อยู่แล้วจะไม่เรียก query ซ้ำโดยอัตโนมัติ
 
 การเลือก contract ใน v3 มีลำดับดังนี้:
 
