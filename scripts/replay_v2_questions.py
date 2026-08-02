@@ -268,9 +268,15 @@ def replay(
         for index, case in enumerate(manifest["cases"], start=1):
             started = time.monotonic()
             route_error = None
+            selected_contract = None
             try:
                 decision = route_metric_contract(case["question"])
                 actual_contract = decision.contract_id
+                # Preserve question-owned typed bindings (for example >= 50%
+                # versus the contract's default > 50%).  Reloading only by id
+                # here silently discarded the router's admitted semantics and
+                # made the replay measure a different contract than runtime.
+                selected_contract = decision.contract
                 route_detail = {
                     "path": decision.path.value,
                     "confidence": decision.confidence,
@@ -321,7 +327,7 @@ def replay(
                     if actual_contract in cache:
                         roles, evidence_hash = cache[actual_contract]
                         evidence = _evidence_state(case["id"], roles)
-                        contract = metric_contract_by_id(actual_contract)
+                        contract = selected_contract
                         status = metric_contract_status(
                             case["question"],
                             evidence,
