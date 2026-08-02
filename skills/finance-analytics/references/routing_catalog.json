@@ -190,6 +190,22 @@
       "id": "finance_employment_extrema",
       "intent": "Find employment-length segments with highest and lowest average funded amount while explicitly retaining N/A.",
       "exclude": "One borrower, overall averages, or approval decisions.",
+      "conditional_allowed_negated_terms": [
+        {
+          "term": "N/A",
+          "required_pattern_groups": [
+            ["(?:สูงสุด|มากที่สุด)[^\\n.!?]{0,48}(?:ต่ำสุด|น้อยที่สุด)"],
+            ["(?:ต่ำสุด|น้อยที่สุด)[^\\n.!?]{0,48}ไม่รวม\\s*N/?A"]
+          ]
+        },
+        {
+          "term": "ไม่รวม",
+          "required_pattern_groups": [
+            ["(?:สูงสุด|มากที่สุด)[^\\n.!?]{0,48}(?:ต่ำสุด|น้อยที่สุด)"],
+            ["(?:ต่ำสุด|น้อยที่สุด)[^\\n.!?]{0,48}ไม่รวม\\s*N/?A"]
+          ]
+        }
+      ],
       "concept_evidence_patterns": {
         "emp_length": [
           "\\bemp[_\\s-]*length\\b",

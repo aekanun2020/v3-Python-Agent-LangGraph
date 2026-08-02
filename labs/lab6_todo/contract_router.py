@@ -5,6 +5,7 @@ import hashlib
 import json
 import math
 import re
+from copy import deepcopy
 from dataclasses import dataclass, replace
 from enum import Enum
 from pathlib import Path
@@ -17,6 +18,11 @@ from labs.lab6_todo.evidence_contract import (
     metric_contract_by_id,
 )
 from labs.lab6_todo.phase2_runtime import RuntimeBudgetExhausted
+from labs.lab6_todo.intent_frame import (
+    ComparisonBinding,
+    NumericRole,
+    analyze_intent_frame,
+)
 
 
 class RoutingPath(str, Enum):
@@ -33,12 +39,23 @@ class RoutingDecision:
     reason: str
     term_evidence: tuple[tuple[str, str], ...] = ()
     semantic_attempted: bool = False
+    parameter_bindings: tuple[ComparisonBinding, ...] = ()
 
     @property
     def contract(self) -> dict | None:
         if not self.contract_id:
             return None
-        return metric_contract_by_id(self.contract_id)
+        contract = metric_contract_by_id(self.contract_id)
+        if contract is None or not self.parameter_bindings:
+            return contract
+        bound = deepcopy(contract)
+        for binding in self.parameter_bindings:
+            bound.setdefault("parameters", {})[binding.parameter] = {
+                "operator": binding.operator,
+                "value": binding.value,
+                "unit": binding.unit,
+            }
+        return bound
 
 
 SemanticResolver = Callable[[str, tuple[dict, ...]], dict]
@@ -51,7 +68,7 @@ _MAX_OUTPUT_TOKENS = 1600
 _PROMPT_VERSION = "hybrid-contract-router-v3"
 # Bump whenever deterministic admission logic changes. Evaluation artifacts
 # must identify both the model-facing prompt/catalog and the Python hard gate.
-_GATE_VERSION = "skill-grounded-admission-gate-v1"
+_GATE_VERSION = "skill-grounded-admission-gate-v2"
 
 
 def _validate_constraint_bindings(answer: dict) -> None:
@@ -440,6 +457,20 @@ def _contract_terms_hold(question: str, entry: dict) -> tuple[bool, str]:
         str(term).casefold()
         for term in entry.get("allowed_negated_terms", ())
     }
+    for rule in entry.get("conditional_allowed_negated_terms", ()):
+        groups = rule.get("required_pattern_groups", ())
+        try:
+            holds = bool(groups) and all(
+                any(
+                    _pattern_has_positive_match(pattern, question)
+                    for pattern in group
+                )
+                for group in groups
+            )
+        except (re.error, TypeError):
+            holds = False
+        if holds:
+            allowed.add(str(rule.get("term", "")).casefold())
     terms = dict.fromkeys((
         *entry.get("question_terms_all", ()),
         *entry.get("question_terms_any", ()),
@@ -555,14 +586,16 @@ def _comparison_operator_conflict(
     return False
 
 
-def _routing_constraints_hold(
+def _bind_routing_constraints(
     question: str,
     entry: dict,
-) -> tuple[bool, str]:
-    """Verify typed Skill-owned constants without trusting LLM bindings."""
+) -> tuple[bool, str, tuple[ComparisonBinding, ...]]:
+    """Validate contract constants and bind grounded comparison parameters."""
     constraints = tuple(entry.get("routing_constraints", ()))
+    frame = analyze_intent_frame(question)
     allowed_numbers: set[float] = set()
     reject_unlisted_numbers = False
+    bindings: list[ComparisonBinding] = []
 
     def add_number(value: object) -> None:
         if isinstance(value, bool) or value is None:
@@ -592,13 +625,18 @@ def _routing_constraints_hold(
             add_number(value)
 
     if reject_unlisted_numbers:
-        unexpected = sorted(_numbers_in_question(question) - allowed_numbers)
+        guarded_numbers = {
+            mention.value
+            for mention in frame.numeric_mentions
+            if mention.role is not NumericRole.INPUT_OPERAND
+        }
+        unexpected = sorted(guarded_numbers - allowed_numbers)
         if unexpected:
             return False, (
                 "unlisted numeric values conflict with fixed contract "
                 "constraints: "
                 + ", ".join(f"{value:g}" for value in unexpected)
-            )
+            ), ()
 
     for constraint in constraints:
         name = str(constraint.get("name") or "unnamed")
@@ -610,34 +648,75 @@ def _routing_constraints_hold(
             "closed_range",
             "fixed_value",
         }:
-            return False, f"unsupported routing constraint kind: {kind}"
+            return False, f"unsupported routing constraint kind: {kind}", ()
         if not isinstance(groups, list) or not groups:
-            return False, f"routing constraint lacks evidence patterns: {name}"
+            return False, f"routing constraint lacks evidence patterns: {name}", ()
+
+        comparison_binding = None
+        if kind == "comparison":
+            expected_value = constraint.get("value")
+            expected_unit = constraint.get("unit")
+            candidates = [
+                mention
+                for mention in frame.comparisons
+                if isinstance(expected_value, (int, float))
+                and mention.value == float(expected_value)
+                and (
+                    expected_unit is None
+                    or mention.unit is None
+                    or mention.unit == expected_unit
+                )
+            ]
+            if candidates:
+                mention = candidates[-1]
+                allowed_operators = set(constraint.get(
+                    "allowed_operators",
+                    (constraint.get("operator"),),
+                ))
+                if mention.operator not in allowed_operators:
+                    return False, (
+                        "conflicting comparison operator occurs in fixed "
+                        f"contract constraint: {name}"
+                    ), ()
+                comparison_binding = ComparisonBinding(
+                    parameter=str(constraint.get("parameter")),
+                    operator=str(mention.operator),
+                    value=mention.value,
+                    unit=str(expected_unit) if expected_unit else mention.unit,
+                    source_span=mention.source_span,
+                )
+
         for group in groups:
             if (
                 not isinstance(group, list)
                 or not group
                 or not all(isinstance(pattern, str) for pattern in group)
             ):
-                return False, f"invalid evidence pattern group: {name}"
+                return False, f"invalid evidence pattern group: {name}", ()
             try:
                 matched = any(
                     _pattern_has_positive_match(pattern, question)
                     for pattern in group
                 )
             except re.error:
-                return False, f"invalid evidence regex in constraint: {name}"
-            if not matched:
-                return False, f"fixed contract constraint is unproven: {name}"
-        if kind == "comparison" and _comparison_operator_conflict(
-            question,
-            str(constraint.get("operator")),
-            constraint.get("value"),
+                return False, f"invalid evidence regex in constraint: {name}", ()
+            if not matched and comparison_binding is None:
+                return False, f"fixed contract constraint is unproven: {name}", ()
+
+        if (
+            kind == "comparison"
+            and comparison_binding is None
+            and _comparison_operator_conflict(
+                question,
+                str(constraint.get("operator")),
+                constraint.get("value"),
+            )
         ):
             return False, (
                 "conflicting comparison operator occurs in fixed contract "
                 f"constraint: {name}"
-            )
+            ), ()
+
         conflict_groups = constraint.get("conflict_pattern_groups", ())
         try:
             conflict = any(
@@ -648,10 +727,20 @@ def _routing_constraints_hold(
                 for group in conflict_groups
             )
         except (re.error, TypeError):
-            return False, f"invalid conflict pattern in constraint: {name}"
+            return False, f"invalid conflict pattern in constraint: {name}", ()
         if conflict:
-            return False, f"conflicting contract constraint occurs: {name}"
-    return True, "fixed contract constraints passed"
+            return False, f"conflicting contract constraint occurs: {name}", ()
+        if comparison_binding is not None:
+            bindings.append(comparison_binding)
+    return True, "fixed contract constraints passed", tuple(bindings)
+
+
+def _routing_constraints_hold(
+    question: str,
+    entry: dict,
+) -> tuple[bool, str]:
+    holds, reason, _bindings = _bind_routing_constraints(question, entry)
+    return holds, reason
 
 
 def _lexical_aliases_hold(question: str, entry: dict) -> bool:
@@ -714,9 +803,8 @@ def validate_semantic_proposal(
             0.0,
             "critical contract anchors are absent or excluded anchors occur",
         )
-    constraints_ok, constraints_reason = _routing_constraints_hold(
-        question,
-        entry,
+    constraints_ok, constraints_reason, parameter_bindings = (
+        _bind_routing_constraints(question, entry)
     )
     if not constraints_ok:
         return RoutingDecision(
@@ -821,6 +909,7 @@ def validate_semantic_proposal(
         confidence,
         str(proposal.get("reason") or "semantic proposal passed hard gate"),
         admitted,
+        parameter_bindings=parameter_bindings,
     )
 
 
@@ -849,21 +938,30 @@ def route_metric_contract(
         if _lexical_aliases_hold(question, item)
     )
     literal_matches = [
-        metric_contract_by_id(item["id"])
+        (metric_contract_by_id(item["id"]), item)
         for item in catalog
         if item["id"] in literal_ids
         and _contract_terms_hold(question, item)[0]
         and _critical_anchors_hold(question, item)
         and _routing_constraints_hold(question, item)[0]
     ]
-    literal_matches = [item for item in literal_matches if item is not None]
+    literal_matches = [
+        (contract, entry)
+        for contract, entry in literal_matches
+        if contract is not None
+    ]
     if len(literal_matches) == 1:
-        literal = literal_matches[0]
+        literal, entry = literal_matches[0]
+        _holds, _reason, parameter_bindings = _bind_routing_constraints(
+            question,
+            entry,
+        )
         return RoutingDecision(
             literal["id"],
             RoutingPath.LEXICAL,
             1.0,
             "literal question_terms_all/any matched",
+            parameter_bindings=parameter_bindings,
         )
     if not semantic:
         return RoutingDecision(

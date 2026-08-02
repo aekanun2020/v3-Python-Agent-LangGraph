@@ -304,6 +304,7 @@
         "parameter": "threshold",
         "kind": "comparison",
         "operator": "gt",
+        "allowed_operators": ["gt", "gte"],
         "value": 50,
         "unit": "percent",
         "reject_unlisted_numbers": true,

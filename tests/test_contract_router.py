@@ -21,7 +21,7 @@ class ContractRouterTests(unittest.TestCase):
         fingerprint = router_fingerprint()
         self.assertEqual(
             fingerprint["gate_version"],
-            "skill-grounded-admission-gate-v1",
+            "skill-grounded-admission-gate-v2",
         )
         self.assertRegex(fingerprint["gate_source_sha256"], r"^[0-9a-f]{64}$")
 
