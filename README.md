@@ -75,6 +75,7 @@ contract-owned constraints, confidence และ exact spans ก่อนรั�
 [V2 Incident Replay report](artifacts/v2_incident_replay_report.md),
 [V2 Full Question Replay on V3](artifacts/v2_full_question_replay_v3_report.md),
 [V2/V3 three-question live recheck](artifacts/v2_v3_three_question_recheck_report.md),
+[V2/V3 three-question recheck run 2](artifacts/v2_v3_three_question_recheck_run2_report.md),
 [v3.1 Evidence-context report](artifacts/v3_1_evidence_context_report.md),
 [HR report](artifacts/hr_skill_run4_run5_report.md) และ
 [Finance report](artifacts/finance_skill_run3_run4_report.md)
