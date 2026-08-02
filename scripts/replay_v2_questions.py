@@ -7,6 +7,7 @@ import hashlib
 import io
 import json
 import re
+import subprocess
 import sys
 import time
 from datetime import datetime, timezone
@@ -36,6 +37,18 @@ from labs.lab6_todo.evidence_state import EvidenceRecord, EvidenceState
 
 
 DEFAULT_MANIFEST = ROOT / "tests" / "evaluation" / "v2_full_question_replay.json"
+
+
+def runtime_commit() -> str:
+    """Return the exact v3 revision executed by the replay harness."""
+    result = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout.strip()
 
 
 def sha256(value: Any) -> str:
@@ -234,6 +247,7 @@ def replay(
     report = {
         "suite_id": manifest["suite_id"],
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "runtime_commit": runtime_commit(),
         "source_commit": manifest["source_commit"],
         "manifest_sha256": sha256(manifest),
         "question_projection_sha256": manifest["question_projection_sha256"],

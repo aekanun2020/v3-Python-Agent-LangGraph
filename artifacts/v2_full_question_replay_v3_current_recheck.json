@@ -1,0 +1,157 @@
+{
+  "suite_id": "v2-full-question-replay-v1",
+  "generated_at": "2026-08-02T02:52:17.318893+00:00",
+  "runtime_commit": "28ddb9861b2b28fba51cddfacfe197a3ab145aea",
+  "source_commit": "f33546aea94620e1e27425d34517e76a9443a5c2",
+  "manifest_sha256": "91aea72fc67be96da5c933feb0d81b24d8d16276759451c4634fc3e1e895fdd1",
+  "question_projection_sha256": "e90b98c24b5aa3836f8c2d05ff0f24eb1c2a453afc44d0edeba755d9c1602fb1",
+  "router_fingerprint": {
+    "prompt_version": "hybrid-contract-router-v3",
+    "gate_version": "skill-grounded-admission-gate-v1",
+    "gate_source_sha256": "611aa9d67bddfe7405df36bc61ba63aa71599f13976a742c2d6cccb116eefcab",
+    "catalog_sha256": "379883caf10e55b4431ec41562e29b8fac8e0d1ccd1fcd62dd90c45cc920dff7",
+    "model": "openai/gpt-oss-120b",
+    "request_timeout_seconds": 30.0,
+    "max_output_tokens": 1600,
+    "reasoning_effort": "low",
+    "minimum_confidence": 0.8
+  },
+  "models": {
+    "agent": "qwen/qwen3.5-35b-a3b",
+    "router": "openai/gpt-oss-120b",
+    "observer": "openai/gpt-oss-120b"
+  },
+  "mcp_tools_discovered": 5,
+  "mcp_endpoint_recorded": false,
+  "summary": {
+    "questions_total": 3,
+    "questions_passed": 2,
+    "questions_failed": 1,
+    "routing_passed": 3,
+    "contract_live_passed": 0,
+    "contract_live_total": 0,
+    "general_agent_live_passed": 2,
+    "general_agent_live_total": 3
+  },
+  "contract_evidence": {},
+  "results": [
+    {
+      "id": "v2q_027",
+      "question": "ตรวจ performance review coverage รายฝ่ายเทียบเกณฑ์ 80%",
+      "category": "hr_unseen_paraphrases",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "User request lacks required fixed constraints (active employee population, review period, coverage threshold) for the performance_review_coverage contract.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ยังไม่มี claim ที่ผ่านเงื่อนไขการตรวจหลักฐานครบถ้วน",
+        "answer_sha256": "fbfb5a1c5d930297a6794ec69350b4e0e51a8a6a042ded295610a4d517b67be5",
+        "answer_nonempty": true,
+        "completed": true,
+        "insufficient_specification": false,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 4,
+          "evidence_frames": 4,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 118.395347,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=3\n[step 1] TODO_WRITE\n[ ] 1. เรียกดูโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[ ] 2. วิเคราะห์ความเชื่อมโยงระหว่างตาราง Performance Review และ Department\n[ ] 3. เขียน T-SQL Query คำนวณ Coverage % รายฝ่าย\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์เทียบเกณฑ์ 80%\n[ ] 5. สรุปข้อค้นพบเชิงธุรกิจ\n[PYTHON OBSERVATION] evidence=call_d2867078dc944f669e65e05a decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_d2867078dc944f669e65e05a supports=False complete=False proved=[] next=query_more reason=Schema information only; actual counts per department are required to evaluate coverage claims\n[step 2] TOOL get_database_context\n[step 3] TODO_UPDATE -> {'index': 1, 'status': 'done'}\n[x] 1. เรียกดูโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[ ] 2. วิเคราะห์ความเชื่อมโยงระหว่างตาราง Performance Review และ Department\n[ ] 3. เขียน T-SQL Query คำนวณ Coverage % รายฝ่าย\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์เทียบเกณฑ์ 80%\n[ ] 5. สรุปข้อค้นพบเชิงธุรกิจ\n[step 3] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[x] 1. เรียกดูโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[~] 2. วิเคราะห์ความเชื่อมโยงระหว่างตาราง Performance Review และ Department\n[ ] 3. เขียน T-SQL Query คำนวณ Coverage % รายฝ่าย\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์เทียบเกณฑ์ 80%\n[ ] 5. สรุปข้อค้นพบเชิงธุรกิจ\n[PYTHON OBSERVATION] evidence=call_82800df318fe4f3a8eb9c7b6 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_82800df318fe4f3a8eb9c7b6 supports=False complete=False proved=[] next=query_more reason=Current evidence is a preview of the employees table and does not provide the required counts for performance review records or distinct employees per department needed to assess coverage.\n[step 3] TOOL preview_table\n[PYTHON OBSERVATION] evidence=call_3bbe2db9f9d64e14b92040e9 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_3bbe2db9f9d64e14b92040e9 supports=True complete=False proved=[] next=query_more reason=Preview of performance_reviews lacks department_id, preventing calculation of review counts and employee counts per department needed for coverage claims.\n[step 3] TOOL preview_table\n[step 4] TODO_UPDATE -> {'index': 2, 'status': 'done'}\n[x] 1. เรียกดูโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[x] 2. วิเคราะห์ความเชื่อมโยงระหว่างตาราง Performance Review และ Department\n[ ] 3. เขียน T-SQL Query คำนวณ Coverage % รายฝ่าย\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์เทียบเกณฑ์ 80%\n[ ] 5. สรุปข้อค้นพบเชิงธุรกิจ\n[step 4] TODO_UPDATE -> {'index': 3, 'status': 'doing'}\n[x] 1. เรียกดูโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[x] 2. วิเคราะห์ความเชื่อมโยงระหว่างตาราง Performance Review และ Department\n[~] 3. เขียน T-SQL Query คำนวณ Coverage % รายฝ่าย\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์เทียบเกณฑ์ 80%\n[ ] 5. สรุปข้อค้นพบเชิงธุรกิจ\n[QUERY CONTRACT REPAIR] tool=execute_query_tool repairs=['mssql-unicode-prefix']\n[PYTHON OBSERVATION] evidence=call_4afe55bb856042619c84164d decision=accept type=query_result risk=True reasons=['distinct-grain', 'multi-source', 'derived-ratio', 'conditional-metric', 'aggregate-comparison']\n[DYNAMIC OBSERVATION] evidence=call_4afe55bb856042619c84164d supports=True complete=False proved=[] next=stop reason=All departments fail to meet the 80% performance review coverage threshold\n[step 5] TOOL execute_query_tool\n[step 6] TODO_UPDATE -> {'index': '3', 'status': 'done'}\n[x] 1. เรียกดูโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[x] 2. วิเคราะห์ความเชื่อมโยงระหว่างตาราง Performance Review และ Department\n[~] 3. เขียน T-SQL Query คำนวณ Coverage % รายฝ่าย\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์เทียบเกณฑ์ 80%\n[ ] 5. สรุปข้อค้นพบเชิงธุรกิจ\n[step 6] TODO_UPDATE -> {'index': '4', 'status': 'done'}\n[x] 1. เรียกดูโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[x] 2. วิเคราะห์ความเชื่อมโยงระหว่างตาราง Performance Review และ Department\n[~] 3. เขียน T-SQL Query คำนวณ Coverage % รายฝ่าย\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์เทียบเกณฑ์ 80%\n[ ] 5. สรุปข้อค้นพบเชิงธุรกิจ\n[step 6] TODO_UPDATE -> {'index': '5', 'status': 'done'}\n[x] 1. เรียกดูโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[x] 2. วิเคราะห์ความเชื่อมโยงระหว่างตาราง Performance Review และ Department\n[~] 3. เขียน T-SQL Query คำนวณ Coverage % รายฝ่าย\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์เทียบเกณฑ์ 80%\n[ ] 5. สรุปข้อค้นพบเชิงธุรกิจ\n[FINAL ROUTING] risks=['unsupported-numbers:0%,50%', 'semantic-decision', 'qualitative-interpretation', 'risky-tool-semantics']\n[FINAL OBSERVATION] verdict=rewrite reason=Answer contains unsupported prescriptive recommendations; only factual coverage findings are supported by evidence.\n[FINAL CLAIM GATE] verify-then-emit; MCP disabled; observer_supported=10\n[CONTEXT FIDELITY] status=supported frames=4/4 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nยังไม่มี claim ที่ผ่านเงื่อนไขการตรวจหลักฐานครบถ้วน\n------------------------------------------------------------\n[todo สุดท้าย]\n[x] 1. เรียกดูโครงสร้างฐานข้อมูลเพื่อหาตารางที่เกี่ยวข้อง\n[x] 2. วิเคราะห์ความเชื่อมโยงระหว่างตาราง Performance Review และ Department\n[~] 3. เขียน T-SQL Query คำนวณ Coverage % รายฝ่าย\n[ ] 4. รัน query และวิเคราะห์ผลลัพธ์เทียบเกณฑ์ 80%\n[ ] 5. สรุปข้อค้นพบเชิงธุรกิจ\n[context budget] BudgetState(steps=12, tool_calls=4, errors=0)\n"
+      },
+      "elapsed_seconds": 123.237317
+    },
+    {
+      "id": "v2q_041",
+      "question": "ยอด funded_amnt ของปี 2020 เท่าไร",
+      "category": "finance_boundaries",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "No contract matches the requested year and required concepts.",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": true,
+      "general": {
+        "passed": true,
+        "runtime_contract": null,
+        "answer": "ข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- The query `SELECT SUM(l.funded_amnt) ... WHERE i.year = 2020` returned NULL, indicating no funded_amnt values for year 2020.\n- The distinct years present in `issue_d_dim` are 2016, 2017, 2018, and 2019; year 2020 is absent.",
+        "answer_sha256": "e68a94478f332620a7b6ca600d6c1e380beee3e365dfb3134aae2843d3c76260",
+        "answer_nonempty": true,
+        "completed": true,
+        "insufficient_specification": false,
+        "context_fidelity": {
+          "status": "supported",
+          "successful_frames": 6,
+          "evidence_frames": 6,
+          "numeric_precision": 1.0,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 123.807887,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=1\n[step 1] TODO_WRITE\n[ ] 1. เรียก get_database_context เพื่อเข้าใจโครงสร้างข้อมูล\n[ ] 2. วิเคราะห์ schema และระบุตารางที่เกี่ยวข้องกับ funding\n[ ] 3. เขียน T-SQL query หา funded_amnt ปี 2020\n[ ] 4. execute query และวิเคราะห์ผลลัพธ์\n[step 2] TODO_UPDATE -> {'index': 1, 'status': 'doing'}\n[~] 1. เรียก get_database_context เพื่อเข้าใจโครงสร้างข้อมูล\n[ ] 2. วิเคราะห์ schema และระบุตารางที่เกี่ยวข้องกับ funding\n[ ] 3. เขียน T-SQL query หา funded_amnt ปี 2020\n[ ] 4. execute query และวิเคราะห์ผลลัพธ์\n[PYTHON OBSERVATION] evidence=call_5c408a7b94e343d1aca24c13 decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_5c408a7b94e343d1aca24c13 supports=True complete=False proved=[] next=query_more reason=Schema information is available but the aggregate sum of funded_amnt for year 2020 has not been retrieved\n[step 3] TOOL get_database_context\n[step 4] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[~] 1. เรียก get_database_context เพื่อเข้าใจโครงสร้างข้อมูล\n[~] 2. วิเคราะห์ schema และระบุตารางที่เกี่ยวข้องกับ funding\n[ ] 3. เขียน T-SQL query หา funded_amnt ปี 2020\n[ ] 4. execute query และวิเคราะห์ผลลัพธ์\n[PYTHON OBSERVATION] evidence=call_0bd1800e20a242e9aa0b0081 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_0bd1800e20a242e9aa0b0081 supports=True complete=False proved=[] next=query_more reason=Missing year column and aggregation to compute total funded_amnt for 2020\n[step 5] TOOL preview_table\n[step 6] TODO_UPDATE -> {'index': 2, 'status': 'done'}\n[~] 1. เรียก get_database_context เพื่อเข้าใจโครงสร้างข้อมูล\n[x] 2. วิเคราะห์ schema และระบุตารางที่เกี่ยวข้องกับ funding\n[ ] 3. เขียน T-SQL query หา funded_amnt ปี 2020\n[ ] 4. execute query และวิเคราะห์ผลลัพธ์\n[step 7] TODO_UPDATE -> {'index': 3, 'status': 'doing'}\n[~] 1. เรียก get_database_context เพื่อเข้าใจโครงสร้างข้อมูล\n[x] 2. วิเคราะห์ schema และระบุตารางที่เกี่ยวข้องกับ funding\n[~] 3. เขียน T-SQL query หา funded_amnt ปี 2020\n[ ] 4. execute query และวิเคราะห์ผลลัพธ์\n[RECONCILIATION CHECK] evidence=call_124526739c5a49b3b6ae0139 cached=False pending=False\n[RECONCILIATION ROUTING] evidence=call_124526739c5a49b3b6ae0139 route=verify reasons=['aggregate-comparison'] fields=['total_funded_2020']\n[PYTHON OBSERVATION] evidence=call_124526739c5a49b3b6ae0139 decision=accept type=query_result risk=False reasons=['aggregate-comparison']\n[LLM OBSERVER SKIPPED] awaiting deterministic reconciliation\n[step 8] TOOL execute_query_tool\n[RECONCILIATION CHECK] evidence=call_aba0354d03ba4ff18221987a cached=False pending=True\n[RECONCILIATION] primary=call_124526739c5a49b3b6ae0139 verification=call_aba0354d03ba4ff18221987a verdict=match reason=independent query returned the same rows and values\n[PYTHON OBSERVATION] evidence=call_aba0354d03ba4ff18221987a decision=accept type=query_result risk=True reasons=['multi-source', 'aggregate-comparison']\n[DYNAMIC OBSERVATION] evidence=call_aba0354d03ba4ff18221987a supports=True complete=False proved=[] next=query_more reason=The query returned NULL for the sum, which does not provide a numeric total; additional evidence (e.g., distinct record count) is needed to confirm coverage and compute the sum.\n[step 9] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_3528b0a528f9459da97a6a33 decision=accept type=query_result risk=True reasons=['multi-source', 'aggregate-comparison']\n[LLM OBSERVER SKIPPED] low risk or risk already reviewed\n[step 10] TOOL execute_query_tool\n[PYTHON OBSERVATION] evidence=call_c9b7fbd19e1d4062870487fb decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_c9b7fbd19e1d4062870487fb supports=False complete=False proved=[] next=query_more reason=The tool result only lists distinct years and lacks funded_amnt data and the required aggregate sum for year 2020.\n[step 11] TOOL execute_query_tool\n[RECONCILIATION CHECK] evidence=call_5fe6d3c3e1e5404287e8481a cached=False pending=False\n[RECONCILIATION ROUTING] evidence=call_5fe6d3c3e1e5404287e8481a route=verify reasons=['multi-source', 'aggregate-comparison'] fields=['year', 'loan_count', 'total_funded']\n[PYTHON OBSERVATION] evidence=call_5fe6d3c3e1e5404287e8481a decision=accept type=query_result risk=True reasons=['multi-source', 'aggregate-comparison']\n[LLM OBSERVER SKIPPED] awaiting deterministic reconciliation\n[step 12] TOOL execute_query_tool\n[FINAL ROUTING] risks=['unsupported-numbers:115675,1928448350,387116,4,434407,495242,5751877900,6400541700,7936263150', 'semantic-decision', 'qualitative-interpretation', 'risky-tool-semantics']\n[FINAL OBSERVATION] verdict=rewrite reason=Answer contains factual claims (loan counts and funded amounts for 2016‑2019) and business recommendations that are not supported by the accepted evidence.\n[FINAL CLAIM GATE] verify-then-emit; MCP disabled; observer_supported=2\n[CONTEXT FIDELITY] status=supported frames=6/6 numeric_precision=1.000 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- The query `SELECT SUM(l.funded_amnt) ... WHERE i.year = 2020` returned NULL, indicating no funded_amnt values for year 2020.\n- The distinct years present in `issue_d_dim` are 2016, 2017, 2018, and 2019; year 2020 is absent.\n------------------------------------------------------------\n[todo สุดท้าย]\n[~] 1. เรียก get_database_context เพื่อเข้าใจโครงสร้างข้อมูล\n[x] 2. วิเคราะห์ schema และระบุตารางที่เกี่ยวข้องกับ funding\n[~] 3. เขียน T-SQL query หา funded_amnt ปี 2020\n[ ] 4. execute query และวิเคราะห์ผลลัพธ์\n[context budget] BudgetState(steps=12, tool_calls=7, errors=0)\n"
+      },
+      "elapsed_seconds": 129.021644
+    },
+    {
+      "id": "v2q_059",
+      "question": "โครงการสองรายการแรกกินสัดส่วนมูลค่ารวมเกินหกสิบเปอร์เซ็นต์หรือไม่",
+      "category": "hr_unseen_paraphrases",
+      "evaluation_mode": "general_agent_live",
+      "expected_contract": null,
+      "actual_contract": null,
+      "route_passed": true,
+      "route": {
+        "path": "abstain",
+        "confidence": 0.0,
+        "reason": "critical contract anchors are absent or excluded anchors occur",
+        "semantic_attempted": true
+      },
+      "route_error": null,
+      "passed": false,
+      "general": {
+        "passed": false,
+        "runtime_contract": null,
+        "answer": "ข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- The first two projects have values 5,000,000 and 2,000,000.\n- The total sum of all project values is 28,000,000.\n- The first two projects represent 25% of the total value, which is less than the 60% threshold.",
+        "answer_sha256": "41879e6e6bfdc7f3be669f2309ac311934c7aff7bb9cf218389407597d4939f5",
+        "answer_nonempty": true,
+        "completed": true,
+        "insufficient_specification": false,
+        "context_fidelity": {
+          "status": "contradicted",
+          "successful_frames": 5,
+          "evidence_frames": 5,
+          "numeric_precision": 0.8,
+          "canonical_label_recall": null,
+          "required_claim_recall": null
+        },
+        "unsupported_fidelity_detail": false,
+        "elapsed_seconds": 106.736888,
+        "error": null,
+        "stdout": "[CONTRACT ROUTING] path=abstain contract=None confidence=0.00 semantic_attempted=False reason=lexical selector abstained\n[ROUTING] deterministic-first; evidence-centric observation\n[CLAIM LEDGER] built from question for general path; claims=3\n[PYTHON OBSERVATION] evidence=call_6be4ed60858143d9991e905b decision=accept type=schema risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_6be4ed60858143d9991e905b supports=False complete=False proved=[] next=query_more reason=The tool output only provides schema metadata; it does not contain the project data needed to retrieve the first two values or compute the total sum.\n[step 1] TOOL get_database_context\n[PYTHON OBSERVATION] evidence=call_b6c1dbfe72c04c6088865ce8 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_b6c1dbfe72c04c6088865ce8 supports=False complete=False proved=[] next=query_more reason=Tool result provides 'project_value' column, but claims require a 'value' column; therefore required fields are missing and claims cannot be completed.\n[step 2] TOOL preview_table\n[step 3] TODO_WRITE\n[ ] 1. คำนวณมูลค่ารวมของทุกโครงการ\n[ ] 2. คำนวณมูลค่าของ 2 รายการแรก\n[ ] 3. เปรียบเทียบร้อยละเพื่อตอบคำถาม\n[step 4] TODO_UPDATE -> {'index': 1, 'status': 'doing'}\n[~] 1. คำนวณมูลค่ารวมของทุกโครงการ\n[ ] 2. คำนวณมูลค่าของ 2 รายการแรก\n[ ] 3. เปรียบเทียบร้อยละเพื่อตอบคำถาม\n[RECONCILIATION CHECK] evidence=call_fe975f13bf294943a1f4e2f4 cached=False pending=False\n[RECONCILIATION ROUTING] evidence=call_fe975f13bf294943a1f4e2f4 route=verify reasons=['aggregate-comparison'] fields=['total_project_value']\n[PYTHON OBSERVATION] evidence=call_fe975f13bf294943a1f4e2f4 decision=accept type=query_result risk=False reasons=['aggregate-comparison']\n[LLM OBSERVER SKIPPED] awaiting deterministic reconciliation\n[step 4] TOOL execute_query_tool\n[RECONCILIATION CHECK] evidence=call_af08a62fe03a42128b7d358d cached=False pending=True\n[RECONCILIATION] primary=call_fe975f13bf294943a1f4e2f4 verification=call_af08a62fe03a42128b7d358d verdict=match reason=independent query returned the same rows and values\n[PYTHON OBSERVATION] evidence=call_af08a62fe03a42128b7d358d decision=accept type=query_result risk=False reasons=['aggregate-comparison']\n[DYNAMIC OBSERVATION] evidence=call_af08a62fe03a42128b7d358d supports=True complete=False proved=[] next=query_more reason=Need record-level values for the first two projects to satisfy claim_001 and enable claim_003\n[step 5] TOOL execute_query_tool\n[step 6] TODO_UPDATE -> {'index': 1, 'status': 'done'}\n[x] 1. คำนวณมูลค่ารวมของทุกโครงการ\n[ ] 2. คำนวณมูลค่าของ 2 รายการแรก\n[ ] 3. เปรียบเทียบร้อยละเพื่อตอบคำถาม\n[step 6] TODO_UPDATE -> {'index': 2, 'status': 'doing'}\n[x] 1. คำนวณมูลค่ารวมของทุกโครงการ\n[~] 2. คำนวณมูลค่าของ 2 รายการแรก\n[ ] 3. เปรียบเทียบร้อยละเพื่อตอบคำถาม\n[PYTHON OBSERVATION] evidence=call_90edd6e21d5448dbb3ccc0d2 decision=accept type=query_result risk=False reasons=[]\n[DYNAMIC OBSERVATION] evidence=call_90edd6e21d5448dbb3ccc0d2 supports=True complete=False proved=[] next=query_more reason=need total sum of the value field across all projects to evaluate claim_002 and subsequently claim_003\n[step 6] TOOL execute_query_tool\n[FINAL ROUTING] risks=['unsupported-numbers:60%,7000000', 'qualitative-interpretation']\n[FINAL OBSERVATION] verdict=rewrite reason=Answer includes invented currency unit (บาท) not present in evidence.\n[FINAL CLAIM GATE] verify-then-emit; MCP disabled; observer_supported=4\n[CONTEXT FIDELITY] status=contradicted frames=5/5 numeric_precision=0.800 label_recall=None claim_recall=None\n------------------------------------------------------------\n[answer]\nข้อเท็จจริงที่ผ่านการตรวจหลักฐาน:\n- The first two projects have values 5,000,000 and 2,000,000.\n- The total sum of all project values is 28,000,000.\n- The first two projects represent 25% of the total value, which is less than the 60% threshold.\n------------------------------------------------------------\n[todo สุดท้าย]\n[x] 1. คำนวณมูลค่ารวมของทุกโครงการ\n[~] 2. คำนวณมูลค่าของ 2 รายการแรก\n[ ] 3. เปรียบเทียบร้อยละเพื่อตอบคำถาม\n[context budget] BudgetState(steps=9, tool_calls=5, errors=0)\n"
+      },
+      "elapsed_seconds": 116.86281
+    }
+  ],
+  "decision_projection_sha256": "fdbf4417969736d3cd27217dd68ececd63c8b15ff2ff86e34d2829331c983967"
+}

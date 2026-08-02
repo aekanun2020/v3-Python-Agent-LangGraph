@@ -1,5 +1,39 @@
 # v3-Python-Agent-LangGraph
 
+## Latest verified baseline
+
+ผลล่าสุดที่มี live OpenRouter + read-only MSSQL MCP evidence ครบชุด บันทึกเมื่อ
+2026-08-02 และอ้างอิงด้วย tag `eval-v3-28ddb98-full63`:
+
+| รายการ | ค่าที่รับรอง |
+|---|---|
+| V3 code under test | `28ddb9861b2b28fba51cddfacfe197a3ab145aea` (`28ddb98`) |
+| V2 comparison baseline | `f33546aea94620e1e27425d34517e76a9443a5c2` (`f33546a`) |
+| Frozen suite | V2 Full Question Replay, 63 คำถาม |
+| V2 automated score | `47/63`; evidence-answer check `52/63` |
+| V3 raw frozen-manifest score | `53/63` |
+| V3 fair adjusted score | `57/63` หลัง controlled recheck และยอมรับ intentional contract routes |
+| Accuracy-only hybrid oracle | `61/63` จาก semantic audit; เป็นเพดานย้อนหลัง ไม่ใช่ผล router ที่รันจริง |
+| Models | Agent `qwen/qwen3.5-35b-a3b`; Router/Observer `openai/gpt-oss-120b` |
+
+คะแนนไม่รวม latency และยังไม่รองรับคำกล่าวว่า v3 ดีกว่า v2 ทุกคำถาม:
+v2 ยังดีกว่าใน Q018, Q021, Q024 และ Q039 ส่วน Q027 กับ Q063
+ยังไม่น่าเชื่อถือในทั้งสอง runtime ตาม semantic audit
+
+แหล่งตรวจสอบหลัก:
+
+- [Machine-readable verified baseline](artifacts/latest_verified_baseline.json)
+- [V2/V3 Full-63 head-to-head report](artifacts/v2_v3_full63_head_to_head_report.md)
+- [V2 scored live result](artifacts/v2_runtime_full_63_scored.json)
+- [V3 current live result](artifacts/v2_full_question_replay_v3_current_run.json)
+- [V3 controlled recheck](artifacts/v2_full_question_replay_v3_current_recheck.json)
+- [V3 current regression report](artifacts/v2_full_question_replay_v3_current_regression_report.md)
+
+`git log -1` แสดง commit ล่าสุดของ branch ซึ่งอาจใหม่กว่ารุ่นที่ทดสอบแล้ว
+เสมอ ให้ดู `code_under_test` ใน metadata หรือตรวจ tag ข้างต้นเมื่อต้องการ
+ทราบว่าผลทดสอบรับรองโค้ด commit ใด หาก HEAD ใหม่กว่า `28ddb98` ต้องรัน
+Full Replay ใหม่ก่อนเรียกว่า verified baseline ล่าสุด
+
 ## สถานะปัจจุบัน: Evidence-centric Pure Python Agent
 
 งานพัฒนาล่าสุดอยู่ที่ **Lab 6** และไม่ใช้ LangGraph ใน critical path:
@@ -111,12 +145,12 @@ incidents `17/17`, routing attempts `40/40` และ contracts `6/6` ต่อ�
 ดู [incident report](artifacts/v2_incident_replay_report.md)
 
 การขยายจาก incident fixtures ไปยังคำถามภายนอกที่ค้นพบใน versioned v2
-artifacts รวมกับ manual-history ที่ตรวจย้อนกลับได้ รวม 63 ข้อ เมื่อนำมารันกับ
-v3 ผ่าน `55/63`: routing `59/63`, contract live path `34/38` และ
-general-agent live path `21/25` เหลือ routing mismatch 4 ข้อกับคำตอบ general
-ที่ขัด tool context 4 ข้อ ผลนี้จึง **ยังไม่รองรับ**
-คำกล่าวว่า v3 ดีกว่า v2 ทุกมิติ ดูวิธีคัดคำถาม, controlled rechecks และ failure
-รายข้อใน [full replay report](artifacts/v2_full_question_replay_v3_report.md)
+artifacts รวมกับ manual-history ที่ตรวจย้อนกลับได้มี 63 ข้อ baseline เดิมได้
+`55/63` ส่วน verified run ปัจจุบันของ commit `28ddb98` ได้ raw `53/63`
+และ fair adjusted `57/63` หลัง controlled recheck ผล v2 runtime จริงที่ commit
+`f33546a` ได้ `47/63` ด้วย automated score เดียวกัน ผลนี้จึง **ยังไม่รองรับ**
+คำกล่าวว่า v3 ดีกว่า v2 ทุกคำถาม ดูวิธีคัดคำถาม, scoring caveat และ semantic
+audit ใน [head-to-head report](artifacts/v2_v3_full63_head_to_head_report.md)
 
 ## Quick start สำหรับผู้เรียน
 

@@ -343,12 +343,14 @@ staffing-route regression ผ่าน live run สองรอบติดต�
 [incident report](../../artifacts/v2_incident_replay_report.md)
 
 เมื่อนำคำถามภายนอกที่ค้นพบใน versioned v2 artifacts รวมกับ manual-history
-ที่ตรวจย้อนกลับได้มาขยายเป็น Full Question Replay 63 ข้อ v3 ผ่าน `55/63`:
-routing `59/63`, contract live path `34/38` และ general-agent live path
-`21/25` เหลือ routing mismatch 4 ข้อและ general answer ที่ขัด tool context
-4 ข้อ ดังนั้น incident suite ที่ผ่านหมดไม่ได้
-แปลว่ารองรับคำถามประวัติ v2 ทั้งหมด ดู
-[full replay report](../../artifacts/v2_full_question_replay_v3_report.md)
+ที่ตรวจย้อนกลับได้มาขยายเป็น Full Question Replay 63 ข้อ verified run ล่าสุด
+ทดสอบ v3 commit `28ddb98`: raw `53/63` และ fair adjusted `57/63`
+หลัง controlled recheck ส่วน v2 runtime จริงที่ commit `f33546a` ได้ `47/63`
+ด้วย automated score เดียวกัน อย่างไรก็ดี v2 ยังตอบ Q018, Q021, Q024 และ
+Q039 ได้ดีกว่า ขณะที่ Q027 กับ Q063 ยังไม่น่าเชื่อถือในทั้งสอง runtime
+ดังนั้น incident suite ที่ผ่านหมดไม่ได้แปลว่ารองรับคำถามประวัติ v2 ทั้งหมด ดู
+[verified baseline](../../artifacts/latest_verified_baseline.json) และ
+[head-to-head report](../../artifacts/v2_v3_full63_head_to_head_report.md)
 
 หลักที่ใช้ตีความผลคือ:
 

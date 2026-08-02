@@ -1,0 +1,53 @@
+{
+  "status": "latest_verified_baseline",
+  "evaluation_date": "2026-08-02",
+  "evidence_tag": "eval-v3-28ddb98-full63",
+  "code_under_test": {
+    "v3_commit": "28ddb9861b2b28fba51cddfacfe197a3ab145aea",
+    "v2_commit": "f33546aea94620e1e27425d34517e76a9443a5c2"
+  },
+  "suite": {
+    "name": "V2 Full Question Replay",
+    "questions": 63,
+    "question_projection_sha256": "e90b98c24b5aa3836f8c2d05ff0f24eb1c2a453afc44d0edeba755d9c1602fb1",
+    "live_mcp": true,
+    "mcp_tools_discovered": 5,
+    "mcp_endpoint_recorded": false,
+    "latency_in_score": false
+  },
+  "models": {
+    "agent": "qwen/qwen3.5-35b-a3b",
+    "router": "openai/gpt-oss-120b",
+    "observer": "openai/gpt-oss-120b"
+  },
+  "scores": {
+    "v2_automated_passed": 47,
+    "v2_evidence_answers_passed": 52,
+    "v3_raw_frozen_manifest_passed": 53,
+    "v3_fair_adjusted_passed": 57,
+    "semantic_audit_hybrid_oracle_estimate": 61,
+    "questions_total": 63
+  },
+  "semantic_audit": {
+    "v2_better": [
+      "v2q_018",
+      "v2q_021",
+      "v2q_024",
+      "v2q_039"
+    ],
+    "unreliable_in_both": [
+      "v2q_027",
+      "v2q_063"
+    ],
+    "hybrid_oracle_is_executed_router_score": false
+  },
+  "artifacts": {
+    "v2_raw": "artifacts/v2_runtime_full_63_raw.json",
+    "v2_scored": "artifacts/v2_runtime_full_63_scored.json",
+    "v3_raw": "artifacts/v2_full_question_replay_v3_current_run.json",
+    "v3_controlled_recheck": "artifacts/v2_full_question_replay_v3_current_recheck.json",
+    "v3_regression_report": "artifacts/v2_full_question_replay_v3_current_regression_report.md",
+    "head_to_head_report": "artifacts/v2_v3_full63_head_to_head_report.md"
+  },
+  "provenance_note": "The source_commit field in v3 replay artifacts identifies the frozen v2 question-source provenance. Use code_under_test.v3_commit here for the v3 runtime commit that was executed."
+}
